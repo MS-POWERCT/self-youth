@@ -1,0 +1,39 @@
+{
+    "name": "lake/login-captcha",
+    "alias": "登录验证码",
+    "description": "Dcat-admin login captcha extension. / Dcat-admin 登录验证码。",
+    "type": "library",
+    "keywords": [
+        "dcat-admin", 
+        "lake", 
+        "captcha", 
+        "login-captcha", 
+        "extension"
+    ],
+    "homepage": "https://github.com/deatil/dcat-login-captcha",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "deatil",
+            "email": "deatil@github.com",
+            "homepage": "https://github.com/deatil"
+        }
+    ],
+    "require": {
+        "php": ">=7.2.5",
+        "dcat/laravel-admin": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Lake\\LoginCaptcha\\": "src/"
+        }
+    },
+    "extra": {
+        "dcat-admin": "Lake\\LoginCaptcha\\ServiceProvider",
+        "laravel": {
+            "providers": [
+                "Lake\\LoginCaptcha\\ServiceProvider"
+            ]
+        }
+    }
+}

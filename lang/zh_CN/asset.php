@@ -1,0 +1,35 @@
+<?php 
+return [
+    'labels' => [
+        'Asset' => 'Asset',
+        'asset' => 'Asset',
+    ],
+    'fields' => [
+        'name' => '中文名',
+        'chain_name' => 'chain_name',
+        'chain_id' => 'chain_id',
+        'unique_code' => '列如智能合约',
+        'icon' => 'icon',
+        'browser_url' => 'browser_url',
+        'rate' => '对u的价格',
+        'pre_create' => '预创建',
+        'withdraw_enable' => '开启提现?',
+        'withdraw_min' => '最小额',
+        'withdraw_max' => '最大额',
+        'withdraw_fee_rate' => '手续费',
+        'withdraw_fee_min' => '最小手续费',
+        'withdraw_fee_max' => '最大手续费',
+        'withdraw_audit' => '审核额度',
+        'withdraw_audit_day' => '单日审核额度',
+        'withdraw_count' => '单日提现次数',
+        'withdraw_deposit_wait' => '提现充值等待',
+        'deposit_enable' => '开启充值',
+        'deposit_min' => '最小充值额',
+        'done_block_number' => 'done_block_number',
+        'last_block_number' => 'last_block_number',
+        'last_block_size' => 'last_block_size',
+        'created_at' => 'created_at',
+    ],
+    'options' => [
+    ],
+];
