@@ -2,7 +2,6 @@
 
 namespace App\Api;
 
-use App\Models\HabitCheckLog;
 use App\Models\HabitValueLog;
 use App\Models\UserHabit;
 use App\Services\HabitService;
@@ -74,66 +73,6 @@ class HabitValueController extends Controller
         }
     }
 
-    // 获取数值记录列表 GET /api/habit/value/list
-    // 需要做分页-按天来分页
-    public function getList(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'size' => 'required|integer|min:1|max:20',
-        ]);
-
-        if ($validator->fails()) {
-            return Response::error(trans('app-return.validator_fails'), 1212);
-        }
-
-        $last_date = $request->input('last_date');
-        $size = $request->input('size');
-        $user_id = Auth::id();
-
-        // 1. 分页获取本次需要加载的日期
-        $dateQuery = HabitValueLog::query()
-            ->where('user_id', $user_id)
-            ->distinct()
-            ->select('record_date');
-
-        if (!empty($last_date)) {
-            $dateQuery->where('record_date', '<', $last_date);
-        }
-
-        $dateList = $dateQuery
-            ->orderBy('record_date', 'desc')
-            ->limit($size)
-            ->get()
-            ->pluck('record_date');
-
-        if ($dateList->isEmpty()) {
-            return Response::success($dateList);
-        }
-
-        // 2. 查询这些日期下的所有记录
-        $logs = HabitValueLog::query()
-            ->where('user_id', $user_id)
-            ->whereIn('record_date', $dateList)
-            ->orderBy('record_date', 'desc')
-            ->orderBy('record_start_time', 'desc')
-            ->get();
-
-        // 3. 按日期分组
-        $groupData = [];
-        foreach ($logs as $log) {
-            $d = $log->record_date;
-            if (!isset($groupData[$d])) {
-                $groupData[$d] = [
-                    'record_date' => $d,
-                    'list' => []
-                ];
-            }
-            $groupData[$d]['list'][] = $log;
-        }
-
-        return Response::success($groupData);
-    }
-
 
     public function edit(Request $request)
     {
@@ -141,8 +80,6 @@ class HabitValueController extends Controller
             'id' => 'required|integer',
             'value' => 'required|integer',
             'record_start_time' => 'required|date_format:Y-m-d H:i:s',
-            'note' => 'string|max:50',
-            'note_image' => 'string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -178,6 +115,70 @@ class HabitValueController extends Controller
         }
     }
 
+
+
+    // 获取数值记录列表 GET /api/habit/value/list
+    // 需要做分页-按天来分页
+    public function getList(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'size' => 'integer|min:1|max:10',
+        ]);
+
+        if ($validator->fails()) {
+            return Response::error(trans('app-return.validator_fails'), 1212);
+        }
+
+        $last_date = $request->input('last_date');
+        $size = $request->input('size', 10);
+        $user_id = Auth::id();
+
+        // 1. 分页获取本次需要加载的日期
+        $dateQuery = HabitValueLog::query()
+            ->where('user_id', $user_id)
+            ->distinct()
+            ->select('record_date');
+
+        if (!empty($last_date)) {
+            $dateQuery->where('record_date', '<', $last_date);
+        }
+
+        $dateList = $dateQuery
+            ->orderBy('record_date', 'desc')
+            ->limit($size)
+            ->get()
+            ->pluck('record_date');
+
+        if ($dateList->isEmpty()) {
+            return Response::success($dateList);
+        }
+
+        // 2. 查询这些日期下的所有记录
+        $logs = HabitValueLog::query()->with('userHabit')
+            ->where('user_id', $user_id)
+            ->whereIn('record_date', $dateList)
+            ->orderBy('record_date', 'desc')
+            ->orderBy('record_start_time', 'desc')
+            ->get();
+
+        // 3. 按日期分组
+        $groupData = [];
+        foreach ($logs as $log) {
+            $d = $log->record_date;
+            if (!isset($groupData[$d])) {
+                $groupData[$d] = [
+                    'record_date' => $d,
+                    'list' => []
+                ];
+            }
+            $groupData[$d]['list'][] = $log;
+        }
+
+        return Response::success($groupData);
+    }
+
+
+
     // 删除单条记录 POST /api/habit/value/del
     public function del(Request $request)
     {
@@ -200,7 +201,7 @@ class HabitValueController extends Controller
         HabitValueLog::where('id', $id)->delete();
 
         // 热力贡献值
-        HabitService::setHabitState($user_id, [
+        HabitService::setHabitState($user_id, (object)[
             'status' => -1,
             'record_date' => $log->record_date,
         ]);

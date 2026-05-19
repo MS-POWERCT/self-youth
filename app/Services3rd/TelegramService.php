@@ -15,8 +15,8 @@ class TelegramService
     public function __construct()
     {
         // 请进行配置 TELEGRAM_BOT_TOKEN 和 TELEGRAM_CHAT_ID
-        $this->botToken = env('TELEGRAM_BOT_TOKEN');
-        $this->chatId = env('TELEGRAM_CHAT_ID');
+        $this->botToken = config('app.telegram_bot_token');
+        $this->chatId = config('app.telegram_chat_id');
         $this->baseUrl = 'https://api.telegram.org/bot' . $this->botToken;
 
         // 验证必要的配置
@@ -40,7 +40,7 @@ class TelegramService
     {
 
         // 本地不发送
-        if (env('APP_ENV') == 'local') {
+        if (config('app.env') == 'local') {
             return true;
         }
 

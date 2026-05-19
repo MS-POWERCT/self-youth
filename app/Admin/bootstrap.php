@@ -41,7 +41,7 @@ Grid::resolving(function (Grid $grid) {
     // $grid->showQuickEditButton(); // 显示快捷编辑
     // $grid->enableDialogCreate(); // 启用弹窗创建
     $grid->paginate(10); // 默认分页10行
-    $grid->model()->orderBy('id', 'desc'); // id倒叙
+    // $grid->model()->orderBy('id', 'desc'); // id倒叙
     $grid->actions(function (Actions $actions) {
         $actions->disableDelete();
         $actions->disableView();

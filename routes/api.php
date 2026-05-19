@@ -37,10 +37,32 @@ Route::middleware('auth:api')->group(function () {
 
     // 用户习惯模块
     Route::post('/habit/getList', "App\Api\HabitController@getList"); // 获取习惯列表
+    Route::post('/habit/getEditableList', "App\Api\HabitController@getEditableList"); // 获取可以编辑的习惯列表
     Route::post('/habit/create', "App\Api\HabitController@create"); // 新增习惯
+    Route::post('/habit/edit', "App\Api\HabitController@edit"); // 编辑习惯
     Route::post('/habit/hide', "App\Api\HabitController@hide"); // 隐藏/显示
     Route::post('/habit/delete', "App\Api\HabitController@delete"); // 删除习惯
     Route::get('/habit/stat', "App\Api\HabitController@stat"); // 获取打卡统计（周/月）
+    Route::get('/habit/getIconList', "App\Api\HabitController@getIconList"); // 获取icon列表
+
+
+    // 习惯打卡模块
+    Route::post('/habit/check/toggle', "App\Api\HabitCheckController@toggle"); // 今日打卡/取消打卡
+    Route::get('/habit/check/today', "App\Api\HabitCheckController@today"); // 今日打卡记录
+
+    // 时长计数记录模块
+    Route::post('/habit/value/create', "App\Api\HabitValueController@create"); // 新增数值记录
+    Route::get('/habit/value/list', "App\Api\HabitValueController@getList"); // 获取数值记录列表
+    Route::post('/habit/value/edit', "App\Api\HabitValueController@edit"); // 编辑数值记录
+    Route::post('/habit/value/del', "App\Api\HabitValueController@del"); // 删除数值记录
+
+
+    // 标记吧
+    Route::get('/mark/getCategoryList', "App\Api\MarkController@getCategoryList");
+    Route::get('/mark/getModuleList', "App\Api\MarkController@getModuleList");
+    Route::get('/mark/getItemList', "App\Api\MarkController@getItemList");
+    Route::post('/mark/markItem', "App\Api\MarkController@markItem");
+    Route::post('/mark/batchMarkItem', "App\Api\MarkController@batchMarkItem");
 
 
     // 情侣圈
@@ -53,16 +75,6 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/loverComment/delData', "App\Api\LoverCommentController@delData"); // 删除评论
 
 
-
-    // 习惯打卡模块
-    Route::post('/habit/check/toggle', "App\Api\HabitCheckController@toggle"); // 今日打卡/取消打卡
-    Route::get('/habit/check/today', "App\Api\HabitCheckController@today"); // 今日打卡记录
-
-    // 时长计数记录模块
-    Route::post('/habit/value/create', "App\Api\HabitValueController@create"); // 新增数值记录
-    Route::get('/habit/value/list', "App\Api\HabitValueController@getList"); // 获取数值记录列表
-    Route::post('/habit/value/edit', "App\Api\HabitValueController@edit"); // 编辑数值记录
-    Route::post('/habit/value/del', "App\Api\HabitValueController@del"); // 删除数值记录
 });
 
 

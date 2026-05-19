@@ -64,8 +64,8 @@ class EmailLoginController extends Controller
         Redis::setex($limitKey, $cooling_time, 1);
 
         // 5. 发送邮件
-        Mail::send('emails.code', ['code' => $code, 'url' => env('APP_URL'), 'time' => $time], function ($message) use ($email) {
-            $message->to($email)->subject('[' . env('APP_NAME') . '] ' . 'Verification - ' . date('Y-m-d H:i:s'));
+        Mail::send('emails.code', ['code' => $code, 'url' => config('app.url'), 'time' => $time], function ($message) use ($email) {
+            $message->to($email)->subject('[' . config('app.name') . '] ' . 'Verification - ' . date('Y-m-d H:i:s'));
         });
 
         return Response::success([], '发送成功');

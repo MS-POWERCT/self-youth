@@ -135,6 +135,10 @@ return [
             'password' => env('REDIS_PASSWORD'),
             'port' => env('REDIS_PORT', '6379'),
             'database' => env('REDIS_DB', '0'),
+            'persistent' => false,    // ← 尝试改为 false
+            'timeout' => 0,         // ← 连接超时
+            'read_timeout' => 60,    // ← 增加这个
+            'retry_interval' => 100,
         ],
 
         'cache' => [

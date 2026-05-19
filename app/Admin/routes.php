@@ -19,6 +19,11 @@ Route::group([
     // 用户信息
     $router->resource('user', 'UserController');
 
+    // 标记模块
+    $router->resource('markCategory', 'MarkCategoryController');
+    $router->resource('markModule', 'MarkModuleController');
+    $router->resource('markItem', 'MarkItemController');
+    $router->resource('markUser', 'MarkUserController');
 
     // 资产
     $router->resource('walletAsset', 'WalletAssetController');

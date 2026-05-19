@@ -14,7 +14,7 @@ class AlibabaTranslateService
 
     public static function translate(string $content, string $from, string $to, $format_type = self::DEFAULT_FORMAT_TYPE)
     {
-        AlibabaCloud::accessKeyClient(env('alibaba_cloud_access_key'), env('alibaba_cloud_access_secret'))
+        AlibabaCloud::accessKeyClient(config('app.aliyun_cloud_access_key'), config('app.aliyun_cloud_access_secret'))
             ->regionId('cn-hangzhou')
             ->asGlobalClient();
 

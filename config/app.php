@@ -56,6 +56,15 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'image_url' => env('APP_IMAGE_URL'),
+
+    'telegram_bot_token' => env('TELEGRAM_BOT_TOKEN'),
+    'telegram_chat_id' => env('TELEGRAM_CHAT_ID'),
+
+    'aliyun_cloud_access_key' => env('ALIBABA_C_ACCESS_KEY'),
+    'aliyun_cloud_access_secret' => env('ALIBABA_C_ACCESS_SECRET'),
+
+
     'asset_url' => env('ASSET_URL'),
 
     /*

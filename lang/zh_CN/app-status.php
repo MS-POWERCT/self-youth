@@ -29,18 +29,14 @@ return [
         ]
     ],
 
-    'nft_order' => [
-        'status' => [
-            0 => '已失效',
-            1 => '持有中',
-            2 => '已转移',
-        ],
-        'source' => [
-            'user' => '用户',
-            'admin' => '管理员',
-            'transfer' => '转移',
+    'mark_user' => [
+        'mark_type' => [
+            0 => '未标记',
+            1 => '想去/计划',
+            2 => '已完成/已去/已看',
         ],
     ],
+
     'wallet_asset' => [
         'module_code' => [
             'BUY_NODE' => '兑换节点',

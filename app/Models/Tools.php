@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\Log;
 
 class Tools
 {
@@ -56,22 +57,20 @@ class Tools
         if (substr($action, -8) === '@destroy') {
             return $value; // 不修改字段内容
         }
+        if (substr($action, -6) === '@index') {
+            return config('app.image_url') . '/uploads/' . $value;
+        }
 
+        // 判断是否为空
         if (empty($value)) {
             return $value;
         }
 
-        // if (!@getimagesize($value)) {
-        //     return env('OSS_CDN_DOMAIN_URL') . DIRECTORY_SEPARATOR . $value;
-        // }
-
         if ($value) {
-            if (env('APP_ENV') == 'local') {
-                $server_ip = gethostbyname(gethostname());
-                $request = request();
-                return 'http://' . $server_ip . ':' . $request->getPort() . '/uploads/' . $value;
+            if (config('app.env') == 'local') {
+                return config('app.image_url') . '/uploads/' . $value;
             } else {
-                return env('APP_URL') . '/uploads/' . $value;
+                return config('app.url') . '/uploads/' . $value;
             }
         }
         return $value;

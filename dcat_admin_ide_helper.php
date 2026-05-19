@@ -7,7 +7,9 @@
  *
  * @author jqh <841324345@qq.com>
  */
+
 namespace Dcat\Admin {
+
     use Illuminate\Support\Collection;
 
     /**
@@ -100,6 +102,14 @@ namespace Dcat\Admin {
      * @property Grid\Column|Collection record_start_time
      * @property Grid\Column|Collection images
      * @property Grid\Column|Collection circle_id
+     * @property Grid\Column|Collection desc
+     * @property Grid\Column|Collection module_id
+     * @property Grid\Column|Collection caregory_id
+     * @property Grid\Column|Collection device_id
+     * @property Grid\Column|Collection item_id
+     * @property Grid\Column|Collection mark_time
+     * @property Grid\Column|Collection mark_type
+     * @property Grid\Column|Collection remark
      * @property Grid\Column|Collection client_id
      * @property Grid\Column|Collection expires_at
      * @property Grid\Column|Collection revoked
@@ -119,6 +129,7 @@ namespace Dcat\Admin {
      * @property Grid\Column|Collection command
      * @property Grid\Column|Collection cron
      * @property Grid\Column|Collection last_run_at
+     * @property Grid\Column|Collection fixed
      * @property Grid\Column|Collection is_show
      * @property Grid\Column|Collection address
      * @property Grid\Column|Collection age
@@ -239,6 +250,14 @@ namespace Dcat\Admin {
      * @method Grid\Column|Collection record_start_time(string $label = null)
      * @method Grid\Column|Collection images(string $label = null)
      * @method Grid\Column|Collection circle_id(string $label = null)
+     * @method Grid\Column|Collection desc(string $label = null)
+     * @method Grid\Column|Collection module_id(string $label = null)
+     * @method Grid\Column|Collection caregory_id(string $label = null)
+     * @method Grid\Column|Collection device_id(string $label = null)
+     * @method Grid\Column|Collection item_id(string $label = null)
+     * @method Grid\Column|Collection mark_time(string $label = null)
+     * @method Grid\Column|Collection mark_type(string $label = null)
+     * @method Grid\Column|Collection remark(string $label = null)
      * @method Grid\Column|Collection client_id(string $label = null)
      * @method Grid\Column|Collection expires_at(string $label = null)
      * @method Grid\Column|Collection revoked(string $label = null)
@@ -258,6 +277,7 @@ namespace Dcat\Admin {
      * @method Grid\Column|Collection command(string $label = null)
      * @method Grid\Column|Collection cron(string $label = null)
      * @method Grid\Column|Collection last_run_at(string $label = null)
+     * @method Grid\Column|Collection fixed(string $label = null)
      * @method Grid\Column|Collection is_show(string $label = null)
      * @method Grid\Column|Collection address(string $label = null)
      * @method Grid\Column|Collection age(string $label = null)
@@ -383,6 +403,14 @@ namespace Dcat\Admin {
      * @property Show\Field|Collection record_start_time
      * @property Show\Field|Collection images
      * @property Show\Field|Collection circle_id
+     * @property Show\Field|Collection desc
+     * @property Show\Field|Collection module_id
+     * @property Show\Field|Collection caregory_id
+     * @property Show\Field|Collection device_id
+     * @property Show\Field|Collection item_id
+     * @property Show\Field|Collection mark_time
+     * @property Show\Field|Collection mark_type
+     * @property Show\Field|Collection remark
      * @property Show\Field|Collection client_id
      * @property Show\Field|Collection expires_at
      * @property Show\Field|Collection revoked
@@ -402,6 +430,7 @@ namespace Dcat\Admin {
      * @property Show\Field|Collection command
      * @property Show\Field|Collection cron
      * @property Show\Field|Collection last_run_at
+     * @property Show\Field|Collection fixed
      * @property Show\Field|Collection is_show
      * @property Show\Field|Collection address
      * @property Show\Field|Collection age
@@ -522,6 +551,14 @@ namespace Dcat\Admin {
      * @method Show\Field|Collection record_start_time(string $label = null)
      * @method Show\Field|Collection images(string $label = null)
      * @method Show\Field|Collection circle_id(string $label = null)
+     * @method Show\Field|Collection desc(string $label = null)
+     * @method Show\Field|Collection module_id(string $label = null)
+     * @method Show\Field|Collection caregory_id(string $label = null)
+     * @method Show\Field|Collection device_id(string $label = null)
+     * @method Show\Field|Collection item_id(string $label = null)
+     * @method Show\Field|Collection mark_time(string $label = null)
+     * @method Show\Field|Collection mark_type(string $label = null)
+     * @method Show\Field|Collection remark(string $label = null)
      * @method Show\Field|Collection client_id(string $label = null)
      * @method Show\Field|Collection expires_at(string $label = null)
      * @method Show\Field|Collection revoked(string $label = null)
@@ -541,6 +578,7 @@ namespace Dcat\Admin {
      * @method Show\Field|Collection command(string $label = null)
      * @method Show\Field|Collection cron(string $label = null)
      * @method Show\Field|Collection last_run_at(string $label = null)
+     * @method Show\Field|Collection fixed(string $label = null)
      * @method Show\Field|Collection is_show(string $label = null)
      * @method Show\Field|Collection address(string $label = null)
      * @method Show\Field|Collection age(string $label = null)
@@ -575,10 +613,9 @@ namespace Dcat\Admin {
     class Show {}
 
     /**
-     
+
      */
     class Form {}
-
 }
 
 namespace Dcat\Admin\Grid {
@@ -588,14 +625,14 @@ namespace Dcat\Admin\Grid {
     class Column {}
 
     /**
-     
+
      */
     class Filter {}
 }
 
 namespace Dcat\Admin\Show {
     /**
-     
+
      */
     class Field {}
 }

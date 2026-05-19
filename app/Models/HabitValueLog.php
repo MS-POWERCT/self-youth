@@ -13,4 +13,9 @@ class HabitValueLog extends Model
 
     protected $table = 'habit_value_logs';
     protected $guarded = [];
+
+    public function userHabit()
+    {
+        return $this->belongsTo(UserHabit::class, 'habit_id');
+    }
 }

@@ -19,7 +19,7 @@ class Web3SignatureMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if (env('APP_ENV') == 'local') {
+        if (config('app.env') == 'local') {
             // 本地不需要签名
             return $next($request);
         }
