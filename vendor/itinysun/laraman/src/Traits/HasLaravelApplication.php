@@ -36,9 +36,7 @@ trait HasLaravelApplication
      * @param Request $request
      * @return void
      */
-    protected function onHttpMessage(TcpConnection $connection, Request $request)
-    {
-    }
+    protected function onHttpMessage(TcpConnection $connection, Request $request) {}
 
     /**
      * 如果是workerman预定义的text类型协议，会触发这个
@@ -47,9 +45,7 @@ trait HasLaravelApplication
      * @param string $data
      * @return void
      */
-    protected function onTextMessage(TcpConnection $connection, string $data)
-    {
-    }
+    protected function onTextMessage(TcpConnection $connection, string $data) {}
 
     /**
      * @throws Throwable
@@ -138,7 +134,6 @@ trait HasLaravelApplication
                 } catch (Throwable $e) {
                     echo 'database heartbeat failed,maybe database has down' . "\r\n" . $e->getMessage() . "\n\r";
                 }
-
             });
         }
 

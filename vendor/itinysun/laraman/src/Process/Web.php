@@ -50,8 +50,6 @@ class Web extends ProcessBase
 
             //发送响应
             $this->send($connection, $response, $request);
-
-
         } catch (Throwable $e) {
 
             //记录异常
@@ -73,6 +71,5 @@ class Web extends ProcessBase
         //读取配置，初始化静态文件服务
         if (isset($this->options['static_file']))
             StaticFileServer::init($this->options['static_file']);
-
     }
 }

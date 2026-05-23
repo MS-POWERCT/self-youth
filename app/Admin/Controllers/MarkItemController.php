@@ -54,8 +54,7 @@ class MarkItemController extends AdminController
             $form->image('img_url')->move(GlobalTool::getImageMove())
                 ->maxSize(GlobalTool::getImageMaxsize())
                 ->accept(GlobalTool::getImageAccept())
-                ->autoUpload()
-                ->required();
+                ->autoUpload();
             // $form->text('img_url');
             $form->text('star');
             $form->text('sort');

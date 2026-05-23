@@ -22,6 +22,7 @@ use Itinysun\Laraman\Process\Web;
  * ]
  *
  */
+
 return [
     'workerman' => [
 
@@ -61,7 +62,7 @@ return [
          * 单位为秒，0 为禁用心跳
          * laravel有数据重连机制，所以如果没有出现问题，可以不用打开这个
          * */
-        'db_heartbeat_interval'=>0,
+        'db_heartbeat_interval' => 0,
 
         /*
          * 事件绑定
@@ -78,18 +79,12 @@ return [
                 CleanWebState::class,
             ],
             //兼容octance保留待用
-            TaskReceived::class => [
-
-            ],
+            TaskReceived::class => [],
             /*
              * 对于非WEB请求，请使用如下两个事件
              */
-            MessageReceived::class=>[
-
-            ],
-            MessageDone::class=>[
-
-            ],
+            MessageReceived::class => [],
+            MessageDone::class => [],
 
         ],
         /*静态文件配置*/
@@ -112,7 +107,7 @@ return [
              * 如果不设置也不会列出目录
              * 如果是php文件，必须开启上面的support_php
              */
-            'defaultPage'=>[
+            'defaultPage' => [
                 'index.html',
                 //'index.php',
             ]

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of webman.
  *
@@ -88,17 +89,20 @@ class Response extends \Workerman\Protocols\Http\Response
 
     public static function fromLaravelResponse(mixed $response): static
     {
+        // 在调用 fromLaravelResponse 的地方
+        if ($response === null) {
+            \Log::error('Response is null in laraman', [
+                'trace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5)
+            ]);
+        }
         $status = $response->getStatusCode();
         $headers = $response->headers->all();
         $reason = static::$_phrases[$status] ?? 'unknown error';
-        $resp = new static($status,marshalHeaders($headers),$response->getContent());
-        $resp->_reason=$reason;
-        if($response instanceof BinaryFileResponse && null!==$response->getFile()){
+        $resp = new static($status, marshalHeaders($headers), $response->getContent());
+        $resp->_reason = $reason;
+        if ($response instanceof BinaryFileResponse && null !== $response->getFile()) {
             $resp->withFile($response->getFile());
         }
         return $resp;
     }
-
-
-
 }

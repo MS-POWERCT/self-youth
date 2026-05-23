@@ -56,8 +56,6 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
-    'image_url' => env('APP_IMAGE_URL'),
-
     'telegram_bot_token' => env('TELEGRAM_BOT_TOKEN'),
     'telegram_chat_id' => env('TELEGRAM_CHAT_ID'),
 

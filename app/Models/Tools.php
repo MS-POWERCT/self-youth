@@ -58,7 +58,7 @@ class Tools
             return $value; // 不修改字段内容
         }
         if (substr($action, -6) === '@index') {
-            return config('app.image_url') . '/uploads/' . $value;
+            return config('app.url') . '/uploads/' . $value;
         }
 
         // 判断是否为空
@@ -68,7 +68,7 @@ class Tools
 
         if ($value) {
             if (config('app.env') == 'local') {
-                return config('app.image_url') . '/uploads/' . $value;
+                return config('app.url') . '/uploads/' . $value;
             } else {
                 return config('app.url') . '/uploads/' . $value;
             }
