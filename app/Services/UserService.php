@@ -84,6 +84,7 @@ class UserService
             $type => $value,
             'ip' => $GLOBALS['clientIp'],
             'status' => 0,
+            'login_type' => $type,
             'name' => $value,
         ];
 

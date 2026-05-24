@@ -99,6 +99,7 @@ Route::middleware('auth:api')->group(function () {
 // 目前还缺密码登录，忘记密码，绑定地址/绑定邮箱
 Route::post('/auth/email/sendCode', "App\Api\Auth\EmailLoginController@sendEmailCode"); // 发送验证码
 Route::post('/auth/email/loginEmail', "App\Api\Auth\EmailLoginController@loginEmail"); // 邮箱登录
+Route::post('/auth/visitor/loginVisitor', "App\Api\Auth\VisitorLoginController@loginVisitor"); // 访客登录
 Route::as('web3')->prefix('web3')->group(function () { // web3 签名登录
     Route::get('signature', "App\Api\Auth\Web3LoginController@signature")->middleware('limit_form_repeat:3');
     Route::post('login', "App\Api\Auth\Web3LoginController@login")->middleware(['limit_form_repeat:3', 'web3.signature']);

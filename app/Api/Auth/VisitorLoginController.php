@@ -6,36 +6,39 @@ use App\Api\Controller;
 use App\Models\User;
 use App\Services\UserService;
 use App\Support\Response;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Redis;
-use M1guelpf\Web3Login\Facades\Signature;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
-class Web3LoginController extends Controller
+class VisitorLoginController extends Controller
 {
-    public function signature()
+
+
+    // 验证码登录
+    public function loginVisitor(Request $request)
     {
-        $nonce = Str::random();
+        // 1. 校验邮箱格式
+        $validator = Validator::make($request->all(), [
+            'uuid' => ['required', 'string']
+        ]);
 
-        Redis::setex('nonce:' . $nonce, 86400, $nonce);
+        if ($validator->fails()) {
+            return Response::error('格式不正确', 5001);
+        }
 
-        return Response::success($nonce, Signature::generate($nonce));
-    }
 
-    // 矿池 web3登录
-    public function login(Request $request)
-    {
+        $uuid = $request->uuid;
+
+
 
         try {
-            $address = $request->address;
-            $user = User::where('address', $request->address)->where('login_type', 'address')->first();
+            $user = User::where('uuid', $uuid)->where('login_type', 'uuid')->first();
 
             if (!$user) {
                 DB::beginTransaction();
-                $user = UserService::createUser($address, 'address');
+                $user = UserService::createUser($uuid, 'uuid');
                 DB::commit();
             }
 

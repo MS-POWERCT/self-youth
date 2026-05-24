@@ -71,10 +71,10 @@ class User extends Authenticatable
     {
 
         // 先验证邮箱是否存在
-        if (!User::where('email', $username)->first()) {
+        if (!User::where('email', $username)->where('login_type', 'email')->first()) {
             throw new OAuthServerException(trans('app-return.email_not_register'), 99, 'invalid_grant');
         }
 
-        return $this->where('email', $username)->where('status', '!=', 1)->first();
+        return $this->where('email', $username)->where('login_type', 'email')->where('status', '!=', 1)->first();
     }
 }
