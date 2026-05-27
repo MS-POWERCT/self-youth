@@ -14,6 +14,7 @@ use Dcat\Admin\Layout\Content;
 use Dcat\Admin\Layout\Row;
 use Dcat\Admin\Layout\Column;
 use Dcat\Admin\Widgets\Modal;
+use Illuminate\Support\Facades\View;
 
 class UserController extends AdminController
 {
@@ -50,8 +51,9 @@ class UserController extends AdminController
     {
         return Grid::make(new User(), function (Grid $grid) {
             $grid->column('id')->sortable();
-            $grid->column('email');
-            $grid->column('address');
+            $grid->column('user_info', '用户信息')->display(function () {
+                return View::make('admin.user-list-info', ['user' => $this])->render();
+            })->width('26%');
             // $grid->column('ip');
             // $grid->column('avatar');
             $grid->column('status')->using(trans('app-status.user.status'))->label(ModelsUser::$user_status_color);
@@ -63,6 +65,8 @@ class UserController extends AdminController
             // $grid->disableActions();
             $grid->filter(function (Grid\Filter $filter) {
                 $filter->equal('id')->width('20%');
+                $filter->like('name')->width('30%');
+                $filter->like('email')->width('30%');
                 $filter->like('address')->width('30%');
                 $filter->equal('status')->select(trans('app-status.user.status'))->width('20%');
             });
@@ -73,6 +77,7 @@ class UserController extends AdminController
                 $u = GlobalTool::getUser();
                 if ($u->admin_role->id == 1) {
                     $actions->append(new UserHabitAudited());
+                    $actions->append("<hr/>");
                 }
             });
         });

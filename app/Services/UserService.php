@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use GuzzleHttp\Promise\Create;
 use Illuminate\Support\Facades\Redis;
 
 /*
@@ -85,7 +86,7 @@ class UserService
             'ip' => $GLOBALS['clientIp'],
             'status' => 0,
             'login_type' => $type,
-            'name' => $value,
+            'name' => CreativeNameService::generateDe(),
         ];
 
         $user = User::create($preData);
