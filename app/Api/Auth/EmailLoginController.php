@@ -92,9 +92,9 @@ class EmailLoginController extends Controller
             return response()->json(array('res_code' => 5003, 'res_msg' => trans('app-return.email_format_error'), 'data' => []));
         }
         // 校验验证码
-        // if (!UserService::checkEmailCode($email, 'login', $request->code)) {
-        //     return Response::error('验证码错误或已过期', '5001');
-        // }
+        if (!UserService::checkEmailCode($email, 'login', $request->code)) {
+            return Response::error('验证码错误或已过期', '5001');
+        }
 
         try {
             $user = User::where('email', $email)->where('login_type', 'email')->first();
