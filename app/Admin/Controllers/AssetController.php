@@ -94,12 +94,6 @@ class AssetController extends AdminController
 
                 $asset = ModelsAsset::find($form->getKey()); // 原数据
                 $form->id = $form->getKey(); // id默认好像是空，需要赋值一下
-                $asset_id = $form->model()->id;
-                $rate = $form->input('rate');
-                // 修改用户状态
-                if ($form->rate && $form->rate != $asset->rate) {
-                    ToolsService::setAssetRate($asset_id, $rate);
-                }
             });
         });
     }

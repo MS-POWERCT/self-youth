@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Redis;
 use M1guelpf\Web3Login\Facades\Signature;
 use Exception;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -20,7 +21,7 @@ class Web3LoginController extends Controller
     {
         $nonce = Str::random();
 
-        Redis::setex('nonce:' . $nonce, 86400, $nonce);
+        Cache::setex('nonce:' . $nonce, $nonce, 86400);
 
         return Response::success($nonce, Signature::generate($nonce));
     }

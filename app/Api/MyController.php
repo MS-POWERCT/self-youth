@@ -3,6 +3,7 @@
 namespace App\Api;
 
 use App\Models\User;
+use App\Services\UserService;
 use App\Support\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -40,11 +41,71 @@ class MyController extends Controller
             return Response::error('邮箱未绑定', '5001');
         }
 
-        // if (!UserService::checkEmailCode($user->email, 'recover', $request->code)) {
-        //     return Response::error('验证码错误或已过期', '5002');
-        // }
+        if (!UserService::checkEmailCode($user->email, 'recover', $request->code)) {
+            return Response::error('验证码错误或已过期', '5002');
+        }
 
         $user->password = Hash::make($password);
+        $user->save();
+
+        return Response::success();
+    }
+
+    // 绑定邮箱
+    public function bindEmail(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string',
+            'code' => 'required|string|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return Response::error($validator->errors()->first(), 1212);
+        }
+
+        $email = $request->email;
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return response()->json(array('res_code' => 5003, 'res_msg' => trans('app-return.email_format_error'), 'data' => []));
+        }
+        $user = User::find(Auth::id());
+
+        // 检查是否有绑定邮箱
+        if ($user->email) {
+            return Response::error('邮箱存在无法进行绑定', '5001');
+        }
+
+        if (!UserService::checkEmailCode($user->email, 'bind-email', $request->code)) {
+            return Response::error('验证码错误或已过期', '5002');
+        }
+
+        $user->email = $email;
+        $user->save();
+
+        return Response::success();
+    }
+
+    // 绑定web3地址
+    public function bindAddress(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'address' => 'required|string',
+            'code' => 'required|string|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return Response::error($validator->errors()->first(), 1212);
+        }
+
+        $address = $request->address;
+
+        $user = User::find(Auth::id());
+
+        // 检查是否有绑定邮箱
+        if ($user->address) {
+            return Response::error('地址存在无法进行绑定', '5001');
+        }
+
+        $user->address = $address;
         $user->save();
 
         return Response::success();

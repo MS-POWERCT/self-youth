@@ -107,16 +107,6 @@ class LoverCircleController extends Controller
             return Response::error(trans('app-return.lover_not_found'));
         }
 
-        // 目前只处理点赞
-        $key = 'lover_circle:like_' . $detail->id;
-        $redis = Redis::connection('cache');
-        if ($redis->hexists($key, $user->id)) {
-            $redis->hdel($key, $user->id);
-        } else {
-            $redis->hset($key, $user->id, date('Y-m-d H:i:s'));
-            // 这里code...
-        }
-
         return Response::success([]);
     }
 

@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\User;
-use GuzzleHttp\Promise\Create;
 use Illuminate\Support\Facades\Redis;
 
 /*

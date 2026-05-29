@@ -30,7 +30,7 @@ class EmailLoginController extends Controller
         // 1. 校验邮箱格式
         $validator = Validator::make($request->all(), [
             'email' => ['required', 'string'],
-            'category' => ['required', Rule::in(['login', 'recover', 'email-address', 'address-email'])],
+            'category' => ['required', Rule::in(['login', 'recover', 'bind-email', 'bind-address'])],
         ]);
 
         if ($validator->fails()) {

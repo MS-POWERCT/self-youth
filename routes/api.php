@@ -32,29 +32,33 @@ Route::middleware('auth:api')->group(function () {
 
     // 用户信息模块
     Route::post('/my/getMyInfo', "App\Api\MyController@getMyInfo");
-    Route::post('/my/changePassword', "App\Api\MyController@changePassword"); // 重置密码
+    Route::post('/my/changePassword', "App\Api\MyController@changePassword")->middleware(['limit_form_repeat:3']); // 重置密码
+    Route::post('/my/bindEmail', "App\Api\MyController@bindEmail")->middleware(['limit_form_repeat:3']);
+    Route::post('/my/bindAddress', "App\Api\MyController@bindAddress")->middleware(['limit_form_repeat:3', 'web3.signature']); //
+
+
 
 
     // 用户习惯模块
     Route::post('/habit/getList', "App\Api\HabitController@getList"); // 获取习惯列表
     Route::post('/habit/getEditableList', "App\Api\HabitController@getEditableList"); // 获取可以编辑的习惯列表
-    Route::post('/habit/create', "App\Api\HabitController@create"); // 新增习惯
-    Route::post('/habit/edit', "App\Api\HabitController@edit"); // 编辑习惯
-    Route::post('/habit/hide', "App\Api\HabitController@hide"); // 隐藏/显示
-    Route::post('/habit/delete', "App\Api\HabitController@delete"); // 删除习惯
+    Route::post('/habit/create', "App\Api\HabitController@create")->middleware(['limit_form_repeat:3']); // 新增习惯
+    Route::post('/habit/edit', "App\Api\HabitController@edit")->middleware(['limit_form_repeat:3']); // 编辑习惯
+    Route::post('/habit/hide', "App\Api\HabitController@hide")->middleware(['limit_form_repeat:3']); // 隐藏/显示
+    Route::post('/habit/delete', "App\Api\HabitController@delete")->middleware(['limit_form_repeat:3']); // 删除习惯
     Route::get('/habit/stat', "App\Api\HabitController@stat"); // 获取打卡统计（周/月）
     Route::get('/habit/getIconList', "App\Api\HabitController@getIconList"); // 获取icon列表
 
 
     // 习惯打卡模块
-    Route::post('/habit/check/toggle', "App\Api\HabitCheckController@toggle"); // 今日打卡/取消打卡
+    Route::post('/habit/check/toggle', "App\Api\HabitCheckController@toggle")->middleware(['limit_form_repeat:3']); // 今日打卡/取消打卡
     Route::get('/habit/check/today', "App\Api\HabitCheckController@today"); // 今日打卡记录
 
     // 时长计数记录模块
-    Route::post('/habit/value/create', "App\Api\HabitValueController@create"); // 新增数值记录
+    Route::post('/habit/value/create', "App\Api\HabitValueController@create")->middleware(['limit_form_repeat:3']); // 新增数值记录
     Route::get('/habit/value/list', "App\Api\HabitValueController@getList"); // 获取数值记录列表
-    Route::post('/habit/value/edit', "App\Api\HabitValueController@edit"); // 编辑数值记录
-    Route::post('/habit/value/del', "App\Api\HabitValueController@del"); // 删除数值记录
+    Route::post('/habit/value/edit', "App\Api\HabitValueController@edit")->middleware(['limit_form_repeat:3']); // 编辑数值记录
+    Route::post('/habit/value/del', "App\Api\HabitValueController@del")->middleware(['limit_form_repeat:3']); // 删除数值记录
 
 
     // 标记吧
@@ -97,9 +101,9 @@ Route::middleware('auth:api')->group(function () {
 
 // 账户模块
 // 目前还缺密码登录，忘记密码，绑定地址/绑定邮箱
-Route::post('/auth/email/sendCode', "App\Api\Auth\EmailLoginController@sendEmailCode"); // 发送验证码
-Route::post('/auth/email/loginEmail', "App\Api\Auth\EmailLoginController@loginEmail"); // 邮箱登录
-Route::post('/auth/visitor/loginVisitor', "App\Api\Auth\VisitorLoginController@loginVisitor"); // 访客登录
+Route::post('/auth/email/sendCode', "App\Api\Auth\EmailLoginController@sendEmailCode")->middleware(['limit_form_repeat:3']); // 发送验证码
+Route::post('/auth/email/loginEmail', "App\Api\Auth\EmailLoginController@loginEmail")->middleware(['limit_form_repeat:3']); // 邮箱登录
+Route::post('/auth/visitor/loginVisitor', "App\Api\Auth\VisitorLoginController@loginVisitor")->middleware(['limit_form_repeat:3']); // 访客登录
 Route::as('web3')->prefix('web3')->group(function () { // web3 签名登录
     Route::get('signature', "App\Api\Auth\Web3LoginController@signature")->middleware('limit_form_repeat:3');
     Route::post('login', "App\Api\Auth\Web3LoginController@login")->middleware(['limit_form_repeat:3', 'web3.signature']);

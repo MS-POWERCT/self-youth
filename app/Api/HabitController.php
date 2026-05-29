@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Support\Response;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
@@ -66,7 +67,7 @@ class HabitController extends Controller
     public function getIconList()
     {
         // 从缓存中获取
-        $list = Redis::get('habit_icon_list');
+        $list = Cache::get('habit_icon_list');
         if ($list) {
             return Response::success(json_decode($list, true));
         }
@@ -74,7 +75,7 @@ class HabitController extends Controller
         $list = DB::table('user_habit_icon')->select('id', 'name', 'icon')->get();
 
         // 缓存
-        Redis::set('habit_icon_list', json_encode($list));
+        Cache::set('habit_icon_list', json_encode($list));
 
         return Response::success($list);
     }
@@ -162,7 +163,7 @@ class HabitController extends Controller
 
         // 检查最近是否删除过习惯-通过缓存
         $key = 'delete_habit:' . $user_id;
-        $cachedTime = Redis::get($key);
+        $cachedTime = Cache::get($key);
         if ($cachedTime) {
             // 计算一下还是多少时间
             $diffTime = $cachedTime - time();
@@ -186,7 +187,7 @@ class HabitController extends Controller
         $habit->save();
         $deleteTime = ToolsService::getCache('HABIT_DELETE_TIME');
         // 缓存最近删除时间
-        Redis::setex($key, $deleteTime, time() + $deleteTime);
+        Cache::put($key, time() + $deleteTime, $deleteTime);
 
         return Response::success();
     }

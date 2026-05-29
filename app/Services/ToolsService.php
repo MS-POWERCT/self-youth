@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Asset;
 use App\Models\Llconfig;
 use Illuminate\Support\Facades\Redis;
 
@@ -226,80 +225,6 @@ class ToolsService
         Redis::set($cacheKey, $value);
     }
 
-
-    // 获取资产价格
-    public static function getAssetRate(int $asset_id, string $source = 'app'): float
-    {
-        $cacheConfig = [
-            'default' => ['key' => 'asset_rate:%s', 'field' => 'rate']
-        ];
-
-        $config = $cacheConfig[$source] ?? $cacheConfig['default'];
-        $cacheKey = sprintf($config['key'], $asset_id);
-
-        // 尝试从缓存获取
-        $rate = Redis::get($cacheKey);
-
-        if ($rate !== null) {
-            return (float)$rate;
-        }
-
-        // 缓存未命中，从数据库获取
-        $asset = Asset::findOrFail($asset_id, ['rate']);
-        $rate = (float)$asset->{$config['field']};
-
-        // 缓存资产价格
-        Redis::set($cacheKey, $rate);
-
-        return $rate;
-    }
-
-    // 设置资产价格
-    public static function setAssetRate(int $asset_id, float $rate, string $source = 'app'): bool
-    {
-        $cacheKeys = [
-            'default' => 'asset_rate:%s'
-        ];
-
-        $cacheKey = sprintf($cacheKeys[$source] ?? $cacheKeys['default'], $asset_id);
-
-        // 更新数据库
-        $updateData = match ($source) {
-            default => ['rate' => $rate]
-        };
-
-        $result = Asset::where('id', $asset_id)->update($updateData);
-
-        if ($result) {
-            // 更新缓存
-            Redis::del($cacheKey);
-            return true;
-        }
-
-        return false;
-    }
-
-
-    // 获取资产名称
-    public static function getAssetName(int $asset_id): string
-    {
-        $cacheKey = sprintf('asset_name:%s', $asset_id);
-
-        // 尝试从缓存获取
-        $name = Redis::get($cacheKey);
-
-        if ($name !== null) {
-            return $name;
-        }
-
-        // 缓存未命中，从数据库获取
-        $asset = Asset::findOrFail($asset_id, ['name']);
-
-        // 缓存资产名称
-        Redis::set($cacheKey, $asset->name);
-
-        return $asset->name;
-    }
 
 
     /**
