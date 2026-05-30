@@ -30,7 +30,7 @@ class EmailLoginController extends Controller
         // 1. 校验邮箱格式
         $validator = Validator::make($request->all(), [
             'email' => ['required', 'string'],
-            'category' => ['required', Rule::in(['login', 'recover', 'bind-email', 'bind-address'])],
+            'category' => ['required', Rule::in(['login', 'recover', 'bind_email'])],
         ]);
 
         if ($validator->fails()) {
@@ -39,12 +39,20 @@ class EmailLoginController extends Controller
 
 
         $email = $request->email;
+        $category = $request->category;
+
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return response()->json(array('res_code' => 5003, 'res_msg' => trans('app-return.email_format_error'), 'data' => []));
         }
 
+        // 如果是绑定邮箱检查这个邮箱是否存在绑定
+        if ($category == 'bind_email') {
+            $user = User::where('email', $email)->first();
+            if ($user) {
+                return Response::error('邮箱已绑定,请更换其他邮箱', '5001');
+            }
+        }
 
-        $category = $request->category;
         $cache_key = UserService::getEmailCodeKey($email, $category);
         $cooling_time = ToolsService::getCache('EMAIL_CODE_COOLING_TIME');
         $time = ToolsService::getCache('EMAIL_CODE_TIME') ?? 300;

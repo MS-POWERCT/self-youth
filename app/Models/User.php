@@ -25,6 +25,8 @@ class User extends Authenticatable
     //         ->useLogName('system'); // 使用 'system' 作为日志名称
     // }
 
+
+
     public static $user_status_color = [
         0 => 'success',
         1 => 'red',
@@ -39,7 +41,8 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $hidden = [];
+    // 密码隐藏
+    protected $hidden = ['password'];
     protected $guarded = [];
     public $incrementing = true; // 允许自增，同时也支持手动指定 ID
 
@@ -71,10 +74,10 @@ class User extends Authenticatable
     {
 
         // 先验证邮箱是否存在
-        if (!User::where('email', $username)->where('login_type', 'email')->first()) {
+        if (!User::where('email', $username)->first()) {
             throw new OAuthServerException(trans('app-return.email_not_register'), 99, 'invalid_grant');
         }
 
-        return $this->where('email', $username)->where('login_type', 'email')->where('status', '!=', 1)->first();
+        return $this->where('email', $username)->where('status', '!=', 1)->first();
     }
 }

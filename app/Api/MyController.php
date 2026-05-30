@@ -16,6 +16,10 @@ class MyController extends Controller
     public function getMyInfo()
     {
         $user = User::find(Auth::id());
+
+        // 对密码进行处理，如果有设置密码就标记为已设置密码
+        $user->has_password = $user->password ? 1 : 0;
+
         return Response::success($user);
     }
 
@@ -74,7 +78,7 @@ class MyController extends Controller
             return Response::error('邮箱存在无法进行绑定', '5001');
         }
 
-        if (!UserService::checkEmailCode($user->email, 'bind-email', $request->code)) {
+        if (!UserService::checkEmailCode($email, 'bind_email', $request->code)) {
             return Response::error('验证码错误或已过期', '5002');
         }
 
@@ -87,22 +91,17 @@ class MyController extends Controller
     // 绑定web3地址
     public function bindAddress(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'address' => 'required|string',
-            'code' => 'required|string|min:6',
-        ]);
-
-        if ($validator->fails()) {
-            return Response::error($validator->errors()->first(), 1212);
-        }
-
         $address = $request->address;
-
         $user = User::find(Auth::id());
 
         // 检查是否有绑定邮箱
         if ($user->address) {
             return Response::error('地址存在无法进行绑定', '5001');
+        }
+
+        // 检查这个地址是否用户已绑定
+        if (User::where('address', $address)->first()) {
+            return Response::error('地址已绑定，请更换其他地址', '5002');
         }
 
         $user->address = $address;
