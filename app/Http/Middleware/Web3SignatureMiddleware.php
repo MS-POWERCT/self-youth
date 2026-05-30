@@ -29,6 +29,9 @@ class Web3SignatureMiddleware
         } catch (Exception $th) {
             Log::error('Web3 Signature Verification Failed', [
                 'line' => $th->getLine(),
+                'message' => $th->getMessage(),
+                'code' => $th->getCode(),
+                'file' => $th->getFile(),
                 'request' => [
                     'method' => $request->method(),
                     'url' => $request->fullUrl(),
