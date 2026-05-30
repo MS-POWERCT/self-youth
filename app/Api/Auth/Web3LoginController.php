@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use M1guelpf\Web3Login\Facades\Signature;
 use Exception;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -20,7 +20,7 @@ class Web3LoginController extends Controller
     {
         $nonce = Str::random();
 
-        Cache::set('nonce:' . $nonce, $nonce, 86400);
+        Redis::set('nonce:' . $nonce, 86400, $nonce);
 
         return Response::success($nonce, Signature::generate($nonce));
     }
