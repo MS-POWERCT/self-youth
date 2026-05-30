@@ -20,7 +20,7 @@ class Web3LoginController extends Controller
     {
         $nonce = Str::random();
 
-        Redis::set('nonce:' . $nonce, 86400, $nonce);
+        Redis::setex('nonce:' . $nonce, 86400, $nonce);
 
         return Response::success($nonce, Signature::generate($nonce));
     }
