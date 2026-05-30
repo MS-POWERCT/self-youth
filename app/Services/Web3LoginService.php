@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Validator;
 use M1guelpf\Web3Login\Facades\Signature;
@@ -40,7 +41,6 @@ class Web3LoginService
             throw new Exception(trans('app-return.web3.nonce'), 1235);
         }
         Redis::del('nonce:' . $nonce);
-
         if (!Signature::verify($nonce, $request->input('signature'), $request->input('address'))) {
             throw new Exception(trans('app-return.web3.signature'), 1235);
         }

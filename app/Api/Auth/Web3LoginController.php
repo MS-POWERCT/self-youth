@@ -22,7 +22,12 @@ class Web3LoginController extends Controller
 
         Redis::setex('nonce:' . $nonce, 86400, $nonce);
 
-        return Response::success($nonce, Signature::generate($nonce));
+        return Response::success(
+            [
+                'nonce' => $nonce,
+                'message' => Signature::generate($nonce),
+            ]
+        );
     }
 
     // 矿池 web3登录
@@ -31,7 +36,7 @@ class Web3LoginController extends Controller
 
         try {
             $address = $request->address;
-            $user = User::where('address', $request->address)->where('login_type', 'address')->first();
+            $user = User::where('address', $request->address)->first();
 
             if (!$user) {
                 DB::beginTransaction();

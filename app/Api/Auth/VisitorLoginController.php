@@ -34,7 +34,7 @@ class VisitorLoginController extends Controller
 
 
         try {
-            $user = User::where('uuid', $uuid)->where('login_type', 'uuid')->first();
+            $user = User::where('uuid', $uuid)->first();
 
             if (!$user) {
                 DB::beginTransaction();

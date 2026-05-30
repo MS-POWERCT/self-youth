@@ -107,7 +107,7 @@ class EmailLoginController extends Controller
         }
 
         try {
-            $user = User::where('email', $email)->where('login_type', 'email')->first();
+            $user = User::where('email', $email)->first();
 
             if (!$user) {
                 DB::beginTransaction();
