@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Http\Request;
 use App\Services\Web3LoginService;
 use App\Support\Response;
+use Illuminate\Support\Facades\Log;
 
 class Web3SignatureMiddleware
 {
@@ -26,14 +27,14 @@ class Web3SignatureMiddleware
         try {
             Web3LoginService::checkSignature($request);
         } catch (Exception $th) {
-            // Log::error('Web3 Signature Verification Failed', [
-            //     'line' => $th->getLine(),
-            //     'request' => [
-            //         'method' => $request->method(),
-            //         'url' => $request->fullUrl(),
-            //         'input' => $request->all(),
-            //     ]
-            // ]);
+            Log::error('Web3 Signature Verification Failed', [
+                'line' => $th->getLine(),
+                'request' => [
+                    'method' => $request->method(),
+                    'url' => $request->fullUrl(),
+                    'input' => $request->all(),
+                ]
+            ]);
             return Response::error('Web3 Signature Verification Failed');
         }
 
