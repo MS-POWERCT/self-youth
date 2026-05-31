@@ -51,7 +51,7 @@ Route::middleware('auth:api')->group(function () {
 
 
     // 习惯打卡模块
-    Route::post('/habit/check/toggle', "App\Api\HabitCheckController@toggle")->middleware(['limit_form_repeat:3']); // 今日打卡/取消打卡
+    Route::post('/habit/check/toggle', "App\Api\HabitCheckController@toggle"); // 今日打卡/取消打卡
     Route::get('/habit/check/today', "App\Api\HabitCheckController@today"); // 今日打卡记录
 
     // 时长计数记录模块
