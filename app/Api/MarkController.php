@@ -75,6 +75,7 @@ class MarkController extends Controller
         $module_id = $request->module_id;
         $list = MarkItem::where('module_id', $module_id)
             ->where('status', 1)
+            ->orderBy('id')
             ->orderBy('sort')
             ->get();
 
