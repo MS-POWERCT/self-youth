@@ -6,9 +6,17 @@ use App\Support\Response;
 use Closure;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Request;
 
 class GlobalData
 {
+    /**
+     * 处理请求前的全局数据
+     *
+     * @param Request $request
+     * @param Closure $next
+     * @return mixed
+     */
     public function handle($request, Closure $next)
     {
         Log::info('ip:' . $request->ip());
@@ -30,8 +38,8 @@ class GlobalData
 
         // 如果参数有address 都修改为小写并保存,不是后台接口才执行
         if (!str_contains($request->url(), 'admin')) {
-            if ($request->has('address') && $request->address) {
-                $address = strtolower(trim($request->address));
+            if ($request->has('address') && $request->input('address')) {
+                $address = strtolower(trim($request->input('address')));
                 if (!preg_match('/^0x[a-fA-F0-9]{40}$/', $address)) {
                     return Response::error(trans('app-return.address_format_error'), 5000);
                 }

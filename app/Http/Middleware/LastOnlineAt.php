@@ -6,10 +6,18 @@ use Closure;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Request;
 
 class LastOnlineAt
 {
 
+    /**
+     * 处理请求前的全局数据
+     *
+     * @param Request $request
+     * @param Closure $next
+     * @return mixed
+     */
     public function handle($request, Closure $next)
     {
 

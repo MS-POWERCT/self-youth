@@ -115,7 +115,7 @@ class Handler extends ExceptionHandler
         }
 
 
-        parent::report($exception);
+        return parent::render($request, $exception);
     }
 
     protected function unauthenticated($request, AuthenticationException $exception)
