@@ -2,18 +2,17 @@
 
 namespace App\Http\Middleware;
 
-use App\Services\ToolsService;
 use App\Support\Response;
 use Closure;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 
 class GlobalData
 {
     public function handle($request, Closure $next)
     {
-
-        $ip = $request->ip() ?? '127.0.0.1';
-        $GLOBALS['clientIp'] = $ip;
+        Log::info('ip:' . $request->ip());
+        $GLOBALS['clientIp'] = $request->ip();
         // ToolsService::getRealIp($ip);
 
         // 版本
