@@ -12,8 +12,9 @@ class GlobalData
     public function handle($request, Closure $next)
     {
 
-        $ip = $request->header('x-forwarded-for') ?? '127.0.0.1';
-        $GLOBALS['clientIp'] = ToolsService::getRealIp($ip);
+        $ip = $request->ip() ?? '127.0.0.1';
+        $GLOBALS['clientIp'] = $ip;
+        // ToolsService::getRealIp($ip);
 
         // 版本
         $version = $request->header('version') ?? '1.1.1';
