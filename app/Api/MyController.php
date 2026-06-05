@@ -2,7 +2,9 @@
 
 namespace App\Api;
 
+use App\Models\MarkUser;
 use App\Models\User;
+use App\Services\HabitService;
 use App\Services\UserService;
 use App\Support\Response;
 use Illuminate\Http\Request;
@@ -19,6 +21,13 @@ class MyController extends Controller
 
         // 对密码进行处理，如果有设置密码就标记为已设置密码
         $user->has_password = $user->password ? 1 : 0;
+
+        // 有2个值，一个是用户连续几天进行习惯，
+        $user->continuous_days_check = HabitService::getContinuousDays($user->id, HabitService::HABITCHECK);
+        $user->continuous_days_value = HabitService::getContinuousDays($user->id, HabitService::HABITVALUE);
+
+        // 用户标记了多少个习惯
+        $user->mark_user_count = MarkUser::where('user_id', Auth::id())->whereIn('mark_type', [1, 2])->count();
 
         return Response::success($user);
     }

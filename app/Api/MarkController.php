@@ -75,8 +75,8 @@ class MarkController extends Controller
         $module_id = $request->module_id;
         $list = MarkItem::where('module_id', $module_id)
             ->where('status', 1)
-            ->orderBy('id')
             ->orderBy('sort')
+            ->orderBy('id')
             ->get();
 
         // 每次请求更新浏览量

@@ -3,14 +3,12 @@
 namespace App\Api;
 
 use App\Models\HabitCheckLog;
-use App\Models\HabitStat;
 use App\Models\UserHabit;
 use App\Services\HabitService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Support\Response;
 
 /**
@@ -20,9 +18,6 @@ use App\Support\Response;
  */
 class HabitCheckController extends Controller
 {
-
-    const TYPE = 1;
-
 
     // 今日打卡/取消打卡 POST /api/habit/check/toggle
     public function toggle(Request $request)
@@ -39,7 +34,7 @@ class HabitCheckController extends Controller
         $date = date('Y-m-d');
 
         // 检查这个习惯是否存在
-        $habit = UserHabit::where('user_id', $user->id)->where('type', self::TYPE)
+        $habit = UserHabit::where('user_id', $user->id)->where('type', HabitService::HABITCHECK)
             ->where('is_show', 1)->where('id', $id)->first();
         if (!$habit) {
             return Response::error(trans('app-return.error_msg'));
@@ -70,6 +65,9 @@ class HabitCheckController extends Controller
             ]);
 
 
+            // 连续打卡天数
+            HabitService::setContinuousDays($user->id, HabitService::HABITCHECK);
+
             DB::commit();
             return Response::success();
         } catch (\Exception $e) {
@@ -82,7 +80,7 @@ class HabitCheckController extends Controller
     public function today()
     {
         $user_id = Auth::id();
-        $habit = UserHabit::where('user_id', $user_id)->where('type', self::TYPE)
+        $habit = UserHabit::where('user_id', $user_id)->where('type', HabitService::HABITCHECK)
             ->where('is_show', 1)->get();
         if (!$habit) {
             return Response::success([]);

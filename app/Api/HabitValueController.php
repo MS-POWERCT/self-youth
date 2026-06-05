@@ -19,8 +19,6 @@ use Illuminate\Support\Facades\Log;
 class HabitValueController extends Controller
 {
 
-    const TYPE = 2;
-
     // 新增一条数值记录 POST /api/habit/value/add
     public function create(Request $request)
     {
@@ -41,7 +39,7 @@ class HabitValueController extends Controller
         $note_image = $request->input('note_image') ?? null;
         $user_id = Auth::id();
         // 检查这个habit_id是否存在
-        $habit = UserHabit::where('id', $habit_id)->where('type', self::TYPE)->where('user_id', $user_id)->first();
+        $habit = UserHabit::where('id', $habit_id)->where('type', HabitService::HABITVALUE)->where('user_id', $user_id)->first();
         if (!$habit) {
             return Response::error('习惯不存在', 1213);
         }
@@ -65,6 +63,9 @@ class HabitValueController extends Controller
                 'status' => 1,
                 'record_date' => $record_date,
             ]);
+
+            // 连续打卡天数
+            HabitService::setContinuousDays($user_id, HabitService::HABITVALUE);
 
             return Response::success();
         } catch (\Throwable $th) {

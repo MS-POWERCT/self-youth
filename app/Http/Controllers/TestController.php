@@ -13,7 +13,10 @@ class TestController
     public function test(Request $request)
     {
 
-        return  $day = date('N');
+        $time = new \DateTime('2026-06-07');
+
+        return $time->diff(now())->days;
+
         // TODO: test code here
         // $list = [
         //     'a' => 1,

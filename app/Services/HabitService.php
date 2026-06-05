@@ -4,10 +4,14 @@ namespace App\Services;
 
 use App\Models\HabitStat;
 use App\Models\UserHabit;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\DB;
 
 class HabitService
 {
+
+    const HABITCHECK = 1;
+    const HABITVALUE = 2;
 
     // 数据库配置了
     // // 1. 习惯打卡模块（打卡型）
@@ -70,5 +74,56 @@ class HabitService
             $stat->total = $stat->total + ($value == 1 ? 1 : -1);
             $stat->save();
         }
+    }
+
+
+    // 存储格式：{"last_date":"2024-01-01","streak":5}
+    public static function setContinuousDays($user_id, $type)
+    {
+        $key = "continuous_days_{$type}";
+
+        $today = now()->toDateString();
+        $yesterday = now()->subDay()->toDateString();
+
+        // 获取该用户的数据
+        $data = Redis::hget($key, $user_id);
+        $data = $data ? json_decode($data, true) : null;
+
+        if ($data && $data['last_date'] == $yesterday) {
+            // 连续
+            $streak = $data['streak'] + 1;
+        } elseif ($data && $data['last_date'] == $today) {
+            // 重复打卡
+            $streak = $data['streak'];
+        } else {
+            // 中断或首次
+            $streak = 1;
+        }
+
+        Redis::hset($key, $user_id, json_encode([
+            'last_date' => $today,
+            'streak' => $streak
+        ]));
+    }
+
+    public static function getContinuousDays($user_id, $type)
+    {
+        $key = "continuous_days_{$type}";
+
+        $data = Redis::hget($key, $user_id);
+        if (!$data) {
+            return 0;
+        }
+
+        $data = json_decode($data, true);
+        $today = now()->toDateString();
+        $yesterday = now()->subDay()->toDateString();
+
+        // 连续有效检查
+        if (in_array($data['last_date'], [$today, $yesterday])) {
+            return $data['streak'];
+        }
+
+        return 0;
     }
 }
