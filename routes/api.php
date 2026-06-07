@@ -98,6 +98,8 @@ Route::middleware('auth:api')->group(function () {
 // });
 
 
+// 其他
+Route::post('/appupdate/version', "App\Api\AppUpdateController@version"); // app 版本更新
 // 账户模块
 // 目前还缺密码登录，忘记密码，绑定地址/绑定邮箱
 Route::post('/auth/email/sendCode', "App\Api\Auth\EmailLoginController@sendEmailCode")->middleware(['limit_form_repeat:3']); // 发送验证码

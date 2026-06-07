@@ -7,9 +7,7 @@
  *
  * @author jqh <841324345@qq.com>
  */
-
 namespace Dcat\Admin {
-
     use Illuminate\Support\Collection;
 
     /**
@@ -102,12 +100,11 @@ namespace Dcat\Admin {
      * @property Grid\Column|Collection record_start_time
      * @property Grid\Column|Collection images
      * @property Grid\Column|Collection circle_id
-     * @property Grid\Column|Collection desc
      * @property Grid\Column|Collection module_id
-     * @property Grid\Column|Collection caregory_id
-     * @property Grid\Column|Collection device_id
+     * @property Grid\Column|Collection star
+     * @property Grid\Column|Collection tags
+     * @property Grid\Column|Collection category_id
      * @property Grid\Column|Collection item_id
-     * @property Grid\Column|Collection mark_time
      * @property Grid\Column|Collection mark_type
      * @property Grid\Column|Collection remark
      * @property Grid\Column|Collection client_id
@@ -120,6 +117,17 @@ namespace Dcat\Admin {
      * @property Grid\Column|Collection redirect
      * @property Grid\Column|Collection secret
      * @property Grid\Column|Collection access_token_id
+     * @property Grid\Column|Collection appid
+     * @property Grid\Column|Collection contents
+     * @property Grid\Column|Collection create_date
+     * @property Grid\Column|Collection create_env
+     * @property Grid\Column|Collection is_mandatory
+     * @property Grid\Column|Collection is_silently
+     * @property Grid\Column|Collection min_uni_version
+     * @property Grid\Column|Collection platform
+     * @property Grid\Column|Collection stable_publish
+     * @property Grid\Column|Collection uni_platform
+     * @property Grid\Column|Collection url
      * @property Grid\Column|Collection email
      * @property Grid\Column|Collection token
      * @property Grid\Column|Collection abilities
@@ -137,6 +145,7 @@ namespace Dcat\Admin {
      * @property Grid\Column|Collection gender
      * @property Grid\Column|Collection ip
      * @property Grid\Column|Collection last_online_at
+     * @property Grid\Column|Collection login_type
      * @property Grid\Column|Collection signature
      * @property Grid\Column|Collection asset_id
      * @property Grid\Column|Collection balance_change
@@ -250,12 +259,11 @@ namespace Dcat\Admin {
      * @method Grid\Column|Collection record_start_time(string $label = null)
      * @method Grid\Column|Collection images(string $label = null)
      * @method Grid\Column|Collection circle_id(string $label = null)
-     * @method Grid\Column|Collection desc(string $label = null)
      * @method Grid\Column|Collection module_id(string $label = null)
-     * @method Grid\Column|Collection caregory_id(string $label = null)
-     * @method Grid\Column|Collection device_id(string $label = null)
+     * @method Grid\Column|Collection star(string $label = null)
+     * @method Grid\Column|Collection tags(string $label = null)
+     * @method Grid\Column|Collection category_id(string $label = null)
      * @method Grid\Column|Collection item_id(string $label = null)
-     * @method Grid\Column|Collection mark_time(string $label = null)
      * @method Grid\Column|Collection mark_type(string $label = null)
      * @method Grid\Column|Collection remark(string $label = null)
      * @method Grid\Column|Collection client_id(string $label = null)
@@ -268,6 +276,17 @@ namespace Dcat\Admin {
      * @method Grid\Column|Collection redirect(string $label = null)
      * @method Grid\Column|Collection secret(string $label = null)
      * @method Grid\Column|Collection access_token_id(string $label = null)
+     * @method Grid\Column|Collection appid(string $label = null)
+     * @method Grid\Column|Collection contents(string $label = null)
+     * @method Grid\Column|Collection create_date(string $label = null)
+     * @method Grid\Column|Collection create_env(string $label = null)
+     * @method Grid\Column|Collection is_mandatory(string $label = null)
+     * @method Grid\Column|Collection is_silently(string $label = null)
+     * @method Grid\Column|Collection min_uni_version(string $label = null)
+     * @method Grid\Column|Collection platform(string $label = null)
+     * @method Grid\Column|Collection stable_publish(string $label = null)
+     * @method Grid\Column|Collection uni_platform(string $label = null)
+     * @method Grid\Column|Collection url(string $label = null)
      * @method Grid\Column|Collection email(string $label = null)
      * @method Grid\Column|Collection token(string $label = null)
      * @method Grid\Column|Collection abilities(string $label = null)
@@ -285,6 +304,7 @@ namespace Dcat\Admin {
      * @method Grid\Column|Collection gender(string $label = null)
      * @method Grid\Column|Collection ip(string $label = null)
      * @method Grid\Column|Collection last_online_at(string $label = null)
+     * @method Grid\Column|Collection login_type(string $label = null)
      * @method Grid\Column|Collection signature(string $label = null)
      * @method Grid\Column|Collection asset_id(string $label = null)
      * @method Grid\Column|Collection balance_change(string $label = null)
@@ -403,12 +423,11 @@ namespace Dcat\Admin {
      * @property Show\Field|Collection record_start_time
      * @property Show\Field|Collection images
      * @property Show\Field|Collection circle_id
-     * @property Show\Field|Collection desc
      * @property Show\Field|Collection module_id
-     * @property Show\Field|Collection caregory_id
-     * @property Show\Field|Collection device_id
+     * @property Show\Field|Collection star
+     * @property Show\Field|Collection tags
+     * @property Show\Field|Collection category_id
      * @property Show\Field|Collection item_id
-     * @property Show\Field|Collection mark_time
      * @property Show\Field|Collection mark_type
      * @property Show\Field|Collection remark
      * @property Show\Field|Collection client_id
@@ -421,6 +440,17 @@ namespace Dcat\Admin {
      * @property Show\Field|Collection redirect
      * @property Show\Field|Collection secret
      * @property Show\Field|Collection access_token_id
+     * @property Show\Field|Collection appid
+     * @property Show\Field|Collection contents
+     * @property Show\Field|Collection create_date
+     * @property Show\Field|Collection create_env
+     * @property Show\Field|Collection is_mandatory
+     * @property Show\Field|Collection is_silently
+     * @property Show\Field|Collection min_uni_version
+     * @property Show\Field|Collection platform
+     * @property Show\Field|Collection stable_publish
+     * @property Show\Field|Collection uni_platform
+     * @property Show\Field|Collection url
      * @property Show\Field|Collection email
      * @property Show\Field|Collection token
      * @property Show\Field|Collection abilities
@@ -438,6 +468,7 @@ namespace Dcat\Admin {
      * @property Show\Field|Collection gender
      * @property Show\Field|Collection ip
      * @property Show\Field|Collection last_online_at
+     * @property Show\Field|Collection login_type
      * @property Show\Field|Collection signature
      * @property Show\Field|Collection asset_id
      * @property Show\Field|Collection balance_change
@@ -551,12 +582,11 @@ namespace Dcat\Admin {
      * @method Show\Field|Collection record_start_time(string $label = null)
      * @method Show\Field|Collection images(string $label = null)
      * @method Show\Field|Collection circle_id(string $label = null)
-     * @method Show\Field|Collection desc(string $label = null)
      * @method Show\Field|Collection module_id(string $label = null)
-     * @method Show\Field|Collection caregory_id(string $label = null)
-     * @method Show\Field|Collection device_id(string $label = null)
+     * @method Show\Field|Collection star(string $label = null)
+     * @method Show\Field|Collection tags(string $label = null)
+     * @method Show\Field|Collection category_id(string $label = null)
      * @method Show\Field|Collection item_id(string $label = null)
-     * @method Show\Field|Collection mark_time(string $label = null)
      * @method Show\Field|Collection mark_type(string $label = null)
      * @method Show\Field|Collection remark(string $label = null)
      * @method Show\Field|Collection client_id(string $label = null)
@@ -569,6 +599,17 @@ namespace Dcat\Admin {
      * @method Show\Field|Collection redirect(string $label = null)
      * @method Show\Field|Collection secret(string $label = null)
      * @method Show\Field|Collection access_token_id(string $label = null)
+     * @method Show\Field|Collection appid(string $label = null)
+     * @method Show\Field|Collection contents(string $label = null)
+     * @method Show\Field|Collection create_date(string $label = null)
+     * @method Show\Field|Collection create_env(string $label = null)
+     * @method Show\Field|Collection is_mandatory(string $label = null)
+     * @method Show\Field|Collection is_silently(string $label = null)
+     * @method Show\Field|Collection min_uni_version(string $label = null)
+     * @method Show\Field|Collection platform(string $label = null)
+     * @method Show\Field|Collection stable_publish(string $label = null)
+     * @method Show\Field|Collection uni_platform(string $label = null)
+     * @method Show\Field|Collection url(string $label = null)
      * @method Show\Field|Collection email(string $label = null)
      * @method Show\Field|Collection token(string $label = null)
      * @method Show\Field|Collection abilities(string $label = null)
@@ -586,6 +627,7 @@ namespace Dcat\Admin {
      * @method Show\Field|Collection gender(string $label = null)
      * @method Show\Field|Collection ip(string $label = null)
      * @method Show\Field|Collection last_online_at(string $label = null)
+     * @method Show\Field|Collection login_type(string $label = null)
      * @method Show\Field|Collection signature(string $label = null)
      * @method Show\Field|Collection asset_id(string $label = null)
      * @method Show\Field|Collection balance_change(string $label = null)
@@ -613,9 +655,10 @@ namespace Dcat\Admin {
     class Show {}
 
     /**
-
+     
      */
     class Form {}
+
 }
 
 namespace Dcat\Admin\Grid {
@@ -625,14 +668,14 @@ namespace Dcat\Admin\Grid {
     class Column {}
 
     /**
-
+     
      */
     class Filter {}
 }
 
 namespace Dcat\Admin\Show {
     /**
-
+     
      */
     class Field {}
 }

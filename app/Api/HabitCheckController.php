@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Support\Response;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Description of My
@@ -72,6 +73,7 @@ class HabitCheckController extends Controller
             return Response::success();
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('异常：' . request()->route()->uri(), ['getMessage' => $e->getMessage(), 'getLine' => $e->getLine(), 'file' => $e->getFile()]);
             return Response::error($e->getMessage());
         }
     }

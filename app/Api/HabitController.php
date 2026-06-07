@@ -12,7 +12,6 @@ use App\Support\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Redis;
 
 /**
  * Description of My
@@ -246,7 +245,7 @@ class HabitController extends Controller
     public function stat()
     {
         // 得到364天内的数据
-        $date = date('Y-m-d', strtotime('-364 days'));
+        $date = date('Y-m-d', strtotime('-366 days'));
 
         $list = HabitStat::where('user_id', Auth::id())
             ->whereDate('date', '>', $date)->get();
