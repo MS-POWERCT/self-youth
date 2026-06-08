@@ -43,8 +43,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/habit/getEditableList', "App\Api\HabitController@getEditableList"); // 获取可以编辑的习惯列表
     Route::post('/habit/create', "App\Api\HabitController@create")->middleware(['limit_form_repeat:3', 'check_uuid']); // 新增习惯
     Route::post('/habit/edit', "App\Api\HabitController@edit")->middleware(['limit_form_repeat:3', 'check_uuid']); // 编辑习惯
-    Route::post('/habit/hide', "App\Api\HabitController@hide")->middleware(['limit_form_repeat:3', 'check_uuid']); // 隐藏/显示
-    Route::post('/habit/delete', "App\Api\HabitController@delete")->middleware(['limit_form_repeat:3', 'check_uuid']); // 删除习惯
+    Route::post('/habit/hide', "App\Api\HabitController@hide")->middleware(['check_uuid']); // 隐藏/显示
+    Route::post('/habit/delete', "App\Api\HabitController@delete")->middleware(['check_uuid']); // 删除习惯
     Route::get('/habit/stat', "App\Api\HabitController@stat"); // 获取打卡统计（周/月）
     Route::get('/habit/getIconList', "App\Api\HabitController@getIconList"); // 获取icon列表
 

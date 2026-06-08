@@ -22,7 +22,8 @@ class MarkController extends Controller
 
     public function getCategoryList()
     {
-        $list = MarkCategory::select('id', 'name', 'icon')->where('status', 1)->get();
+        $list = MarkCategory::select('id', 'name', 'icon')->where('status', 1)
+            ->orderBy('sort')->orderBy('id')->get();
         return Response::success($list);
     }
 
