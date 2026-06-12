@@ -5,6 +5,7 @@ namespace App\Api;
 use App\Models\HabitCheckLog;
 use App\Models\UserHabit;
 use App\Services\HabitService;
+use App\Services\UserService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -58,6 +59,13 @@ class HabitCheckController extends Controller
                 $check->check_date = $date;
                 $check->save();
             }
+
+            $status_name = $check->status == 0 ? '取消打卡' : '打卡';
+
+
+            // 进行日志的记录
+            UserService::addLog($user->id, '进行' . $habit->name . ': ' . $status_name, 'habit');
+
 
             // 热力贡献值
             HabitService::setHabitState($user->id, (object)[

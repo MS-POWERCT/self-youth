@@ -35,6 +35,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/my/changePassword', "App\Api\MyController@changePassword")->middleware(['limit_form_repeat:3']); // 重置密码
     Route::post('/my/bindEmail', "App\Api\MyController@bindEmail")->middleware(['limit_form_repeat:3']);
     Route::post('/my/bindAddress', "App\Api\MyController@bindAddress")->middleware(['limit_form_repeat:3', 'web3.signature']); //
+    Route::get('/my/getUserLog', "App\Api\MyController@getUserLog"); //
 
 
 

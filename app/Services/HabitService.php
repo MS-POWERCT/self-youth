@@ -110,7 +110,7 @@ class HabitService
     {
         $key = "continuous_days_{$type}";
 
-        $data = Redis::hget($key, $user_id);
+        $data = Redis::hget($key, $user_id) ?? [];
         if (!$data) {
             return 0;
         }

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Models\UserLog;
 use Illuminate\Support\Facades\Redis;
 
 /*
@@ -95,5 +96,29 @@ class UserService
 
 
         return $user;
+    }
+
+
+    // 用户操作日志功能
+    public static function addLog(Int $user_id, string $log, string $type = 'default', Int $morph_id = 0)
+    {
+        if ($type == 'mark') {
+            $log = UserLog::where('user_id', $user_id)->where('morph_id', $morph_id)->first();
+            if ($log) {
+                $log->num += 1;
+                $log->updated_at = now();
+                $log->save();
+            } else {
+                UserLog::create([
+                    'user_id' => $user_id,
+                    'type' => $type,
+                    'morph_id' => $morph_id,
+                    'log' => $log,
+                    'num' => 1
+                ]);
+            }
+        } else {
+            UserLog::create(compact('user_id', 'type', 'morph_id', 'log', 'morph_id'));
+        }
     }
 }

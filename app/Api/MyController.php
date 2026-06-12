@@ -4,6 +4,7 @@ namespace App\Api;
 
 use App\Models\MarkUser;
 use App\Models\User;
+use App\Models\UserLog;
 use App\Services\HabitService;
 use App\Services\UserService;
 use App\Support\Response;
@@ -117,5 +118,14 @@ class MyController extends Controller
         $user->save();
 
         return Response::success();
+    }
+
+
+    // 日志记录
+    public function getUserLog()
+    {
+        return Response::success(UserLog::where('user_id', Auth::id())
+            ->where('status', 1)->orderByDesc('updated_at')
+            ->orderByDesc('id')->limit(30)->get());
     }
 }

@@ -5,6 +5,7 @@ namespace App\Api;
 use App\Models\HabitStat;
 use App\Models\UserHabit;
 use App\Services\ToolsService;
+use App\Services\UserService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -105,9 +106,12 @@ class HabitController extends Controller
         }
 
         try {
+
+            $user_id = Auth::id();
+
             // 创建习惯
             UserHabit::create([
-                'user_id' => Auth::id(),
+                'user_id' => $user_id,
                 'name' => $request->name,
                 'type' => $request->type,
                 'sort' => 0,
@@ -115,12 +119,57 @@ class HabitController extends Controller
                 'fixed' => 0,
                 'icon' => $request->icon,
             ]);
+
+            UserService::addLog($user_id, '添加习惯' . $request->name);
+
             return Response::success();
         } catch (\Throwable $th) {
             Log::error('异常：' . request()->route()->uri(), ['getMessage' => $th->getMessage(), 'getLine' => $th->getLine(), 'file' => $th->getFile()]);
             return Response::error(trans('app-return.error_msg'));
         }
     }
+
+
+
+    //编辑习惯
+    public function edit(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+            'type' => 'required|in:1,2',          // 类型：1-打卡型，2-计数型
+            'icon' => 'required|string|max:100',  // 图标
+        ]);
+
+
+        if ($validator->fails()) {
+            return Response::error(trans('app-return.validator_fails'), 1212);
+        }
+
+        // 检查唯一性
+        $user_id = Auth::id();
+        $habit = UserHabit::where('user_id', $user_id())
+            ->where('id', $request->id)
+            ->first();
+
+        if (!$habit) {
+            return Response::error('未发现', 456346);
+        }
+
+        try {
+            // 创建习惯
+            $habit->icon = $request->icon;
+            $habit->save();
+
+
+            UserService::addLog($user_id, '编辑习惯');
+
+            return Response::success();
+        } catch (\Throwable $th) {
+            Log::error('异常：' . request()->route()->uri(), ['getMessage' => $th->getMessage(), 'getLine' => $th->getLine(), 'file' => $th->getFile()]);
+            return Response::error(trans('app-return.error_msg'));
+        }
+    }
+
 
 
     // 隐藏/显示
@@ -142,6 +191,11 @@ class HabitController extends Controller
         }
         $habit->is_show = $request->is_show;
         $habit->save();
+
+
+        $log = $habit->is_show == 1 ? '显示:' . $habit->name : '隐藏:' . $habit->name;
+        UserService::addLog($user_id, $log);
+
         return Response::success();
     }
 
@@ -180,6 +234,9 @@ class HabitController extends Controller
             return Response::error('最后1个习惯不能删除');
         }
 
+        // 记录删除日志
+        UserService::addLog($user_id, '删除习惯:' . $habit->name);
+
         // $habit->delete();
         $habit->deleted_at = now();
         $habit->name = $habit->name . '_' . ToolsService::getRandomStr(6, 1) . '_已删除';
@@ -188,57 +245,11 @@ class HabitController extends Controller
         // 缓存最近删除时间
         Cache::put($key, time() + $deleteTime, $deleteTime);
 
+
+
         return Response::success();
     }
 
-
-    //编辑习惯
-    public function edit(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'id' => 'required|integer',
-            'name' => 'required|string|max:100',  // 习惯名称
-            'type' => 'required|in:1,2',          // 类型：1-打卡型，2-计数型
-            'icon' => 'required|string|max:100',  // 图标
-        ]);
-
-
-        if ($validator->fails()) {
-            return Response::error(trans('app-return.validator_fails'), 1212);
-        }
-
-        // 检查唯一性
-        $habit = UserHabit::where('user_id', Auth::id())
-            ->where('id', $request->id)
-            ->first();
-
-        if (!$habit) {
-            return Response::error(trans('app-return.not_found'), 456346);
-        }
-        // 检查名称是否重复
-        $exists = UserHabit::where('user_id', Auth::id())
-            ->where('name', $request->name)
-            ->where('type', $request->type)
-            ->where('id', '!=', $request->id)
-            ->exists();
-
-        if ($exists) {
-            return Response::error('该习惯已存在');
-        }
-
-        try {
-            // 创建习惯
-
-            $habit->name = $request->name;
-            $habit->icon = $request->icon;
-            $habit->save();
-
-            return Response::success();
-        } catch (\Throwable $th) {
-            Log::error('异常：' . request()->route()->uri(), ['getMessage' => $th->getMessage(), 'getLine' => $th->getLine(), 'file' => $th->getFile()]);
-            return Response::error(trans('app-return.error_msg'));
-        }
-    }
 
 
     // 热力贡献值 GET /api/habit/stat

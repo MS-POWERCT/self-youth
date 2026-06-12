@@ -5,6 +5,7 @@ namespace App\Api;
 use App\Models\HabitValueLog;
 use App\Models\UserHabit;
 use App\Services\HabitService;
+use App\Services\UserService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -57,6 +58,10 @@ class HabitValueController extends Controller
                 'note' => $note,
                 'note_image' => $note_image,
             ]);
+
+            // 记录日志
+            UserService::addLog($user_id, '进行' . $habit->name . ': ' . $value . ' 分钟', 'habit');
+
 
             // 热力贡献值
             HabitService::setHabitState($user_id, (object)[
