@@ -46,7 +46,7 @@ class HabitService
                 'user_id' => $user->id,
                 'name' => $value->name,
                 'type' => $value->type,
-                'icon' => $value->icon,
+                'icon_id' => $value->icon_id,
                 'sort' => $value->sort,
             ];
         }

@@ -6,6 +6,7 @@ use App\Models\MarkCategory;
 use App\Models\MarkItem;
 use App\Models\MarkModule;
 use App\Models\MarkUser;
+use App\Services\UserService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -124,6 +125,8 @@ class MarkController extends Controller
         }
         $item_id = $request->item_id;
         $mark_type = $request->mark_type;
+        $user_id = Auth::id();
+
 
         // item_id检查这个是否存在
         $item = MarkItem::where('id', $item_id)->first();
@@ -132,10 +135,10 @@ class MarkController extends Controller
         }
 
         // 检查用户是否标记了该项
-        $mark = MarkUser::where('user_id', Auth::id())->where('item_id', $item_id)->first();
+        $mark = MarkUser::where('user_id', $user_id)->where('item_id', $item_id)->first();
         if (!$mark) {
             MarkUser::create([
-                'user_id' => Auth::id(),
+                'user_id' => $user_id,
                 'module_id' => $item->module_id,
                 'item_id' => $item_id,
                 'mark_type' => $mark_type,
@@ -145,8 +148,11 @@ class MarkController extends Controller
             $mark->save();
         }
 
+        // 记录用户操作日志
+        UserService::addLog($user_id, '标记-' . $item->name . '-' . trans('app-status.mark_item.status.' . $mark_type), 'mark');
+
         // 每次用户进行标记就要记录参与量，一个用户最大只能标记一次，使用set进行唯一存储
-        Redis::sadd('mark_item_participant:' . $item->module_id, Auth::id());
+        Redis::sadd('mark_item_participant:' . $item->module_id, $user_id);
 
         return Response::success();
     }

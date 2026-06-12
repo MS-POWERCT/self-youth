@@ -160,7 +160,7 @@ class HabitValueController extends Controller
         }
 
         // 2. 查询这些日期下的所有记录
-        $logs = HabitValueLog::query()->with('userHabit')
+        $logs = HabitValueLog::query()->with('userHabit.habitIcon')
             ->where('user_id', $user_id)
             ->whereIn('record_date', $dateList)
             ->orderBy('record_date', 'desc')

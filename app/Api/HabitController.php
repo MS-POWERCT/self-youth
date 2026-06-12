@@ -4,15 +4,15 @@ namespace App\Api;
 
 use App\Models\HabitStat;
 use App\Models\UserHabit;
+use App\Models\UserHabitIcon;
 use App\Services\ToolsService;
 use App\Services\UserService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Support\Response;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 /**
  * Description of My
@@ -36,7 +36,7 @@ class HabitController extends Controller
         $type = $request->type;
         $user = Auth::user();
 
-        $list = UserHabit::where('user_id', $user->id)->where('type', $type)
+        $list = UserHabit::with('habitIcon')->where('user_id', $user->id)->where('type', $type)
             ->where('is_show', 1)->orderBy('sort', 'DESC')->limit(20)->get();
 
         return Response::success($list);
@@ -55,7 +55,7 @@ class HabitController extends Controller
         }
         $user = Auth::user();
 
-        $list = UserHabit::where('user_id', $user->id)->where('type', $request->type)
+        $list = UserHabit::with('habitIcon')->where('user_id', $user->id)->where('type', $request->type)
             ->where('fixed', 0)
             ->orderBy('sort', 'DESC')->limit(20)->get();
 
@@ -67,15 +67,15 @@ class HabitController extends Controller
     public function getIconList()
     {
         // 从缓存中获取
-        $list = Cache::get('habit_icon_list');
+        $list = Redis::get('habit_icon_list');
         if ($list) {
             return Response::success(json_decode($list, true));
         }
 
-        $list = DB::table('user_habit_icon')->select('id', 'name', 'icon')->get();
+        $list = UserHabitIcon::select('id', 'name', 'icon')->get();
 
         // 缓存
-        Cache::set('habit_icon_list', json_encode($list));
+        Redis::set('habit_icon_list', json_encode($list));
 
         return Response::success($list);
     }
@@ -88,7 +88,7 @@ class HabitController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100',  // 习惯名称
             'type' => 'required|in:1,2',          // 类型：1-打卡型，2-计数型
-            'icon' => 'required|string|max:100',  // 图标
+            'icon_id' => 'required|integer',  // 图标
         ]);
 
         if ($validator->fails()) {
@@ -117,8 +117,10 @@ class HabitController extends Controller
                 'sort' => 0,
                 'is_show' => 1,
                 'fixed' => 0,
-                'icon' => $request->icon,
+                'icon_id' => $request->icon_id,
             ]);
+
+
 
             UserService::addLog($user_id, '添加习惯' . $request->name);
 
@@ -137,7 +139,7 @@ class HabitController extends Controller
         $validator = Validator::make($request->all(), [
             'id' => 'required|integer',
             'type' => 'required|in:1,2',          // 类型：1-打卡型，2-计数型
-            'icon' => 'required|string|max:100',  // 图标
+            'icon_id' => 'required|integer',  // 图标
         ]);
 
 
@@ -157,7 +159,7 @@ class HabitController extends Controller
 
         try {
             // 创建习惯
-            $habit->icon = $request->icon;
+            $habit->icon_id = $request->icon_id;
             $habit->save();
 
 
@@ -216,7 +218,7 @@ class HabitController extends Controller
 
         // 检查最近是否删除过习惯-通过缓存
         $key = 'delete_habit:' . $user_id;
-        $cachedTime = Cache::get($key);
+        $cachedTime = Redis::get($key);
         if ($cachedTime) {
             // 计算一下还是多少时间
             $diffTime = $cachedTime - time();
@@ -243,7 +245,7 @@ class HabitController extends Controller
         $habit->save();
         $deleteTime = ToolsService::getCache('HABIT_DELETE_TIME');
         // 缓存最近删除时间
-        Cache::put($key, time() + $deleteTime, $deleteTime);
+        Redis::setex($key, time() + $deleteTime, $deleteTime);
 
 
 

@@ -13,4 +13,9 @@ class UserHabit extends Model
 
     protected $table = 'user_habits';
     protected $guarded = [];
+
+    public function habitIcon()
+    {
+        return $this->belongsTo(UserHabitIcon::class, 'icon_id', 'id');
+    }
 }

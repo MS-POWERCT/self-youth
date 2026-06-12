@@ -126,6 +126,6 @@ class MyController extends Controller
     {
         return Response::success(UserLog::where('user_id', Auth::id())
             ->where('status', 1)->orderByDesc('updated_at')
-            ->orderByDesc('id')->limit(30)->get());
+            ->orderByDesc('id')->limit(50)->get());
     }
 }

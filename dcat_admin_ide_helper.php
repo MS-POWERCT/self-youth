@@ -138,6 +138,7 @@ namespace Dcat\Admin {
      * @property Grid\Column|Collection cron
      * @property Grid\Column|Collection last_run_at
      * @property Grid\Column|Collection fixed
+     * @property Grid\Column|Collection icon_id
      * @property Grid\Column|Collection is_show
      * @property Grid\Column|Collection address
      * @property Grid\Column|Collection age
@@ -297,6 +298,7 @@ namespace Dcat\Admin {
      * @method Grid\Column|Collection cron(string $label = null)
      * @method Grid\Column|Collection last_run_at(string $label = null)
      * @method Grid\Column|Collection fixed(string $label = null)
+     * @method Grid\Column|Collection icon_id(string $label = null)
      * @method Grid\Column|Collection is_show(string $label = null)
      * @method Grid\Column|Collection address(string $label = null)
      * @method Grid\Column|Collection age(string $label = null)
@@ -461,6 +463,7 @@ namespace Dcat\Admin {
      * @property Show\Field|Collection cron
      * @property Show\Field|Collection last_run_at
      * @property Show\Field|Collection fixed
+     * @property Show\Field|Collection icon_id
      * @property Show\Field|Collection is_show
      * @property Show\Field|Collection address
      * @property Show\Field|Collection age
@@ -620,6 +623,7 @@ namespace Dcat\Admin {
      * @method Show\Field|Collection cron(string $label = null)
      * @method Show\Field|Collection last_run_at(string $label = null)
      * @method Show\Field|Collection fixed(string $label = null)
+     * @method Show\Field|Collection icon_id(string $label = null)
      * @method Show\Field|Collection is_show(string $label = null)
      * @method Show\Field|Collection address(string $label = null)
      * @method Show\Field|Collection age(string $label = null)
