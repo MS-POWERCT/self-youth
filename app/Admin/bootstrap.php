@@ -4,6 +4,7 @@ use Dcat\Admin\Grid;
 use Dcat\Admin\Form;
 use Dcat\Admin\Grid\Filter;
 use Dcat\Admin\Grid\Displayers\Actions;
+use Dcat\Admin\Admin;
 
 /**
  * Dcat-admin - admin builder based on Laravel.
@@ -23,7 +24,6 @@ use Dcat\Admin\Grid\Displayers\Actions;
  * Admin::js('/packages/prettydocs/js/main.js');
  *
  */
-
 
 
 Filter::resolving(function (Filter $filter) {

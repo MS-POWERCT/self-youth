@@ -23,7 +23,7 @@ class MarkItemController extends AdminController
             $grid->column('id')->sortable();
             $grid->column('module.name', '小分类');
             $grid->column('title')->editable();
-            $grid->column('img_url')->image('', 60);
+            // $grid->column('img_url')->image('', 60);
             $grid->column('star')->editable();
             $grid->column('sort')->editable();
             $grid->column('status')->switch();

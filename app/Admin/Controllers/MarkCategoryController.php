@@ -5,7 +5,6 @@ namespace App\Admin\Controllers;
 use App\Admin\Repositories\MarkCategory;
 use Dcat\Admin\Form;
 use Dcat\Admin\Grid;
-use Dcat\Admin\Show;
 use Dcat\Admin\Http\Controllers\AdminController;
 
 class MarkCategoryController extends AdminController
@@ -37,6 +36,7 @@ class MarkCategoryController extends AdminController
         return Form::make(new MarkCategory(), function (Form $form) {
             $form->display('id');
             $form->text('name');
+            $form->text('icon')->help('Iconify 图标标识符，如: mdi:home, bi:bookmark');
             $form->number('sort');
             $form->switch('status');
 

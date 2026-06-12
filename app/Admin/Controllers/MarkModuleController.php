@@ -25,7 +25,7 @@ class MarkModuleController extends AdminController
             $grid->column('name')->editable();
             $grid->column('title')->editable();
             // 图片
-            $grid->column('img_url')->image('', 60);
+            // $grid->column('img_url')->image('', 60);
             $grid->column('sort')->editable();
             $grid->column('status')->switch();
             $grid->column('created_at')->datetimeSplit();

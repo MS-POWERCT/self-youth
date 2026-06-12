@@ -18,12 +18,23 @@ Route::group([
 
     // 用户信息
     $router->resource('user', 'UserController');
+    $router->resource('userLog', 'UserLogController');
+
+
 
     // 标记模块
     $router->resource('markCategory', 'MarkCategoryController');
     $router->resource('markModule', 'MarkModuleController');
     $router->resource('markItem', 'MarkItemController');
     $router->resource('markUser', 'MarkUserController');
+
+    // 习惯模块
+    $router->resource('habitCheckLog', 'HabitCheckLogController');
+    $router->resource('habitValueLog', 'HabitValueLogController');
+    $router->resource('userHabitConfig', 'UserHabitConfigController');
+    $router->resource('userHabit', 'UserHabitController');
+    $router->resource('userHabitIcon', 'UserHabitIconController');
+
 
     // 资产
     $router->resource('walletAsset', 'WalletAssetController');
