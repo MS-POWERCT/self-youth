@@ -66,18 +66,33 @@ class EmailLoginController extends Controller
         // 3. 生成6位验证码
         $code = rand(100000, 999999);
 
-
         // 4. 存入Redis，5分钟过期
         Redis::setex($cache_key, $time, $code);
         Redis::setex($limitKey, $cooling_time, 1);
 
-        // 5. 发送邮件
-        Mail::send('emails.code', ['code' => $code, 'url' => config('app.url'), 'time' => $time], function ($message) use ($email) {
-            $message->to($email)->subject('[' . config('app.name') . '] ' . 'Verification - ' . date('Y-m-d H:i:s'));
+        // 5. 准备邮件参数
+        $categoryMap = [
+            'login' => '邮箱登录',
+            'recover' => '重置密码',
+            'bind_email' => '绑定邮箱',
+        ];
+        $category_text = $categoryMap[$category] ?? '验证';
+        $time_minutes = round($time / 60); // 转换为分钟
+
+        // 需要优化，异步发送邮件
+        Mail::send('emails.new_code', [
+            'code' => $code,
+            'time' => $time_minutes,
+            'url' => config('app.url'),
+            'app_name' => config('app.name'),
+            'category_text' => $category_text,
+        ], function ($message) use ($email) {
+            $message->to($email)->subject('[' . config('app.name') . '] Verification Code');
         });
 
         return Response::success([], '发送成功');
     }
+
 
 
 

@@ -12,5 +12,15 @@ use Illuminate\Http\Request;
 class TestController
 {
 
-    public function test(Request $request) {}
+    public function test(Request $request)
+    {
+
+        return view('emails.new_code', [
+            'app_name' => config('app.name'),
+            'category_text' => 'Login',
+            'code' => 123456,
+            'time' => 60,
+            'url' => config('app.url')
+        ]);
+    }
 }
