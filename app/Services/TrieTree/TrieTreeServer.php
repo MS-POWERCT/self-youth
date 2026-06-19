@@ -60,7 +60,7 @@ class TrieTreeServer
     {
         $trie = self::create();
 
-        $contents = Redis::connection('cache')->get('TrieSensitive') ?? '';
+        $contents = Redis::get('TrieSensitive') ?? '';
         $contents = explode(',', $contents);
         // 添加敏感词
         foreach ($contents as $key => $value) {

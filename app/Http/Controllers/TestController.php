@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Api\MyController;
 use App\Models\User;
+use App\Services\FarmUserService;
 use App\Services\HabitService;
 use App\Services\UserService;
 use App\Support\Response;
@@ -14,13 +15,11 @@ class TestController
 
     public function test(Request $request)
     {
-
-        return view('emails.new_code', [
-            'app_name' => config('app.name'),
-            'category_text' => 'Login',
-            'code' => 123456,
-            'time' => 60,
-            'url' => config('app.url')
-        ]);
+        // $total_exp = 0;
+        // for ($i = 1; $i <= 50; $i++) {
+        //     $exp = FarmUserService::getFarmUserNextLevelExp($i);
+        //     $total_exp += $exp;
+        // }
+        // FarmUserService::printFarmUserNextLevelExp();
     }
 }

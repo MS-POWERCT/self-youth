@@ -60,33 +60,31 @@ namespace Dcat\Admin {
      * @property Grid\Column|Collection log
      * @property Grid\Column|Collection morph_id
      * @property Grid\Column|Collection morph_model
-     * @property Grid\Column|Collection browser_url
-     * @property Grid\Column|Collection chain_id
-     * @property Grid\Column|Collection chain_name
-     * @property Grid\Column|Collection deposit_enable
-     * @property Grid\Column|Collection deposit_min
-     * @property Grid\Column|Collection done_block_number
-     * @property Grid\Column|Collection last_block_number
-     * @property Grid\Column|Collection last_block_size
      * @property Grid\Column|Collection pre_create
-     * @property Grid\Column|Collection rate
-     * @property Grid\Column|Collection unique_code
-     * @property Grid\Column|Collection withdraw_audit
-     * @property Grid\Column|Collection withdraw_audit_day
-     * @property Grid\Column|Collection withdraw_count
-     * @property Grid\Column|Collection withdraw_deposit_wait
-     * @property Grid\Column|Collection withdraw_enable
-     * @property Grid\Column|Collection withdraw_fee_max
-     * @property Grid\Column|Collection withdraw_fee_min
-     * @property Grid\Column|Collection withdraw_fee_rate
-     * @property Grid\Column|Collection withdraw_max
-     * @property Grid\Column|Collection withdraw_min
      * @property Grid\Column|Collection connection
      * @property Grid\Column|Collection exception
      * @property Grid\Column|Collection failed_at
      * @property Grid\Column|Collection payload
      * @property Grid\Column|Collection queue
      * @property Grid\Column|Collection uuid
+     * @property Grid\Column|Collection asset_id
+     * @property Grid\Column|Collection desc
+     * @property Grid\Column|Collection level_id
+     * @property Grid\Column|Collection mature_after_time
+     * @property Grid\Column|Collection mature_time
+     * @property Grid\Column|Collection price
+     * @property Grid\Column|Collection quarter
+     * @property Grid\Column|Collection quarter_exp
+     * @property Grid\Column|Collection quarter_output_num
+     * @property Grid\Column|Collection selling_asset_id
+     * @property Grid\Column|Collection selling_price
+     * @property Grid\Column|Collection handbook_id
+     * @property Grid\Column|Collection is_unlocked
+     * @property Grid\Column|Collection plant_mature_at
+     * @property Grid\Column|Collection plant_start_at
+     * @property Grid\Column|Collection residue_output
+     * @property Grid\Column|Collection total_output
+     * @property Grid\Column|Collection num
      * @property Grid\Column|Collection check_date
      * @property Grid\Column|Collection check_time
      * @property Grid\Column|Collection habit_id
@@ -137,8 +135,8 @@ namespace Dcat\Admin {
      * @property Grid\Column|Collection command
      * @property Grid\Column|Collection cron
      * @property Grid\Column|Collection last_run_at
-     * @property Grid\Column|Collection fixed
      * @property Grid\Column|Collection icon_id
+     * @property Grid\Column|Collection fixed
      * @property Grid\Column|Collection is_show
      * @property Grid\Column|Collection address
      * @property Grid\Column|Collection age
@@ -148,28 +146,10 @@ namespace Dcat\Admin {
      * @property Grid\Column|Collection last_online_at
      * @property Grid\Column|Collection login_type
      * @property Grid\Column|Collection signature
-     * @property Grid\Column|Collection asset_id
      * @property Grid\Column|Collection balance_change
-     * @property Grid\Column|Collection freeze_change
      * @property Grid\Column|Collection module_code
-     * @property Grid\Column|Collection pledge_change
      * @property Grid\Column|Collection wallet_asset_id
      * @property Grid\Column|Collection balance
-     * @property Grid\Column|Collection freeze
-     * @property Grid\Column|Collection pledge
-     * @property Grid\Column|Collection amount
-     * @property Grid\Column|Collection block_number
-     * @property Grid\Column|Collection from
-     * @property Grid\Column|Collection nonce
-     * @property Grid\Column|Collection to
-     * @property Grid\Column|Collection tx_confirm_time
-     * @property Grid\Column|Collection tx_id
-     * @property Grid\Column|Collection fee
-     * @property Grid\Column|Collection network
-     * @property Grid\Column|Collection sent_at
-     * @property Grid\Column|Collection sent_confirm_time
-     * @property Grid\Column|Collection success_at
-     * @property Grid\Column|Collection success_confirm_time
      *
      * @method Grid\Column|Collection batch_uuid(string $label = null)
      * @method Grid\Column|Collection causer_id(string $label = null)
@@ -220,33 +200,31 @@ namespace Dcat\Admin {
      * @method Grid\Column|Collection log(string $label = null)
      * @method Grid\Column|Collection morph_id(string $label = null)
      * @method Grid\Column|Collection morph_model(string $label = null)
-     * @method Grid\Column|Collection browser_url(string $label = null)
-     * @method Grid\Column|Collection chain_id(string $label = null)
-     * @method Grid\Column|Collection chain_name(string $label = null)
-     * @method Grid\Column|Collection deposit_enable(string $label = null)
-     * @method Grid\Column|Collection deposit_min(string $label = null)
-     * @method Grid\Column|Collection done_block_number(string $label = null)
-     * @method Grid\Column|Collection last_block_number(string $label = null)
-     * @method Grid\Column|Collection last_block_size(string $label = null)
      * @method Grid\Column|Collection pre_create(string $label = null)
-     * @method Grid\Column|Collection rate(string $label = null)
-     * @method Grid\Column|Collection unique_code(string $label = null)
-     * @method Grid\Column|Collection withdraw_audit(string $label = null)
-     * @method Grid\Column|Collection withdraw_audit_day(string $label = null)
-     * @method Grid\Column|Collection withdraw_count(string $label = null)
-     * @method Grid\Column|Collection withdraw_deposit_wait(string $label = null)
-     * @method Grid\Column|Collection withdraw_enable(string $label = null)
-     * @method Grid\Column|Collection withdraw_fee_max(string $label = null)
-     * @method Grid\Column|Collection withdraw_fee_min(string $label = null)
-     * @method Grid\Column|Collection withdraw_fee_rate(string $label = null)
-     * @method Grid\Column|Collection withdraw_max(string $label = null)
-     * @method Grid\Column|Collection withdraw_min(string $label = null)
      * @method Grid\Column|Collection connection(string $label = null)
      * @method Grid\Column|Collection exception(string $label = null)
      * @method Grid\Column|Collection failed_at(string $label = null)
      * @method Grid\Column|Collection payload(string $label = null)
      * @method Grid\Column|Collection queue(string $label = null)
      * @method Grid\Column|Collection uuid(string $label = null)
+     * @method Grid\Column|Collection asset_id(string $label = null)
+     * @method Grid\Column|Collection desc(string $label = null)
+     * @method Grid\Column|Collection level_id(string $label = null)
+     * @method Grid\Column|Collection mature_after_time(string $label = null)
+     * @method Grid\Column|Collection mature_time(string $label = null)
+     * @method Grid\Column|Collection price(string $label = null)
+     * @method Grid\Column|Collection quarter(string $label = null)
+     * @method Grid\Column|Collection quarter_exp(string $label = null)
+     * @method Grid\Column|Collection quarter_output_num(string $label = null)
+     * @method Grid\Column|Collection selling_asset_id(string $label = null)
+     * @method Grid\Column|Collection selling_price(string $label = null)
+     * @method Grid\Column|Collection handbook_id(string $label = null)
+     * @method Grid\Column|Collection is_unlocked(string $label = null)
+     * @method Grid\Column|Collection plant_mature_at(string $label = null)
+     * @method Grid\Column|Collection plant_start_at(string $label = null)
+     * @method Grid\Column|Collection residue_output(string $label = null)
+     * @method Grid\Column|Collection total_output(string $label = null)
+     * @method Grid\Column|Collection num(string $label = null)
      * @method Grid\Column|Collection check_date(string $label = null)
      * @method Grid\Column|Collection check_time(string $label = null)
      * @method Grid\Column|Collection habit_id(string $label = null)
@@ -297,8 +275,8 @@ namespace Dcat\Admin {
      * @method Grid\Column|Collection command(string $label = null)
      * @method Grid\Column|Collection cron(string $label = null)
      * @method Grid\Column|Collection last_run_at(string $label = null)
-     * @method Grid\Column|Collection fixed(string $label = null)
      * @method Grid\Column|Collection icon_id(string $label = null)
+     * @method Grid\Column|Collection fixed(string $label = null)
      * @method Grid\Column|Collection is_show(string $label = null)
      * @method Grid\Column|Collection address(string $label = null)
      * @method Grid\Column|Collection age(string $label = null)
@@ -308,28 +286,10 @@ namespace Dcat\Admin {
      * @method Grid\Column|Collection last_online_at(string $label = null)
      * @method Grid\Column|Collection login_type(string $label = null)
      * @method Grid\Column|Collection signature(string $label = null)
-     * @method Grid\Column|Collection asset_id(string $label = null)
      * @method Grid\Column|Collection balance_change(string $label = null)
-     * @method Grid\Column|Collection freeze_change(string $label = null)
      * @method Grid\Column|Collection module_code(string $label = null)
-     * @method Grid\Column|Collection pledge_change(string $label = null)
      * @method Grid\Column|Collection wallet_asset_id(string $label = null)
      * @method Grid\Column|Collection balance(string $label = null)
-     * @method Grid\Column|Collection freeze(string $label = null)
-     * @method Grid\Column|Collection pledge(string $label = null)
-     * @method Grid\Column|Collection amount(string $label = null)
-     * @method Grid\Column|Collection block_number(string $label = null)
-     * @method Grid\Column|Collection from(string $label = null)
-     * @method Grid\Column|Collection nonce(string $label = null)
-     * @method Grid\Column|Collection to(string $label = null)
-     * @method Grid\Column|Collection tx_confirm_time(string $label = null)
-     * @method Grid\Column|Collection tx_id(string $label = null)
-     * @method Grid\Column|Collection fee(string $label = null)
-     * @method Grid\Column|Collection network(string $label = null)
-     * @method Grid\Column|Collection sent_at(string $label = null)
-     * @method Grid\Column|Collection sent_confirm_time(string $label = null)
-     * @method Grid\Column|Collection success_at(string $label = null)
-     * @method Grid\Column|Collection success_confirm_time(string $label = null)
      */
     class Grid {}
 
@@ -385,33 +345,31 @@ namespace Dcat\Admin {
      * @property Show\Field|Collection log
      * @property Show\Field|Collection morph_id
      * @property Show\Field|Collection morph_model
-     * @property Show\Field|Collection browser_url
-     * @property Show\Field|Collection chain_id
-     * @property Show\Field|Collection chain_name
-     * @property Show\Field|Collection deposit_enable
-     * @property Show\Field|Collection deposit_min
-     * @property Show\Field|Collection done_block_number
-     * @property Show\Field|Collection last_block_number
-     * @property Show\Field|Collection last_block_size
      * @property Show\Field|Collection pre_create
-     * @property Show\Field|Collection rate
-     * @property Show\Field|Collection unique_code
-     * @property Show\Field|Collection withdraw_audit
-     * @property Show\Field|Collection withdraw_audit_day
-     * @property Show\Field|Collection withdraw_count
-     * @property Show\Field|Collection withdraw_deposit_wait
-     * @property Show\Field|Collection withdraw_enable
-     * @property Show\Field|Collection withdraw_fee_max
-     * @property Show\Field|Collection withdraw_fee_min
-     * @property Show\Field|Collection withdraw_fee_rate
-     * @property Show\Field|Collection withdraw_max
-     * @property Show\Field|Collection withdraw_min
      * @property Show\Field|Collection connection
      * @property Show\Field|Collection exception
      * @property Show\Field|Collection failed_at
      * @property Show\Field|Collection payload
      * @property Show\Field|Collection queue
      * @property Show\Field|Collection uuid
+     * @property Show\Field|Collection asset_id
+     * @property Show\Field|Collection desc
+     * @property Show\Field|Collection level_id
+     * @property Show\Field|Collection mature_after_time
+     * @property Show\Field|Collection mature_time
+     * @property Show\Field|Collection price
+     * @property Show\Field|Collection quarter
+     * @property Show\Field|Collection quarter_exp
+     * @property Show\Field|Collection quarter_output_num
+     * @property Show\Field|Collection selling_asset_id
+     * @property Show\Field|Collection selling_price
+     * @property Show\Field|Collection handbook_id
+     * @property Show\Field|Collection is_unlocked
+     * @property Show\Field|Collection plant_mature_at
+     * @property Show\Field|Collection plant_start_at
+     * @property Show\Field|Collection residue_output
+     * @property Show\Field|Collection total_output
+     * @property Show\Field|Collection num
      * @property Show\Field|Collection check_date
      * @property Show\Field|Collection check_time
      * @property Show\Field|Collection habit_id
@@ -462,8 +420,8 @@ namespace Dcat\Admin {
      * @property Show\Field|Collection command
      * @property Show\Field|Collection cron
      * @property Show\Field|Collection last_run_at
-     * @property Show\Field|Collection fixed
      * @property Show\Field|Collection icon_id
+     * @property Show\Field|Collection fixed
      * @property Show\Field|Collection is_show
      * @property Show\Field|Collection address
      * @property Show\Field|Collection age
@@ -473,28 +431,10 @@ namespace Dcat\Admin {
      * @property Show\Field|Collection last_online_at
      * @property Show\Field|Collection login_type
      * @property Show\Field|Collection signature
-     * @property Show\Field|Collection asset_id
      * @property Show\Field|Collection balance_change
-     * @property Show\Field|Collection freeze_change
      * @property Show\Field|Collection module_code
-     * @property Show\Field|Collection pledge_change
      * @property Show\Field|Collection wallet_asset_id
      * @property Show\Field|Collection balance
-     * @property Show\Field|Collection freeze
-     * @property Show\Field|Collection pledge
-     * @property Show\Field|Collection amount
-     * @property Show\Field|Collection block_number
-     * @property Show\Field|Collection from
-     * @property Show\Field|Collection nonce
-     * @property Show\Field|Collection to
-     * @property Show\Field|Collection tx_confirm_time
-     * @property Show\Field|Collection tx_id
-     * @property Show\Field|Collection fee
-     * @property Show\Field|Collection network
-     * @property Show\Field|Collection sent_at
-     * @property Show\Field|Collection sent_confirm_time
-     * @property Show\Field|Collection success_at
-     * @property Show\Field|Collection success_confirm_time
      *
      * @method Show\Field|Collection batch_uuid(string $label = null)
      * @method Show\Field|Collection causer_id(string $label = null)
@@ -545,33 +485,31 @@ namespace Dcat\Admin {
      * @method Show\Field|Collection log(string $label = null)
      * @method Show\Field|Collection morph_id(string $label = null)
      * @method Show\Field|Collection morph_model(string $label = null)
-     * @method Show\Field|Collection browser_url(string $label = null)
-     * @method Show\Field|Collection chain_id(string $label = null)
-     * @method Show\Field|Collection chain_name(string $label = null)
-     * @method Show\Field|Collection deposit_enable(string $label = null)
-     * @method Show\Field|Collection deposit_min(string $label = null)
-     * @method Show\Field|Collection done_block_number(string $label = null)
-     * @method Show\Field|Collection last_block_number(string $label = null)
-     * @method Show\Field|Collection last_block_size(string $label = null)
      * @method Show\Field|Collection pre_create(string $label = null)
-     * @method Show\Field|Collection rate(string $label = null)
-     * @method Show\Field|Collection unique_code(string $label = null)
-     * @method Show\Field|Collection withdraw_audit(string $label = null)
-     * @method Show\Field|Collection withdraw_audit_day(string $label = null)
-     * @method Show\Field|Collection withdraw_count(string $label = null)
-     * @method Show\Field|Collection withdraw_deposit_wait(string $label = null)
-     * @method Show\Field|Collection withdraw_enable(string $label = null)
-     * @method Show\Field|Collection withdraw_fee_max(string $label = null)
-     * @method Show\Field|Collection withdraw_fee_min(string $label = null)
-     * @method Show\Field|Collection withdraw_fee_rate(string $label = null)
-     * @method Show\Field|Collection withdraw_max(string $label = null)
-     * @method Show\Field|Collection withdraw_min(string $label = null)
      * @method Show\Field|Collection connection(string $label = null)
      * @method Show\Field|Collection exception(string $label = null)
      * @method Show\Field|Collection failed_at(string $label = null)
      * @method Show\Field|Collection payload(string $label = null)
      * @method Show\Field|Collection queue(string $label = null)
      * @method Show\Field|Collection uuid(string $label = null)
+     * @method Show\Field|Collection asset_id(string $label = null)
+     * @method Show\Field|Collection desc(string $label = null)
+     * @method Show\Field|Collection level_id(string $label = null)
+     * @method Show\Field|Collection mature_after_time(string $label = null)
+     * @method Show\Field|Collection mature_time(string $label = null)
+     * @method Show\Field|Collection price(string $label = null)
+     * @method Show\Field|Collection quarter(string $label = null)
+     * @method Show\Field|Collection quarter_exp(string $label = null)
+     * @method Show\Field|Collection quarter_output_num(string $label = null)
+     * @method Show\Field|Collection selling_asset_id(string $label = null)
+     * @method Show\Field|Collection selling_price(string $label = null)
+     * @method Show\Field|Collection handbook_id(string $label = null)
+     * @method Show\Field|Collection is_unlocked(string $label = null)
+     * @method Show\Field|Collection plant_mature_at(string $label = null)
+     * @method Show\Field|Collection plant_start_at(string $label = null)
+     * @method Show\Field|Collection residue_output(string $label = null)
+     * @method Show\Field|Collection total_output(string $label = null)
+     * @method Show\Field|Collection num(string $label = null)
      * @method Show\Field|Collection check_date(string $label = null)
      * @method Show\Field|Collection check_time(string $label = null)
      * @method Show\Field|Collection habit_id(string $label = null)
@@ -622,8 +560,8 @@ namespace Dcat\Admin {
      * @method Show\Field|Collection command(string $label = null)
      * @method Show\Field|Collection cron(string $label = null)
      * @method Show\Field|Collection last_run_at(string $label = null)
-     * @method Show\Field|Collection fixed(string $label = null)
      * @method Show\Field|Collection icon_id(string $label = null)
+     * @method Show\Field|Collection fixed(string $label = null)
      * @method Show\Field|Collection is_show(string $label = null)
      * @method Show\Field|Collection address(string $label = null)
      * @method Show\Field|Collection age(string $label = null)
@@ -633,28 +571,10 @@ namespace Dcat\Admin {
      * @method Show\Field|Collection last_online_at(string $label = null)
      * @method Show\Field|Collection login_type(string $label = null)
      * @method Show\Field|Collection signature(string $label = null)
-     * @method Show\Field|Collection asset_id(string $label = null)
      * @method Show\Field|Collection balance_change(string $label = null)
-     * @method Show\Field|Collection freeze_change(string $label = null)
      * @method Show\Field|Collection module_code(string $label = null)
-     * @method Show\Field|Collection pledge_change(string $label = null)
      * @method Show\Field|Collection wallet_asset_id(string $label = null)
      * @method Show\Field|Collection balance(string $label = null)
-     * @method Show\Field|Collection freeze(string $label = null)
-     * @method Show\Field|Collection pledge(string $label = null)
-     * @method Show\Field|Collection amount(string $label = null)
-     * @method Show\Field|Collection block_number(string $label = null)
-     * @method Show\Field|Collection from(string $label = null)
-     * @method Show\Field|Collection nonce(string $label = null)
-     * @method Show\Field|Collection to(string $label = null)
-     * @method Show\Field|Collection tx_confirm_time(string $label = null)
-     * @method Show\Field|Collection tx_id(string $label = null)
-     * @method Show\Field|Collection fee(string $label = null)
-     * @method Show\Field|Collection network(string $label = null)
-     * @method Show\Field|Collection sent_at(string $label = null)
-     * @method Show\Field|Collection sent_confirm_time(string $label = null)
-     * @method Show\Field|Collection success_at(string $label = null)
-     * @method Show\Field|Collection success_confirm_time(string $label = null)
      */
     class Show {}
 

@@ -79,6 +79,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/loverComment/delData', "App\Api\LoverCommentController@delData")->middleware(['limit_form_repeat:3', 'check_uuid']); // 删除评论
 
 
+    // 农场模块
+    Route::post('/farmUser/initFarm', "App\Api\FarmUserController@initFarm"); // 初始化农场参数等
 });
 
 

@@ -39,7 +39,7 @@ class I18nService
 
         foreach ($langs as $lang => $lang_name) {
             $cache_key_lang = 'i18n_' . $cache_key . '_' . $lang;
-            $translates = json_decode(Redis::connection('cache')->hget($cache_key, $id), true);
+            $translates = json_decode(Redis::hget($cache_key, $id), true);
             foreach ($fields as $k => $v) {
                 if ($lang !== 'zh_CN' && $v['value']) {
                     $translation = AlibabaTranslateService::translate($v['value'], 'zh', $lang, $v['format_type'] ?? 'text');
@@ -49,7 +49,7 @@ class I18nService
                 }
                 $translates[$k] = $translatedValue;
             }
-            Redis::connection('cache')->hset($cache_key_lang, $id, json_encode($translates));
+            Redis::hset($cache_key_lang, $id, json_encode($translates));
         }
     }
 
@@ -57,14 +57,14 @@ class I18nService
     public static function getI18n($model, $id)
     {
         $cache_key_lang = 'i18n_' . $model . '_' . $GLOBALS['user_lang'];
-        return json_decode(Redis::connection('cache')->hget($cache_key_lang, $id), true) ?? [];
+        return json_decode(Redis::hget($cache_key_lang, $id), true) ?? [];
     }
 
     // 获取多个产品翻译
     public static function getBatchI18n($model, $ids)
     {
         $cache_key_lang = 'i18n_' . $model . '_' . $GLOBALS['user_lang'];
-        $data = Redis::connection('cache')->hmget($cache_key_lang, $ids);
+        $data = Redis::hmget($cache_key_lang, $ids);
         $data = array_combine($ids, $data);
         foreach ($data as $key => $value) {
             $data[$key] = json_decode($value, true);
