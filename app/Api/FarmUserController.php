@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\FarmUserLandService;
 use App\Services\FarmUserService;
 use App\Services\FarmWarehouseService;
+use App\Services\WalletAssetService;
 use App\Support\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -31,10 +32,12 @@ class FarmUserController extends Controller
 
         $farm_user = [
             'user_id' => $user->id,
+            'user_name' => $user->name,
             'level_id' => $farm_user_level,
             'level_title' => trans('app-status.farm_user.level_title')[$farm_user_level] ?? '--', // 用户称号
             'exp' => FarmUserService::getFarmUserExp($user->id), // 用户经验
             'next_level_exp' => FarmUserService::getFarmUserNextLevelExp($farm_user_level + 1), // 下一级需要的经验
+            'wallet_assets' => WalletAssetService::getAccountAssetAll($user),
         ];
 
         return Response::success($farm_user);
@@ -43,11 +46,9 @@ class FarmUserController extends Controller
 
 
     // 获取用户土地
-    public function getFarmInfo()
+    public function getLandList()
     {
-        $user = Auth::user();
-        $data['lands'] = FarmUserLandService::getUserLand($user);
-        return Response::success($data);
+        return Response::success(FarmUserLandService::getLandList(Auth::user()));
     }
 
 

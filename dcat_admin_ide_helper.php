@@ -7,7 +7,9 @@
  *
  * @author jqh <841324345@qq.com>
  */
+
 namespace Dcat\Admin {
+
     use Illuminate\Support\Collection;
 
     /**
@@ -79,7 +81,6 @@ namespace Dcat\Admin {
      * @property Grid\Column|Collection selling_asset_id
      * @property Grid\Column|Collection selling_price
      * @property Grid\Column|Collection handbook_id
-     * @property Grid\Column|Collection is_unlocked
      * @property Grid\Column|Collection plant_mature_at
      * @property Grid\Column|Collection plant_start_at
      * @property Grid\Column|Collection residue_output
@@ -219,7 +220,6 @@ namespace Dcat\Admin {
      * @method Grid\Column|Collection selling_asset_id(string $label = null)
      * @method Grid\Column|Collection selling_price(string $label = null)
      * @method Grid\Column|Collection handbook_id(string $label = null)
-     * @method Grid\Column|Collection is_unlocked(string $label = null)
      * @method Grid\Column|Collection plant_mature_at(string $label = null)
      * @method Grid\Column|Collection plant_start_at(string $label = null)
      * @method Grid\Column|Collection residue_output(string $label = null)
@@ -364,7 +364,6 @@ namespace Dcat\Admin {
      * @property Show\Field|Collection selling_asset_id
      * @property Show\Field|Collection selling_price
      * @property Show\Field|Collection handbook_id
-     * @property Show\Field|Collection is_unlocked
      * @property Show\Field|Collection plant_mature_at
      * @property Show\Field|Collection plant_start_at
      * @property Show\Field|Collection residue_output
@@ -504,7 +503,6 @@ namespace Dcat\Admin {
      * @method Show\Field|Collection selling_asset_id(string $label = null)
      * @method Show\Field|Collection selling_price(string $label = null)
      * @method Show\Field|Collection handbook_id(string $label = null)
-     * @method Show\Field|Collection is_unlocked(string $label = null)
      * @method Show\Field|Collection plant_mature_at(string $label = null)
      * @method Show\Field|Collection plant_start_at(string $label = null)
      * @method Show\Field|Collection residue_output(string $label = null)
@@ -579,10 +577,9 @@ namespace Dcat\Admin {
     class Show {}
 
     /**
-     
+
      */
     class Form {}
-
 }
 
 namespace Dcat\Admin\Grid {
@@ -592,14 +589,14 @@ namespace Dcat\Admin\Grid {
     class Column {}
 
     /**
-     
+
      */
     class Filter {}
 }
 
 namespace Dcat\Admin\Show {
     /**
-     
+
      */
     class Field {}
 }

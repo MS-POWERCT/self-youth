@@ -28,13 +28,11 @@ class FarmUserLandController extends AdminController
             $grid->column('plant_start_at');
             $grid->column('quarter');
             $grid->column('status');
-            $grid->column('is_unlocked');
             $grid->column('created_at');
             $grid->column('updated_at')->sortable();
-        
+
             $grid->filter(function (Grid\Filter $filter) {
                 $filter->equal('id');
-        
             });
         });
     }
@@ -59,7 +57,6 @@ class FarmUserLandController extends AdminController
             $show->field('plant_start_at');
             $show->field('quarter');
             $show->field('status');
-            $show->field('is_unlocked');
             $show->field('created_at');
             $show->field('updated_at');
         });
@@ -83,8 +80,7 @@ class FarmUserLandController extends AdminController
             $form->text('plant_start_at');
             $form->text('quarter');
             $form->text('status');
-            $form->text('is_unlocked');
-        
+
             $form->display('created_at');
             $form->display('updated_at');
         });

@@ -1,4 +1,4 @@
-<?php 
+<?php
 return [
     'labels' => [
         'FarmUserLand' => 'FarmUserLand',
@@ -14,8 +14,6 @@ return [
         'plant_start_at' => '种植时间',
         'quarter' => '当前季度',
         'status' => '0空闲，1种植，2成熟，3枯萎',
-        'is_unlocked' => '是否解锁',
     ],
-    'options' => [
-    ],
+    'options' => [],
 ];

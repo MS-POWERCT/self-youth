@@ -81,6 +81,7 @@ Route::middleware('auth:api')->group(function () {
 
     // 农场模块
     Route::post('/farmUser/initFarm', "App\Api\FarmUserController@initFarm"); // 初始化农场参数等
+    Route::post('/farmUser/getLandList', "App\Api\FarmUserController@getLandList"); // 获取用户土地
 });
 
 

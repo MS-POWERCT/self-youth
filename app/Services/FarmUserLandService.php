@@ -3,12 +3,14 @@
 namespace App\Services;
 
 use App\Models\FarmUserLand;
+use App\Models\User;
 
 class FarmUserLandService
 {
     // 土地等级
     public static $LEVEL = [
         1 => [
+            'short_name' => '普',
             'name' => '普通土地',
             'ability_exp' => 0,
             'ability_reward' => 0,
@@ -31,6 +33,7 @@ class FarmUserLandService
             ]
         ],
         2 => [
+            'short_name' => '红',
             'name' => '红土地',
             'ability_exp' => 0,
             'ability_reward' => 10,
@@ -59,6 +62,7 @@ class FarmUserLandService
             ]
         ],
         3 => [
+            'short_name' => '黑',
             'name' => '黑土地',
             'ability_exp' => 0,
             'ability_reward' => 10,
@@ -93,7 +97,7 @@ class FarmUserLandService
 
 
     // 获取用户土地
-    static public function getUserLand($user)
+    static public function getLandList(User $user)
     {
         $list = FarmUserLand::with('handbook')->where('user_id', $user->id)->get();
 
@@ -104,8 +108,7 @@ class FarmUserLandService
                 $lands[] = [
                     'user_id' => $user->id,
                     'level_id' => 1,
-                    'status' => 0,
-                    'is_unlocked' => $i < self::$DEFAULT_LAND_COUNT ? 1 : 0,
+                    'status' => $i < self::$DEFAULT_LAND_COUNT ? 0 : 9
                 ];
             }
             FarmUserLand::insert($lands);
@@ -116,6 +119,7 @@ class FarmUserLandService
             $level = self::$LEVEL[$value['level_id']];
             $value['level'] = [
                 'name' => $level['name'],
+                'short_name' => $level['short_name'],
                 'ability_exp' => $level['ability_exp'],
                 'ability_reward' => $level['ability_reward'],
                 'ability_speed' => $level['ability_speed']
