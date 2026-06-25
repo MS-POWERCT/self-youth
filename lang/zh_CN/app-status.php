@@ -1,15 +1,6 @@
 <?php
 
 return [
-    'wallet_bridge_status' => [
-        'CREATED' => '待Link',
-        'AUDIT' => 'Link中',
-        'AUDITED' => 'Link中',
-        'SENT' => 'Link成功',
-        'SUCCEEDED' => 'Link成功',
-        'FAILED' => '待Link',
-        'CANCELED' => '待Link'
-    ],
     'user' => [
         'status' => [
             0 => '正常',
@@ -39,35 +30,8 @@ return [
 
     'wallet_asset' => [
         'module_code' => [
-            'BUY_NODE' => '兑换节点',
-            'BUY_NFT' => '兑换NFT',
-            'NODE_DIRECT_REWARD' => 'node直接奖励',
-            'NODE_INDIRECT_REWARD' => 'node间推奖励',
-            'NFT_DIRECT_REWARD' => 'nft直接奖励',
-            'NFT_INDIRECT_REWARD' => 'nft间推奖励',
-            'DEPOSIT' => '充值',
-            'WITHDRAW' => '提现',
-            'WITHDRAW_CANCELED' => '提现退回',
-            'ADMIN' => '系统充值',
+            'ADMIN' => '系统',
         ],
-    ],
-    'wallet_deposit' => [
-        'status' => [
-            'CREATED' => '请求交易',
-            'LACKED' => '额度不足',
-            'SUCCESS' => '交易成功',
-            'FAILED' => '交易失败',
-        ]
-    ],
-    'wallet_withdraw' => [
-        'status' => [
-            'CREATED' => '待上链',
-            'AUDITED' => '上链中',
-            'SENT' => '区块确认中',
-            'SUCCEEDED' => '上链成功',
-            'FAILED' => '上链失败',
-            'CANCELED' => '上链失败',
-        ]
     ],
     'mark_item' => [
         'status' => [
@@ -76,8 +40,6 @@ return [
             2 => '完成',
         ],
     ],
-
-
     // 农场部分
     'farm_user' => [
         'level_title' => [

@@ -20,6 +20,12 @@ use Illuminate\Support\Facades\Redis;
 class UserService
 {
 
+    // 默认常量
+    public static $HANDBOOK_ID_DEFAULT = 1; // 默认手册id
+    public static $HANDBOOK_NUM_DEFAULT = 6; // 默认种子数量
+    public static $WALLET_ASSET_ID_DEFAULT = 1; // 默认资产
+    public static $WALLET_ASSET_NUM_DEFAULT = 100; // 默认资产数量
+
 
     public static function getEmailCodeKey($email, $category)
     {
@@ -47,34 +53,6 @@ class UserService
         return true;
     }
 
-
-    /**
-     * 生成推荐码
-     * 默认推荐码长度6
-     * 如果用户量增多后5次撞表就加1位
-     */
-    // public static function setUserParentCode()
-    // {
-    //     $my_referral_code = '';
-    //     $length = 6;
-    //     $count = 0;
-    //     do {
-    //         $my_referral_code = ToolsService::getRandomStr($length, 1);
-    //         $count += 1;
-    //         $parent = User::where('referral_code', $my_referral_code)->select('id')->first();
-    //         if (!empty($parent)) {
-    //             if ($count % 5 == 0) {
-    //                 $length += 1;
-    //             }
-    //             continue;
-    //         }
-    //         return $my_referral_code;
-    //     } while (true);
-    // }
-
-
-
-
     /**
      * 创建用户函数
      * @return type
@@ -94,6 +72,16 @@ class UserService
         // 创建默认习惯
         HabitService::getDefaultHabit($user);
 
+        // 创建用户默认资产
+        $wallet_asset = WalletAssetService::getWalletAsset($user, self::$WALLET_ASSET_ID_DEFAULT);
+        // 默认给100
+        WalletAssetService::change($wallet_asset, self::$WALLET_ASSET_NUM_DEFAULT, [
+            'module_code' => 'ADMIN',
+        ]);
+        // 给这个用户仓库增加6个土豆
+        $warehouse = FarmWarehouseService::getUserWareHouse($user, self::$HANDBOOK_ID_DEFAULT, 'seed');
+        $warehouse->num += self::$HANDBOOK_NUM_DEFAULT;
+        $warehouse->save();
 
         return $user;
     }

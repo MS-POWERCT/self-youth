@@ -11,7 +11,7 @@ class FarmWarehouseService
     public static $FARM_DEES_MAX = 100; // 仓库最大数量
 
 
-    // 获取用户土地
+    // 获取用户仓库
     static public function getUserWareHouse($user, $handbook_id, $type)
     {
         $warehouse = FarmWarehouse::where('user_id', $user->id)
