@@ -30,7 +30,7 @@ class FarmUserController extends Controller
 
         $farm_user_level = FarmUserService::getFarmUserLevel($user->id);
 
-        $farm_user = [
+        $init_data = [
             'user_id' => $user->id,
             'user_name' => $user->name,
             'level_id' => $farm_user_level,
@@ -38,9 +38,16 @@ class FarmUserController extends Controller
             'exp' => FarmUserService::getFarmUserExp($user->id), // 用户经验
             'next_level_exp' => FarmUserService::getFarmUserNextLevelExp($farm_user_level + 1), // 下一级需要的经验
             'wallet_assets' => WalletAssetService::getAccountAssetAll($user),
+            'default_exp' => [
+                'plant' => FarmUserService::$FARM_PLANT_EXP, // 种植得多少经验
+                'shovel' => FarmUserService::$FARM_SHOVEL_EXP, // 铲除得多少经验
+                'water' => FarmUserService::$FARM_WATER_EXP, // 除草得多少经验
+                'kill' => FarmUserService::$FARM_KILL_EXP, // 击虫得多少经验
+                'till' => FarmUserService::$FARM_TILL_EXP, // 翻土得多少经验
+            ],
         ];
 
-        return Response::success($farm_user);
+        return Response::success($init_data);
     }
 
 
@@ -128,10 +135,10 @@ class FarmUserController extends Controller
     // 刷新用户土地
     public function refresh(Request $request)
     {
-        $land_id = $request->land_id;
+        $land_id = $request->land_id ?? 0;
         $user = Auth::user();
 
-        $farm_lands = $land_id
+        $farm_lands = $land_id > 0
             ? FarmUserLand::with('handbook')->where('user_id', $user->id)->where('id', $land_id)->get()
             : FarmUserLand::with('handbook')->where('user_id', $user->id)->get();
 
@@ -146,8 +153,6 @@ class FarmUserController extends Controller
                     'residue_output' => $output,
                     'status' => 2,
                 ]);
-            } elseif ($farm_land->status == 1) {
-                // 这里可以添加放一些虫子或者杂草让用户可以进行除草
             }
         }
 

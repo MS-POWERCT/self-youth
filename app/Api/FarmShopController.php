@@ -31,7 +31,7 @@ class FarmShopController extends Controller
         $type = $request->type ?? 'seed';
 
         $list = FarmShop::with('handbook')->select('id', 'handbook_id', 'type', 'status')->where('type', $type)
-            ->where('status', 'ENABLED')
+            ->where('status', 1)
             ->offset($page * $size)
             ->limit($size)
             ->get();
@@ -61,7 +61,7 @@ class FarmShopController extends Controller
         }
 
         // 查询这个产品是否
-        $product = FarmShop::with('handbook')->where('id', $request->id)->where('status', 'ENABLED')->first();
+        $product = FarmShop::with('handbook')->where('id', $request->id)->where('status', 1)->first();
         if (!$product) {
             return Response::error(trans('app-return.not_found'));
         }

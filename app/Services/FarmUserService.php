@@ -16,7 +16,7 @@ class FarmUserService
     // 每次杀虫得多少经验
     public static $FARM_KILL_EXP = 3;
     // 每次翻土的多少经验
-    // public static $FARM_TILL_EXP = 3;
+    public static $FARM_TILL_EXP = 3;
 
 
     // 用户升级条件 code... 条件是什么待定
