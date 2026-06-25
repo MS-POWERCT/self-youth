@@ -23,19 +23,19 @@ class FarmWarehouseController extends Controller
 
 
     // 仓库列表
-    // public function getList(Request $request)
-    // {
-    //     $type = $request->type ?? 'seed';
+    public function getList(Request $request)
+    {
+        $type = $request->type ?? 'seed';
 
-    //     $list = FarmWarehouse::with(['handbook' => function ($query) {
-    //         $query->orderBy('level_id', 'ASC');
-    //     }])->where('user_id', Auth::id())
-    //         ->where('num', '>', 0)
-    //         ->where('type', $type)
-    //         ->orderBy('id', 'DESC')->get();
+        $list = FarmWarehouse::with(['handbook' => function ($query) {
+            $query->orderBy('level_id', 'ASC');
+        }])->where('user_id', Auth::id())
+            ->where('num', '>', 0)
+            ->where('type', $type)
+            ->orderBy('id', 'DESC')->get();
 
-    //     return Response::success($list);
-    // }
+        return Response::success($list);
+    }
 
 
     // 卖出

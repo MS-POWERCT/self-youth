@@ -26,7 +26,7 @@ class WalletAssetService
     static public function checkBalance(WalletAsset $wallet_asset, int $amount, $error = 1235)
     {
         $wallet_asset = WalletAsset::lockForUpdate()->find($wallet_asset->id);
-        if ($wallet_asset && $wallet_asset->balance > $amount) {
+        if ($wallet_asset && $wallet_asset->balance >= $amount) {
         } else {
             $asset = Asset::select('id', 'name')->find($wallet_asset->asset_id);
             throw new Exception(trans('app-exception.balance_not_enough', ['unit' => $asset->name]), $error);

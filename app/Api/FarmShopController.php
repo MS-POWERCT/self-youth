@@ -22,9 +22,34 @@ use Illuminate\Support\Facades\Log;
 class FarmShopController extends Controller
 {
 
+
+    // 获取列表
+    public function getList(Request $request)
+    {
+        $page = intval($request->page ?? 0);
+        $size = min(intval($request->size ?? 50), 500);
+        $type = $request->type ?? 'seed';
+
+        $list = FarmShop::with('handbook')->select('id', 'handbook_id', 'type', 'status')->where('type', $type)
+            ->where('status', 'ENABLED')
+            ->offset($page * $size)
+            ->limit($size)
+            ->get();
+
+        // 查询所有相关的Asset
+        $allAssets = Asset::select('id', 'name', 'icon')->get()->keyBy('id');
+        // 分配查询结果回$list中的每个元素
+        foreach ($list as &$value) {
+            if ($value->handbook) {
+                $value->handbook->asset = $allAssets[$value->handbook->asset_id] ?? '';
+                $value->handbook->sellingAsset = $allAssets[$value->handbook->selling_asset_id] ?? '';
+            }
+        }
+
+        return Response::success($list);
+    }
+
     // 购买
-    // public function buy(Request $request)
-    // {
     public function buy(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -62,7 +87,7 @@ class FarmShopController extends Controller
             DB::beginTransaction();
 
             $total_amount = $product->handbook->price * $num;
-            $wallet_account = WalletAssetService::getWalletAsset($user, $asset);
+            $wallet_account = WalletAssetService::getWalletAsset($user, $asset->id);
             WalletAssetService::checkBalance($wallet_account, $total_amount);
 
             // 扣除余额
@@ -75,7 +100,7 @@ class FarmShopController extends Controller
             $warehouse->save();
 
             DB::commit();
-            return Response::success(WalletAssetService::getAccountAssetAll($user));
+            return Response::success();
         } catch (\Throwable $th) {
 
             DB::rollBack();
@@ -89,33 +114,5 @@ class FarmShopController extends Controller
             }
             return Response::error(trans('app-return.error_msg'));
         }
-    }
-
-    // 获取列表
-    public function getList(Request $request)
-    {
-        $page = intval($request->page ?? 0);
-        $size = min(intval($request->size ?? 50), 500);
-        $category = $request->category ?? 1;
-        $type = $request->type ?? 'seed';
-
-        $list = FarmShop::with('handbook')->where('type', $type)
-            ->where('category', $category)
-            ->where('status', 'ENABLED')
-            ->offset($page * $size)
-            ->limit($size)
-            ->get();
-
-        // 查询所有相关的Asset
-        $allAssets = Asset::select('id', 'name', 'icon')->get()->keyBy('id');
-        // 分配查询结果回$list中的每个元素
-        foreach ($list as &$value) {
-            if ($value->handbook) {
-                $value->handbook->asset = $allAssets[$value->handbook->asset_id] ?? '';
-                $value->handbook->sellingAsset = $allAssets[$value->handbook->selling_asset_id] ?? '';
-            }
-        }
-
-        return Response::success($list);
     }
 }
