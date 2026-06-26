@@ -29,7 +29,7 @@ class FarmTaskController extends Controller
         $today = date('Ymd');
         $taskDateKey = 'farm_task_d:' . $today; // 检查用户是否已领取任务
 
-        $userTaskList = FarmUserTask::with('farmTask')
+        $userTaskList = FarmUserTask::with('farmTask', 'farmTask.rewardAsset')
             ->select('id', 'user_id', 'farm_task_id', 'status')
             ->where('user_id', $user_id)
             ->where('status', 0)
@@ -81,7 +81,7 @@ class FarmTaskController extends Controller
         Redis::sAdd($taskDateKey, $user_id);
 
         // 返回完整的任务列表
-        $userTaskList = FarmUserTask::with('farmTask')
+        $userTaskList = FarmUserTask::with('farmTask', 'farmTask.rewardAsset')
             ->select('id', 'user_id', 'farm_task_id', 'status')
             ->where('user_id', $user_id)
             ->where('status', 0)
@@ -102,7 +102,7 @@ class FarmTaskController extends Controller
 
         $user = Auth::user();
 
-        $detail = FarmUserTask::with('farmTask')->where('user_id', $user->id)->where('id', $request->id)->where('status', 0)->first();
+        $detail = FarmUserTask::with('farmTask', 'farmTask.rewardAsset')->where('user_id', $user->id)->where('id', $request->id)->where('status', 0)->first();
         if (!$detail) {
             return Response::error('任务不存在', 456346);
         }
@@ -143,7 +143,7 @@ class FarmTaskController extends Controller
         $detail->save();
 
         // 把剩下的任务返回
-        $remainingTasks = FarmUserTask::with('farmTask')->where('user_id', $user->id)->where('status', 0)->get();
+        $remainingTasks = FarmUserTask::with('farmTask', 'farmTask.rewardAsset')->where('user_id', $user->id)->where('status', 0)->get();
 
         return Response::success($remainingTasks);
     }
@@ -169,7 +169,7 @@ class FarmTaskController extends Controller
         $detail->save();
 
         // 把剩下的任务返回
-        $remainingTasks = FarmUserTask::with('farmTask')->where('user_id', $user_id)->where('status', 0)->get();
+        $remainingTasks = FarmUserTask::with('farmTask', 'farmTask.rewardAsset')->where('user_id', $user_id)->where('status', 0)->get();
         return Response::success($remainingTasks);
     }
 }

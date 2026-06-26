@@ -2,6 +2,7 @@
 
 namespace App\Api;
 
+use App\Models\FarmHandbook;
 use App\Models\FarmUserLand;
 use App\Models\FarmWarehouse;
 use Illuminate\Support\Facades\Auth;
@@ -45,6 +46,7 @@ class FarmUserController extends Controller
                 'kill' => FarmUserService::$FARM_KILL_EXP, // 击虫得多少经验
                 'till' => FarmUserService::$FARM_TILL_EXP, // 翻土得多少经验
             ],
+            'handbooks' => FarmHandbook::pluck('name', 'id')->toArray(), //图谱
         ];
 
         return Response::success($init_data);
