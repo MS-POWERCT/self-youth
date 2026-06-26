@@ -80,12 +80,14 @@ Route::middleware('auth:api')->group(function () {
 
 
     // 农场模块
-    Route::post('/farmUser/initFarm', "App\Api\FarmUserController@initFarm"); // 初始化农场参数等
+    Route::post('/farmUser/initFarm', "App\Api\FarmUserController@initFarm")->middleware(['check_uuid']); // 初始化农场参数等
     Route::post('/farmUser/getLandList', "App\Api\FarmUserController@getLandList"); // 获取用户土地
     Route::post('/farmUser/plant', "App\Api\FarmUserController@plant"); // 种植
     Route::post('/farmUser/remove', "App\Api\FarmUserController@remove"); // 移除土地
     Route::post('/farmUser/refresh', "App\Api\FarmUserController@refresh"); // 刷新用户土地
     Route::post('/farmUser/harvest', "App\Api\FarmUserController@harvest"); // 收获
+    Route::post('/farmUser/getLandUpgradeInfo', "App\Api\FarmUserController@getLandUpgradeInfo"); // 获取升级信息
+    Route::post('/farmUser/upgradeLand', "App\Api\FarmUserController@upgradeLand"); // 升级
     Route::get('/farmShop/getList', "App\Api\FarmShopController@getList"); // 获取商店列表
     Route::post('/farmShop/buy', "App\Api\FarmShopController@buy"); // 购买
     Route::post('/farmWarehouse/getList', "App\Api\FarmWarehouseController@getList"); // 仓库列表

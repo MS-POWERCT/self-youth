@@ -35,7 +35,7 @@ class FarmUserController extends Controller
             'user_id' => $user->id,
             'user_name' => $user->name,
             'level_id' => $farm_user_level,
-            'level_title' => trans('app-status.farm_user.level_title')[$farm_user_level] ?? '--', // 用户称号
+            'level_title' => trans('app-status.farm_user.level_title')[$farm_user_level] ?? '称号之外', // 用户称号
             'exp' => FarmUserService::getFarmUserExp($user->id), // 用户经验
             'next_level_exp' => FarmUserService::getFarmUserNextLevelExp($farm_user_level + 1), // 下一级需要的经验
             'wallet_assets' => WalletAssetService::getAccountAssetAll($user),
@@ -50,14 +50,6 @@ class FarmUserController extends Controller
         ];
 
         return Response::success($init_data);
-    }
-
-
-
-    // 获取用户土地
-    public function getLandList()
-    {
-        return Response::success(FarmUserLandService::getLandList(Auth::user()));
     }
 
 
@@ -162,7 +154,6 @@ class FarmUserController extends Controller
     }
 
 
-
     // 收获
     public function harvest(Request $request)
     {
@@ -252,5 +243,202 @@ class FarmUserController extends Controller
         FarmUserService::farmAddExp($user->id, FarmUserService::$FARM_SHOVEL_EXP); // 增加经验
 
         return Response::success(FarmUserLandService::getLandList($user));
+    }
+
+
+
+    // 获取用户土地
+    public function getLandList()
+    {
+        return Response::success(FarmUserLandService::getLandList(Auth::user()));
+    }
+
+    // 获取土地升级的信息
+    public function getLandUpgradeInfo()
+    {
+        $user = Auth::user();
+        $farm_user_level = FarmUserService::getFarmUserLevel($user->id);
+
+        // 获取用户各等级土地数量
+        $lands = FarmUserLand::where('user_id', $user->id)->where('status', '<>', 9)->get();
+        $landCounts = [
+            1 => $lands->where('level_id', 1)->count(), // 普通土地
+            2 => $lands->where('level_id', 2)->count(), // 红土地
+            3 => $lands->where('level_id', 3)->count(), // 金土地
+        ];
+
+        $upgrade_info = [];
+        $levelConfig = FarmUserLandService::$LEVEL;
+
+        // 定义升级规则
+        $upgradeRules = [
+            1 => [
+                'upgrade_type' => 1,
+                'requirement' => null, // 普通土地无前置要求
+                'action' => '开垦',
+                'desc' => '开垦新的土地',
+            ],
+            2 => [
+                'upgrade_type' => 2,
+                'requirement' => fn() => $landCounts[1] > $landCounts[2], // 普通土地数量必须大于红土地数量
+                'action' => '升级',
+                'desc' => '升级红土地',
+            ],
+            3 => [
+                'upgrade_type' => 3,
+                'requirement' => fn() => $landCounts[2] > $landCounts[3], // 红土地数量必须大于金土地数量
+                'action' => '升级',
+                'desc' => '升级金土地',
+            ],
+        ];
+
+        foreach ($upgradeRules as $levelId => $rule) {
+            $nextCount = $landCounts[$rule['upgrade_type']] + 1;
+
+            // 检查是否达到土地数量上限
+            if ($nextCount > FarmUserLandService::$MAX_LAND_COUNT) {
+                continue;
+            }
+
+            // 检查等级要求
+            if ($levelConfig[$levelId]['level'][$nextCount] > $farm_user_level) {
+                continue;
+            }
+
+            // 检查前置要求（红土地需要普通土地，金土地需要红土地）
+            if ($rule['requirement'] && !$rule['requirement']()) {
+                continue;
+            }
+
+            $upgrade_info[] = [
+                'level_id' => $levelId,
+                'name' => $levelConfig[$levelId]['name'],
+                'price' => $levelConfig[$levelId]['price'][$nextCount],
+                'desc' => $rule['desc'],
+                'bottom' => $rule['action'],
+                'upgrade_type' => $rule['upgrade_type'],
+            ];
+        }
+
+        return Response::success($upgrade_info);
+    }
+
+
+    // 开垦土地或者升级土地
+    public function upgradeLand(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'upgrade_type' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return Response::error($validator->errors()->first(), 1212);
+        }
+
+        $upgrade_type = $request->upgrade_type;
+        if (!in_array($upgrade_type, [1, 2, 3])) {
+            return Response::error('土地类型无效', 1212);
+        }
+
+        $user = Auth::user();
+        $farm_user_level = FarmUserService::getFarmUserLevel($user->id);
+
+        // 获取用户各等级土地数量
+        $lands = FarmUserLand::where('user_id', $user->id)->where('status', '<>', 9)->get();
+        $landCounts = [
+            1 => $lands->where('level_id', 1)->count(),
+            2 => $lands->where('level_id', 2)->count(),
+            3 => $lands->where('level_id', 3)->count(),
+        ];
+
+        $levelConfig = FarmUserLandService::$LEVEL;
+        $nextCount = $landCounts[$upgrade_type] + 1;
+
+        // 检查是否达到土地数量上限
+        if ($nextCount > FarmUserLandService::$MAX_LAND_COUNT) {
+            return Response::error('土地数量已达上限', 1212);
+        }
+
+        // 检查等级要求
+        if ($levelConfig[$upgrade_type]['level'][$nextCount] > $farm_user_level) {
+            return Response::error('等级不足，无法升级', 1212);
+        }
+
+        // 检查升级约束
+        if ($upgrade_type == 2 && $landCounts[1] <= $landCounts[2]) {
+            return Response::error('普通土地数量不足，无法升级红土地', 1212);
+        }
+        if ($upgrade_type == 3 && $landCounts[2] <= $landCounts[3]) {
+            return Response::error('红土地数量不足，无法升级金土地', 1212);
+        }
+
+        // 计算价格
+        $price = $levelConfig[$upgrade_type]['price'][$nextCount];
+
+        // 得到用户资产
+        $wallet_asset = WalletAssetService::getWalletAsset($user, 1);
+
+        try {
+            DB::beginTransaction();
+
+            // 检查是否有足够的金币
+            WalletAssetService::checkBalance($wallet_asset, $price);
+
+            // 扣除金币
+            WalletAssetService::change($wallet_asset, -$price, [
+                'module_code' => 'FARM_LAND_UPGRADE',
+            ]);
+
+            // 执行土地操作
+            $land = null;
+            if ($upgrade_type == 1) {
+                // 开垦普通土地：激活一块未开垦的土地
+                $land = FarmUserLand::where('user_id', $user->id)
+                    ->where('level_id', 1)
+                    ->where('status', 9)
+                    ->orderBy('id', 'asc')
+                    ->first();
+                if ($land) {
+                    $land->update(['status' => 0]);
+                }
+            } else if ($upgrade_type == 2) {
+                // 升级红土地：将一块普通土地升级为红土地
+                $land = FarmUserLand::where('user_id', $user->id)
+                    ->where('level_id', 1)
+                    ->where('status', '<>', 9)
+                    ->orderBy('id', 'asc')
+                    ->first();
+                if ($land) {
+                    $land->update(['level_id' => 2]);
+                }
+            } else if ($upgrade_type == 3) {
+                // 升级金土地：将一块红土地升级为金土地
+                $land = FarmUserLand::where('user_id', $user->id)
+                    ->where('level_id', 2)
+                    ->where('status', '<>', 9)
+                    ->orderBy('id', 'asc')
+                    ->first();
+                if ($land) {
+                    $land->update(['level_id' => 3]);
+                }
+            }
+
+            if (!$land) {
+                throw new \Exception('没有可操作的土地', 1212);
+            }
+
+            DB::commit();
+
+            // 返回用户土地列表
+            $lands = FarmUserLandService::getLandList($user);
+            return Response::success($lands);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            if ($th->getCode() == 1235) {
+                return Response::error($th->getMessage());
+            } else {
+                Log::error('异常：' . request()->route()->uri(), ['getMessage' => $th->getMessage(), 'getLine' => $th->getLine(), 'file' => $th->getFile()]);
+                return Response::error($th->getMessage());
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Api\MyController;
 use App\Models\User;
+use App\Services\FarmUserLandService;
 use App\Services\FarmUserService;
 use App\Services\HabitService;
 use App\Services\UserService;
@@ -21,5 +22,7 @@ class TestController
         //     $total_exp += $exp;
         // }
         // FarmUserService::printFarmUserNextLevelExp();
+
+        return FarmUserLandService::$LEVEL[1]['level'][4];
     }
 }

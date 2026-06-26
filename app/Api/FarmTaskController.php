@@ -45,49 +45,39 @@ class FarmTaskController extends Controller
         // 获取所有符合条件的任务
         $availableTasks = FarmTask::where('level_id', '<=', $farm_user_level)->get();
 
-        // 如果任务总数小于需要的数量，返回全部
-        if ($availableTasks->count() < $taskNumber) {
-            return Response::success($availableTasks);
-        }
-
         // 检查还有几个任务，进行补齐
         $remainingTasks = $taskNumber - count($userTaskList);
 
         // 如果已有任务足够，直接返回
         if ($remainingTasks <= 0) {
-            Redis::sAdd($taskDateKey, $user_id);
             return Response::success($userTaskList);
         }
-
 
         // 排除已领取的任务
         $excludeIds = $userTaskList->pluck('farm_task_id')->toArray();
         $taskPool = $availableTasks->reject(fn($task) => in_array($task->id, $excludeIds));
 
-        // 抽取新任务
-        $newTasks = FarmTaskService::weightedRandomSelection($taskPool, $remainingTasks);
+        // 如果可用任务池小于需要的数量，就把所有可用任务给用户；否则随机抽取
+        $newTasks = $taskPool->count() < $remainingTasks
+            ? $taskPool
+            : FarmTaskService::weightedRandomSelection($taskPool, $remainingTasks);
 
-        // 批量保存
+        // 批量保存用户任务
         if ($newTasks->isNotEmpty()) {
-            $insertData = $newTasks->map(fn($task) => [
+            FarmUserTask::insert($newTasks->map(fn($task) => [
                 'user_id' => $user_id,
                 'farm_task_id' => $task->id,
-            ])->toArray();
-
-            FarmUserTask::insert($insertData);
+            ])->toArray());
         }
 
-        // 标记已领取
+        // 标记已领取并返回完整列表
         Redis::sAdd($taskDateKey, $user_id);
 
-        // 返回完整的任务列表
-        $userTaskList = FarmUserTask::with('farmTask', 'farmTask.rewardAsset')
+        return Response::success(FarmUserTask::with('farmTask', 'farmTask.rewardAsset')
             ->select('id', 'user_id', 'farm_task_id', 'status')
             ->where('user_id', $user_id)
             ->where('status', 0)
-            ->get();
-
-        return Response::success($userTaskList);
+            ->get());
     }
 
     // 交付任务
