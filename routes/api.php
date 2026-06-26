@@ -89,7 +89,9 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/farmShop/getList', "App\Api\FarmShopController@getList"); // 获取商店列表
     Route::post('/farmShop/buy', "App\Api\FarmShopController@buy"); // 购买
     Route::post('/farmWarehouse/getList', "App\Api\FarmWarehouseController@getList"); // 仓库列表
-
+    Route::post('/farmTask/getList', "App\Api\FarmTaskController@getList"); // 获取任务列表
+    Route::post('/farmTask/submit', "App\Api\FarmTaskController@submit"); // 提交任务
+    Route::post('/farmTask/cancel', "App\Api\FarmTaskController@cancel"); // 放弃任务
 });
 
 

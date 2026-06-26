@@ -35,6 +35,8 @@ Route::group([
     $router->resource('userHabit', 'UserHabitController');
     $router->resource('userHabitIcon', 'UserHabitIconController');
 
+    // 农场模块
+    $router->resource('farmTask', 'FarmTaskController');
 
     // 资产
     $router->resource('walletAsset', 'WalletAssetController');

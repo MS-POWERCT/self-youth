@@ -7,9 +7,7 @@
  *
  * @author jqh <841324345@qq.com>
  */
-
 namespace Dcat\Admin {
-
     use Illuminate\Support\Collection;
 
     /**
@@ -81,10 +79,20 @@ namespace Dcat\Admin {
      * @property Grid\Column|Collection selling_asset_id
      * @property Grid\Column|Collection selling_price
      * @property Grid\Column|Collection handbook_id
+     * @property Grid\Column|Collection npc_name
+     * @property Grid\Column|Collection quality_ratio
+     * @property Grid\Column|Collection quality_type
+     * @property Grid\Column|Collection reward_asset_id
+     * @property Grid\Column|Collection reward_exp
+     * @property Grid\Column|Collection reward_gold
+     * @property Grid\Column|Collection task_need
      * @property Grid\Column|Collection plant_mature_at
      * @property Grid\Column|Collection plant_start_at
      * @property Grid\Column|Collection residue_output
      * @property Grid\Column|Collection total_output
+     * @property Grid\Column|Collection farm_task_id
+     * @property Grid\Column|Collection ok_at
+     * @property Grid\Column|Collection task_log
      * @property Grid\Column|Collection num
      * @property Grid\Column|Collection check_date
      * @property Grid\Column|Collection check_time
@@ -220,10 +228,20 @@ namespace Dcat\Admin {
      * @method Grid\Column|Collection selling_asset_id(string $label = null)
      * @method Grid\Column|Collection selling_price(string $label = null)
      * @method Grid\Column|Collection handbook_id(string $label = null)
+     * @method Grid\Column|Collection npc_name(string $label = null)
+     * @method Grid\Column|Collection quality_ratio(string $label = null)
+     * @method Grid\Column|Collection quality_type(string $label = null)
+     * @method Grid\Column|Collection reward_asset_id(string $label = null)
+     * @method Grid\Column|Collection reward_exp(string $label = null)
+     * @method Grid\Column|Collection reward_gold(string $label = null)
+     * @method Grid\Column|Collection task_need(string $label = null)
      * @method Grid\Column|Collection plant_mature_at(string $label = null)
      * @method Grid\Column|Collection plant_start_at(string $label = null)
      * @method Grid\Column|Collection residue_output(string $label = null)
      * @method Grid\Column|Collection total_output(string $label = null)
+     * @method Grid\Column|Collection farm_task_id(string $label = null)
+     * @method Grid\Column|Collection ok_at(string $label = null)
+     * @method Grid\Column|Collection task_log(string $label = null)
      * @method Grid\Column|Collection num(string $label = null)
      * @method Grid\Column|Collection check_date(string $label = null)
      * @method Grid\Column|Collection check_time(string $label = null)
@@ -364,10 +382,20 @@ namespace Dcat\Admin {
      * @property Show\Field|Collection selling_asset_id
      * @property Show\Field|Collection selling_price
      * @property Show\Field|Collection handbook_id
+     * @property Show\Field|Collection npc_name
+     * @property Show\Field|Collection quality_ratio
+     * @property Show\Field|Collection quality_type
+     * @property Show\Field|Collection reward_asset_id
+     * @property Show\Field|Collection reward_exp
+     * @property Show\Field|Collection reward_gold
+     * @property Show\Field|Collection task_need
      * @property Show\Field|Collection plant_mature_at
      * @property Show\Field|Collection plant_start_at
      * @property Show\Field|Collection residue_output
      * @property Show\Field|Collection total_output
+     * @property Show\Field|Collection farm_task_id
+     * @property Show\Field|Collection ok_at
+     * @property Show\Field|Collection task_log
      * @property Show\Field|Collection num
      * @property Show\Field|Collection check_date
      * @property Show\Field|Collection check_time
@@ -503,10 +531,20 @@ namespace Dcat\Admin {
      * @method Show\Field|Collection selling_asset_id(string $label = null)
      * @method Show\Field|Collection selling_price(string $label = null)
      * @method Show\Field|Collection handbook_id(string $label = null)
+     * @method Show\Field|Collection npc_name(string $label = null)
+     * @method Show\Field|Collection quality_ratio(string $label = null)
+     * @method Show\Field|Collection quality_type(string $label = null)
+     * @method Show\Field|Collection reward_asset_id(string $label = null)
+     * @method Show\Field|Collection reward_exp(string $label = null)
+     * @method Show\Field|Collection reward_gold(string $label = null)
+     * @method Show\Field|Collection task_need(string $label = null)
      * @method Show\Field|Collection plant_mature_at(string $label = null)
      * @method Show\Field|Collection plant_start_at(string $label = null)
      * @method Show\Field|Collection residue_output(string $label = null)
      * @method Show\Field|Collection total_output(string $label = null)
+     * @method Show\Field|Collection farm_task_id(string $label = null)
+     * @method Show\Field|Collection ok_at(string $label = null)
+     * @method Show\Field|Collection task_log(string $label = null)
      * @method Show\Field|Collection num(string $label = null)
      * @method Show\Field|Collection check_date(string $label = null)
      * @method Show\Field|Collection check_time(string $label = null)
@@ -577,9 +615,10 @@ namespace Dcat\Admin {
     class Show {}
 
     /**
-
+     
      */
     class Form {}
+
 }
 
 namespace Dcat\Admin\Grid {
@@ -589,14 +628,14 @@ namespace Dcat\Admin\Grid {
     class Column {}
 
     /**
-
+     
      */
     class Filter {}
 }
 
 namespace Dcat\Admin\Show {
     /**
-
+     
      */
     class Field {}
 }

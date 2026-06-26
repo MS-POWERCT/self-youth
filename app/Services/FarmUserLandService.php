@@ -62,8 +62,8 @@ class FarmUserLandService
             ]
         ],
         3 => [
-            'short_name' => '黑',
-            'name' => '黑土地',
+            'short_name' => '金',
+            'name' => '金土地',
             'ability_exp' => 0,
             'ability_reward' => 10,
             'ability_speed' => 5,
