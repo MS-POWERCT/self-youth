@@ -74,7 +74,7 @@ class FarmShopController extends Controller
         // 查看是否会超过数量
         $warehouse = FarmWarehouseService::getUserWareHouse($user, $product->handbook_id, $product->type);
         if ($warehouse->num + $num > FarmWarehouseService::$FARM_DEES_MAX) {
-            return Response::error(trans('app-return.farm_seed_max'));
+            return Response::error("种子数量超过最大数量" . FarmWarehouseService::$FARM_DEES_MAX . "个");
         }
 
         // 有一个等级限制

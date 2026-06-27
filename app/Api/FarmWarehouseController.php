@@ -38,6 +38,46 @@ class FarmWarehouseController extends Controller
     }
 
 
+    /**
+     * 扩充仓库
+     * @return Response
+     */
+    public function extendWarehouse()
+    {
+        $user = Auth::user();
+        // 获取下一次扩充价格
+        $next_extend_price = FarmWarehouseService::getNextExtendPrice($user->id);
+
+        // 检查是否可以扩充
+        if ($next_extend_price <= 0) {
+            return Response::error('仓库已扩充到最大');
+        }
+
+        // 获取下一次扩充大小
+        $next_extend_num = FarmWarehouseService::$FARM_EXTEND_NUM;
+        $wallet_account = WalletAssetService::getWalletAsset($user, 1);
+        try {
+            // 检查余额
+            WalletAssetService::checkBalance($wallet_account, $next_extend_price);
+
+            // 扣除余额
+            WalletAssetService::change($wallet_account, -$next_extend_price, [
+                'module_code' => 'EXTEND',
+            ]);
+
+            FarmWarehouseService::addWareHouseSize($user->id, $next_extend_num);
+
+            return Response::success();
+        } catch (\Exception $e) {
+            Log::error('异常：' . request()->route()->uri(), [
+                'getMessage' => $e->getMessage(),
+                'getLine' => $e->getLine(),
+                'getFile' => $e->getFile()
+            ]);
+            return Response::error('扩充仓库失败');
+        }
+    }
+
     // 卖出
     // public function sell(Request $request)
     // {

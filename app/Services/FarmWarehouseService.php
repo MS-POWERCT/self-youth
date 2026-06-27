@@ -3,13 +3,25 @@
 namespace App\Services;
 
 use App\Models\FarmWarehouse;
+use Illuminate\Support\Facades\Redis;
 
 class FarmWarehouseService
 {
-
+    // 背包单作物最大数量
+    public static $FARM_DEES_MAX = 999;
+    // 仓库单作物最大数量
+    public static $FARM_WAREHOUSE_MAX = 999999;
+    // 仓库默认大小数量
     public static $FARM_DEFAULT_NUM = 10; // 仓库默认数量
-    public static $FARM_DEES_MAX = 100; // 仓库最大数量
-
+    // 仓库的扩充价格等,每次增加5个数量
+    public static $FARM_EXTEND_PRICE_LIST = [
+        15 => 1000,
+        20 => 5000,
+        25 => 20000,
+        30 => 50000
+    ];
+    // 每次增加到数量
+    public static $FARM_EXTEND_NUM = 5;
 
     /**
      * 获取用户仓库
@@ -50,5 +62,75 @@ class FarmWarehouseService
         }
 
         return $query->get();
+    }
+
+
+    /**
+     * 获取用户仓库大小
+     * @param int $user_id 用户ID
+     * @return int 仓库大小
+     */
+    public static function getWareHouseSize($user_id)
+    {
+        // 没有就创建使用默认值到redis中
+        // 检查一下是否存在
+        $exists = Redis::hexists('users_warehouse_size', $user_id);
+        if (!$exists) {
+            Redis::hset('users_warehouse_size', $user_id, self::$FARM_DEFAULT_NUM);
+        }
+        return Redis::hget('users_warehouse_size', $user_id);
+    }
+    /**
+     * 增加用户仓库大小
+     * @param int $user_id 用户ID
+     * @param int $size 仓库大小
+     */
+    public static function addWareHouseSize($user_id, $size)
+    {
+        Redis::hincrby('users_warehouse_size', $user_id, $size);
+    }
+    /**
+     * 获取用户仓库使用情况
+     * @param int $user_id 用户ID
+     * @return int 仓库使用情况
+     */
+    public static function getWareHouseUse($user_id)
+    {
+        return (int)FarmWarehouse::where('user_id', $user_id)->where('type', 'fruit')->where('num', '>', 0)->count();
+    }
+    /**
+     * 得到下一个扩充价格
+     * @param int $user_id 用户ID
+     * @return int 下一个扩充价格
+     */
+    public static function getNextExtendPrice($user_id)
+    {
+        $warehouse_size = self::getWareHouseSize($user_id);
+        $next_size = $warehouse_size + 5;
+        return self::$FARM_EXTEND_PRICE_LIST[$next_size] ?? 0;
+    }
+
+    /**
+     * 判断新的入仓是否满了
+     * @param int $user_id 用户ID
+     * @param int $handbook_id 手册id
+     * @return bool 是否满了
+     */
+    public static function isFullHouse($user_id, $handbook_id)
+    {
+        $exists = FarmWarehouse::where('user_id', $user_id)
+            ->where('handbook_id', $handbook_id)
+            ->where('type', 'fruit')
+            ->where('num', '>', 0)
+            ->exists();
+
+        if ($exists) {
+            return false;
+        }
+
+        $use = self::getWareHouseUse($user_id);
+        $warehouse_size = self::getWareHouseSize($user_id);
+
+        return $use >= $warehouse_size;
     }
 }

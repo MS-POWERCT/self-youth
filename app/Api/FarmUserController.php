@@ -14,6 +14,7 @@ use App\Support\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -47,6 +48,10 @@ class FarmUserController extends Controller
                 'till' => FarmUserService::$FARM_TILL_EXP, // 翻土得多少经验
             ],
             'handbooks' => FarmHandbook::pluck('name', 'id')->toArray(), //图谱
+            'warehouse_size' => FarmWarehouseService::getWareHouseSize($user->id), // 仓库大小
+            'warehouse_use' => FarmWarehouseService::getWareHouseUse($user->id), // 仓库使用情况
+            'next_extend_price' => FarmWarehouseService::getNextExtendPrice($user->id), // 下一个扩充价格
+            'next_extend_size' => FarmWarehouseService::$FARM_EXTEND_NUM, // 下一个扩充大小
         ];
 
         return Response::success($init_data);
@@ -171,6 +176,19 @@ class FarmUserController extends Controller
         if (!$farm_land) {
             return Response::error(trans('app-return.not_found'), 1212);
         }
+
+        // 检查仓库容量是否足够
+        // 要先判断当前入仓到是否是新的
+        if (FarmWarehouseService::isFullHouse($user->id, $farm_land->handbook_id)) {
+            return Response::error('仓库已满,请先扩充仓库', 1212);
+        }
+        // 判断果实是否超过最大数量---这段代码先不开启code...
+        // $farm_warehouse = FarmWarehouseService::getUserWareHouse($user, $farm_land->handbook_id, 'fruit');
+        // if ($farm_warehouse->num + $farm_land->residue_output > FarmWarehouseService::$FARM_WAREHOUSE_MAX) {
+        //     return Response::error("果实数量超过最大数量" . FarmWarehouseService::$FARM_WAREHOUSE_MAX . "个");
+        // }
+
+
         try {
             DB::beginTransaction();
 
@@ -262,8 +280,8 @@ class FarmUserController extends Controller
         // 获取用户各等级土地数量
         $lands = FarmUserLand::where('user_id', $user->id)->where('status', '<>', 9)->get();
         $landCounts = [
-            1 => $lands->where('level_id', 1)->count(), // 普通土地
-            2 => $lands->where('level_id', 2)->count(), // 红土地
+            1 => $lands->whereIn('level_id', [1, 2, 3])->count(), // 普通土地
+            2 => $lands->whereIn('level_id', [2, 3])->count(), // 红土地
             3 => $lands->where('level_id', 3)->count(), // 金土地
         ];
 
@@ -345,8 +363,8 @@ class FarmUserController extends Controller
         // 获取用户各等级土地数量
         $lands = FarmUserLand::where('user_id', $user->id)->where('status', '<>', 9)->get();
         $landCounts = [
-            1 => $lands->where('level_id', 1)->count(),
-            2 => $lands->where('level_id', 2)->count(),
+            1 => $lands->whereIn('level_id', [1, 2, 3])->count(),
+            2 => $lands->whereIn('level_id', [2, 3])->count(),
             3 => $lands->where('level_id', 3)->count(),
         ];
 
@@ -440,5 +458,69 @@ class FarmUserController extends Controller
                 return Response::error($th->getMessage());
             }
         }
+    }
+
+
+    // ============== 特殊建筑接口 ==============
+    /**
+     * 得到特殊建筑的基础信息
+     */
+    public function getSpecialInfo()
+    {
+        $user = Auth::user();
+        $farm_user_level = FarmUserService::getFarmUserLevel($user->id);
+        $level_exp = FarmUserService::getFarmUserNextLevelExp($farm_user_level);
+        $exp = floor($level_exp * 0.02);
+        $gold = ($farm_user_level + 1) * 50;
+
+        return Response::success([
+            'world_tree' => [
+                'exp' => $exp,
+                'gold' => $gold,
+                'click_count' => intval(Redis::hget('farm_tree_count', $user->id)),
+                'is_click' => intval(Redis::sismember('farm_tree_click', $user->id)),
+                'total_exp' => intval(Redis::hget('farm_tree_total_exp', $user->id)),
+                'total_gold' => intval(Redis::hget('farm_tree_total_gold', $user->id)),
+            ],
+        ]);
+    }
+    /**
+     * 点击世界树
+     *
+     */
+    public function clickWorldTree()
+    {
+        $user = Auth::user();
+
+        // 判断是否点击过世界树
+        if (Redis::sismember('farm_tree_click', $user->id)) {
+            return Response::error('您已领取', 1212);
+        }
+
+
+        $farm_user_level = FarmUserService::getFarmUserLevel($user->id);
+        $level_exp = FarmUserService::getFarmUserNextLevelExp($farm_user_level);
+        $exp = floor($level_exp * 0.02);
+        $gold = ($farm_user_level + 1) * 50;
+
+        // 更新经验
+        FarmUserService::farmAddExp($user->id, $exp);
+
+        // 更新用户资产
+        $wallet_asset = WalletAssetService::getWalletAsset($user, 1);
+        WalletAssetService::change($wallet_asset, $gold, [
+            'module_code' => 'FARM_WORLD_TREE',
+        ]);
+
+        // 点击后放到缓存中set
+        Redis::sadd('farm_tree_click', $user->id);
+        // 记录总点击次数
+        Redis::hincrby('farm_tree_count', $user->id, 1);
+        // 累计获得的经验
+        Redis::hincrby('farm_tree_total_exp', $user->id, $exp);
+        // 累计获得的金币
+        Redis::hincrby('farm_tree_total_gold', $user->id, $gold);
+
+        return Response::success();
     }
 }
