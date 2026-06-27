@@ -2,6 +2,7 @@
 
 namespace App\Api;
 
+use App\Models\FarmHandbook;
 use App\Models\FarmTask;
 use App\Models\FarmUserTask;
 use Illuminate\Support\Facades\Auth;
@@ -29,11 +30,7 @@ class FarmTaskController extends Controller
         $today = date('Ymd');
         $taskDateKey = 'farm_task_d:' . $today; // 检查用户是否已领取任务
 
-        $userTaskList = FarmUserTask::with('farmTask', 'farmTask.rewardAsset')
-            ->select('id', 'user_id', 'farm_task_id', 'status')
-            ->where('user_id', $user_id)
-            ->where('status', 0)
-            ->get();
+        $userTaskList = FarmTaskService::getUserTaskList($user_id);
 
         if (Redis::sIsMember($taskDateKey, $user_id)) {
             return Response::success($userTaskList);
@@ -73,11 +70,7 @@ class FarmTaskController extends Controller
         // 标记已领取并返回完整列表
         Redis::sAdd($taskDateKey, $user_id);
 
-        return Response::success(FarmUserTask::with('farmTask', 'farmTask.rewardAsset')
-            ->select('id', 'user_id', 'farm_task_id', 'status')
-            ->where('user_id', $user_id)
-            ->where('status', 0)
-            ->get());
+        return Response::success(FarmTaskService::getUserTaskList($user_id));
     }
 
     // 交付任务
@@ -92,7 +85,8 @@ class FarmTaskController extends Controller
 
         $user = Auth::user();
 
-        $detail = FarmUserTask::with('farmTask', 'farmTask.rewardAsset')->where('user_id', $user->id)->where('id', $request->id)->where('status', 0)->first();
+        $detail = FarmUserTask::with('farmTask', 'farmTask.rewardAsset')
+            ->where('user_id', $user->id)->where('id', $request->id)->where('status', 0)->first();
         if (!$detail) {
             return Response::error('任务不存在', 456346);
         }
@@ -109,7 +103,10 @@ class FarmTaskController extends Controller
         }
         foreach ($taskNeed as $key => $value) {
             if ($warehouseNum->where('handbook_id', $value['handbook_id'])->where('type', 'fruit')->value('num') < $value['quantity']) {
-                return Response::error('用户仓库资源不足,需要' . $value['quantity'] . '个', 456346);
+                return Response::error(
+                    '用户仓库资源不足,需要' . $value['quantity'] . '个' . FarmHandbook::where('id', $value['handbook_id'])->value('name'),
+                    456346
+                );
             }
         }
 
@@ -133,9 +130,7 @@ class FarmTaskController extends Controller
         $detail->save();
 
         // 把剩下的任务返回
-        $remainingTasks = FarmUserTask::with('farmTask', 'farmTask.rewardAsset')->where('user_id', $user->id)->where('status', 0)->get();
-
-        return Response::success($remainingTasks);
+        return Response::success(FarmTaskService::getUserTaskList($user->id));
     }
 
     // 放弃任务
@@ -159,7 +154,6 @@ class FarmTaskController extends Controller
         $detail->save();
 
         // 把剩下的任务返回
-        $remainingTasks = FarmUserTask::with('farmTask', 'farmTask.rewardAsset')->where('user_id', $user_id)->where('status', 0)->get();
-        return Response::success($remainingTasks);
+        return Response::success(FarmTaskService::getUserTaskList($user_id));
     }
 }

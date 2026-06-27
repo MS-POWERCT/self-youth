@@ -22,6 +22,17 @@ class FarmTask extends Model
         2 => 'info',
     ];
 
+    protected $appends = ['quality_type_name'];
+
+    public function getQualityTypeNameAttribute()
+    {
+        $types = trans('app-status.task.quality_type');
+        if (isset($types[$this->quality_type])) {
+            return $types[$this->quality_type];
+        }
+        return null;
+    }
+
     // 奖励资产
     public function rewardAsset()
     {

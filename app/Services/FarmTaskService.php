@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\FarmTask;
+use App\Models\FarmUserTask;
 
 class FarmTaskService
 {
@@ -70,5 +71,20 @@ class FarmTaskService
         }
 
         return collect($result);
+    }
+
+    /**
+     * 返回用户当前任务列表
+     * @param int $user_id
+     */
+    public static function getUserTaskList($user_id)
+    {
+        return FarmUserTask::with('farmTask', 'farmTask.rewardAsset')
+            ->select('farm_user_tasks.id', 'farm_user_tasks.user_id', 'farm_user_tasks.farm_task_id', 'farm_user_tasks.status')
+            ->join('farm_tasks', 'farm_user_tasks.farm_task_id', '=', 'farm_tasks.id')
+            ->where('farm_user_tasks.user_id', $user_id)
+            ->where('farm_user_tasks.status', 0)
+            ->orderBy('farm_tasks.quality_type', 'desc')
+            ->get();
     }
 }
