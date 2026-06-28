@@ -27,8 +27,8 @@ class FarmTaskController extends Controller
     public function getList()
     {
         $user_id = Auth::id();
-        $today = date('Ymd');
-        $taskDateKey = 'farm_task_d:' . $today; // 检查用户是否已领取任务
+        $period = date('G') >= 12 ? 'pm' : 'am';
+        $taskDateKey = 'farm_task_d:' . date('Ymd') . '_' . $period;
 
         $userTaskList = FarmTaskService::getUserTaskList($user_id);
 
@@ -47,6 +47,7 @@ class FarmTaskController extends Controller
 
         // 如果已有任务足够，直接返回
         if ($remainingTasks <= 0) {
+            Redis::sAdd($taskDateKey, $user_id);
             return Response::success($userTaskList);
         }
 

@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Asset;
+use App\Models\FarmDeliveryRecord;
 use Illuminate\Support\Facades\Redis;
 
 class FarmUserService
@@ -17,6 +19,52 @@ class FarmUserService
     public static $FARM_KILL_EXP = 3;
     // 每次翻土的多少经验
     public static $FARM_TILL_EXP = 3;
+
+
+    // 配送工具配置
+    public static $FARM_DELIVERY_TOOL = [
+        [
+            'id' => 0,
+            'name' => "电动车",
+            'icon' => "noto-v1:motor-scooter",
+            'price' => 1000,
+            'level_id' => 1,
+            'asset_id' => 1,
+            'capacity' => 10,  // 装载量
+            'delivery_time' => 10, // 配送时间（分钟）
+        ],
+        [
+            'id' => 1,
+            'name' => "面包车",
+            'icon' => "noto-v1:minibus",
+            'price' => 10000,
+            'level_id' => 10,
+            'asset_id' => 1,
+            'capacity' => 20,  // 装载量
+            'delivery_time' => 5, // 配送时间（分钟）
+        ],
+        [
+            'id' => 2,
+            'name' => "货车",
+            'icon' => "noto-v1:delivery-truck",
+            'price' => 100000,
+            'level_id' => 20,
+            'asset_id' => 1,
+            'capacity' => 50,  // 装载量
+            'delivery_time' => 3, // 配送时间（分钟）
+        ],
+        [
+            'id' => 3,
+            'name' => "直升机",
+            'icon' => "noto-v1:helicopter",
+            'price' => 1000000,
+            'level_id' => 30,
+            'asset_id' => 1,
+            'capacity' => 100,  // 装载量
+            'delivery_time' => 2, // 配送时间（分钟）
+        ]
+    ];
+
 
 
     // 用户升级条件 code... 条件是什么待定
@@ -120,5 +168,37 @@ class FarmUserService
             $total_exp += $exp;
             dump("等级{$i}需要{$exp}经验,当前总经验为{$total_exp}");
         }
+    }
+
+    /**
+     * 获取用户配送工具列表
+     * @param  \App\Models\User $user
+     */
+    public static function getFarmUserDeliveryToolList($user)
+    {
+        $delivery_tools = self::$FARM_DELIVERY_TOOL;
+        $assets = Asset::pluck('name', 'id')->toArray();
+
+        // 获得用户的工具
+        $user_delivery_tools = json_decode(Redis::hget('users_delivery_tool', $user->id), true) ?? [];
+
+        $delivery_records_list = FarmDeliveryRecord::with(['handbook'])
+            ->select(['id', 'tool_id', 'num', 'handbook_id', 'asset_id', 'start_at', 'end_at', 'amount', 'status'])
+            ->where('user_id', $user->id)
+            ->where('status', 0)
+            ->get();
+
+        // 合并配送工具和资产信息
+        foreach ($delivery_tools as $key => $tool) {
+            $delivery_tools[$key]['asset_name'] = $assets[$tool['asset_id']] ?? '';
+            // 检查用户是否有这个工具
+            $delivery_tools[$key]['is_have'] = in_array($tool['id'], $user_delivery_tools) ? 1 : 0;
+            // 是否配送和配送信息
+
+            $delivery_tools[$key]['is_delivery'] = $delivery_records_list->contains('tool_id', $tool['id']) ? 1 : 0;
+            $delivery_tools[$key]['delivery_record'] = $delivery_records_list->where('tool_id', $tool['id'])->first() ?? [];
+        }
+
+        return $delivery_tools;
     }
 }

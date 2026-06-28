@@ -67,7 +67,13 @@ namespace Dcat\Admin {
      * @property Grid\Column|Collection payload
      * @property Grid\Column|Collection queue
      * @property Grid\Column|Collection uuid
+     * @property Grid\Column|Collection amount
      * @property Grid\Column|Collection asset_id
+     * @property Grid\Column|Collection end_at
+     * @property Grid\Column|Collection handbook_id
+     * @property Grid\Column|Collection num
+     * @property Grid\Column|Collection start_at
+     * @property Grid\Column|Collection tool_id
      * @property Grid\Column|Collection desc
      * @property Grid\Column|Collection level_id
      * @property Grid\Column|Collection mature_after_time
@@ -78,7 +84,6 @@ namespace Dcat\Admin {
      * @property Grid\Column|Collection quarter_output_num
      * @property Grid\Column|Collection selling_asset_id
      * @property Grid\Column|Collection selling_price
-     * @property Grid\Column|Collection handbook_id
      * @property Grid\Column|Collection npc_name
      * @property Grid\Column|Collection quality_ratio
      * @property Grid\Column|Collection quality_type
@@ -92,8 +97,6 @@ namespace Dcat\Admin {
      * @property Grid\Column|Collection total_output
      * @property Grid\Column|Collection farm_task_id
      * @property Grid\Column|Collection ok_at
-     * @property Grid\Column|Collection task_log
-     * @property Grid\Column|Collection num
      * @property Grid\Column|Collection check_date
      * @property Grid\Column|Collection check_time
      * @property Grid\Column|Collection habit_id
@@ -216,7 +219,13 @@ namespace Dcat\Admin {
      * @method Grid\Column|Collection payload(string $label = null)
      * @method Grid\Column|Collection queue(string $label = null)
      * @method Grid\Column|Collection uuid(string $label = null)
+     * @method Grid\Column|Collection amount(string $label = null)
      * @method Grid\Column|Collection asset_id(string $label = null)
+     * @method Grid\Column|Collection end_at(string $label = null)
+     * @method Grid\Column|Collection handbook_id(string $label = null)
+     * @method Grid\Column|Collection num(string $label = null)
+     * @method Grid\Column|Collection start_at(string $label = null)
+     * @method Grid\Column|Collection tool_id(string $label = null)
      * @method Grid\Column|Collection desc(string $label = null)
      * @method Grid\Column|Collection level_id(string $label = null)
      * @method Grid\Column|Collection mature_after_time(string $label = null)
@@ -227,7 +236,6 @@ namespace Dcat\Admin {
      * @method Grid\Column|Collection quarter_output_num(string $label = null)
      * @method Grid\Column|Collection selling_asset_id(string $label = null)
      * @method Grid\Column|Collection selling_price(string $label = null)
-     * @method Grid\Column|Collection handbook_id(string $label = null)
      * @method Grid\Column|Collection npc_name(string $label = null)
      * @method Grid\Column|Collection quality_ratio(string $label = null)
      * @method Grid\Column|Collection quality_type(string $label = null)
@@ -241,8 +249,6 @@ namespace Dcat\Admin {
      * @method Grid\Column|Collection total_output(string $label = null)
      * @method Grid\Column|Collection farm_task_id(string $label = null)
      * @method Grid\Column|Collection ok_at(string $label = null)
-     * @method Grid\Column|Collection task_log(string $label = null)
-     * @method Grid\Column|Collection num(string $label = null)
      * @method Grid\Column|Collection check_date(string $label = null)
      * @method Grid\Column|Collection check_time(string $label = null)
      * @method Grid\Column|Collection habit_id(string $label = null)
@@ -370,7 +376,13 @@ namespace Dcat\Admin {
      * @property Show\Field|Collection payload
      * @property Show\Field|Collection queue
      * @property Show\Field|Collection uuid
+     * @property Show\Field|Collection amount
      * @property Show\Field|Collection asset_id
+     * @property Show\Field|Collection end_at
+     * @property Show\Field|Collection handbook_id
+     * @property Show\Field|Collection num
+     * @property Show\Field|Collection start_at
+     * @property Show\Field|Collection tool_id
      * @property Show\Field|Collection desc
      * @property Show\Field|Collection level_id
      * @property Show\Field|Collection mature_after_time
@@ -381,7 +393,6 @@ namespace Dcat\Admin {
      * @property Show\Field|Collection quarter_output_num
      * @property Show\Field|Collection selling_asset_id
      * @property Show\Field|Collection selling_price
-     * @property Show\Field|Collection handbook_id
      * @property Show\Field|Collection npc_name
      * @property Show\Field|Collection quality_ratio
      * @property Show\Field|Collection quality_type
@@ -395,8 +406,6 @@ namespace Dcat\Admin {
      * @property Show\Field|Collection total_output
      * @property Show\Field|Collection farm_task_id
      * @property Show\Field|Collection ok_at
-     * @property Show\Field|Collection task_log
-     * @property Show\Field|Collection num
      * @property Show\Field|Collection check_date
      * @property Show\Field|Collection check_time
      * @property Show\Field|Collection habit_id
@@ -519,7 +528,13 @@ namespace Dcat\Admin {
      * @method Show\Field|Collection payload(string $label = null)
      * @method Show\Field|Collection queue(string $label = null)
      * @method Show\Field|Collection uuid(string $label = null)
+     * @method Show\Field|Collection amount(string $label = null)
      * @method Show\Field|Collection asset_id(string $label = null)
+     * @method Show\Field|Collection end_at(string $label = null)
+     * @method Show\Field|Collection handbook_id(string $label = null)
+     * @method Show\Field|Collection num(string $label = null)
+     * @method Show\Field|Collection start_at(string $label = null)
+     * @method Show\Field|Collection tool_id(string $label = null)
      * @method Show\Field|Collection desc(string $label = null)
      * @method Show\Field|Collection level_id(string $label = null)
      * @method Show\Field|Collection mature_after_time(string $label = null)
@@ -530,7 +545,6 @@ namespace Dcat\Admin {
      * @method Show\Field|Collection quarter_output_num(string $label = null)
      * @method Show\Field|Collection selling_asset_id(string $label = null)
      * @method Show\Field|Collection selling_price(string $label = null)
-     * @method Show\Field|Collection handbook_id(string $label = null)
      * @method Show\Field|Collection npc_name(string $label = null)
      * @method Show\Field|Collection quality_ratio(string $label = null)
      * @method Show\Field|Collection quality_type(string $label = null)
@@ -544,8 +558,6 @@ namespace Dcat\Admin {
      * @method Show\Field|Collection total_output(string $label = null)
      * @method Show\Field|Collection farm_task_id(string $label = null)
      * @method Show\Field|Collection ok_at(string $label = null)
-     * @method Show\Field|Collection task_log(string $label = null)
-     * @method Show\Field|Collection num(string $label = null)
      * @method Show\Field|Collection check_date(string $label = null)
      * @method Show\Field|Collection check_time(string $label = null)
      * @method Show\Field|Collection habit_id(string $label = null)

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Asset;
 use App\Models\Llconfig;
 use Illuminate\Support\Facades\Redis;
 
@@ -267,5 +268,27 @@ class ToolsService
         $parts[] = $secs . '秒';
 
         return implode('', $parts);
+    }
+
+
+    // 获取资产名称
+    public static function getAssetName(int $asset_id): string
+    {
+        $cacheKey = sprintf('asset_name:%s', $asset_id);
+
+        // 尝试从缓存获取
+        $name = Redis::get($cacheKey);
+
+        if ($name !== null) {
+            return $name;
+        }
+
+        // 缓存未命中，从数据库获取
+        $asset = Asset::findOrFail($asset_id, ['name']);
+
+        // 缓存资产名称
+        Redis::set($cacheKey, $asset->name);
+
+        return $asset->name;
     }
 }
