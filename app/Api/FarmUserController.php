@@ -475,12 +475,14 @@ class FarmUserController extends Controller
         $exp = floor($level_exp * 0.02);
         $gold = ($farm_user_level + 1) * 50;
 
+        $click_key = 'farm_tree_click:' . date('Ymd');
+
         return Response::success([
             'world_tree' => [
                 'exp' => $exp,
                 'gold' => $gold,
                 'click_count' => intval(Redis::hget('farm_tree_count', $user->id)),
-                'is_click' => intval(Redis::sismember('farm_tree_click', $user->id)),
+                'is_click' => intval(Redis::sismember($click_key, $user->id)),
                 'total_exp' => intval(Redis::hget('farm_tree_total_exp', $user->id)),
                 'total_gold' => intval(Redis::hget('farm_tree_total_gold', $user->id)),
             ],
@@ -494,8 +496,10 @@ class FarmUserController extends Controller
     {
         $user = Auth::user();
 
+        $click_key = 'farm_tree_click:' . date('Ymd');
+
         // 判断是否点击过世界树
-        if (Redis::sismember('farm_tree_click', $user->id)) {
+        if (Redis::sismember($click_key, $user->id)) {
             return Response::error('您已领取', 1212);
         }
 
@@ -515,7 +519,7 @@ class FarmUserController extends Controller
         ]);
 
         // 点击后放到缓存中set
-        Redis::sadd('farm_tree_click', $user->id);
+        Redis::sadd($click_key, $user->id);
         // 记录总点击次数
         Redis::hincrby('farm_tree_count', $user->id, 1);
         // 累计获得的经验
