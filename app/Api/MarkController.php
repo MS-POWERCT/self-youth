@@ -45,12 +45,8 @@ class MarkController extends Controller
 
         try {
             foreach ($list as $item) {
-                $item->pv = config('app.env') == 'production' ?
-                    Redis::get('mark_item_pv:' . $item->id) ?? 0 :
-                    0; // 浏览量
-                $item->participant = config('app.env') == 'production' ?
-                    Redis::scard('mark_item_participant:' . $item->id) ?? 0 :
-                    0; // 参与量
+                $item->pv = Redis::get('mark_item_pv:' . $item->id) ?? 0; // 浏览量
+                $item->participant = Redis::scard('mark_item_participant:' . $item->id) ?? 0;    // 参与量
             }
         } catch (\Throwable $th) {
             //throw $th;
@@ -82,9 +78,7 @@ class MarkController extends Controller
             ->get();
 
         // 每次请求更新浏览量
-        if (config('app.env') == 'production') {
-            Redis::incr('mark_item_pv:' . $module_id);
-        }
+        Redis::incr('mark_item_pv:' . $module_id);
 
 
         // 这里要和用户标记表进行关联查询，判断用户是否标记了该项
@@ -98,12 +92,8 @@ class MarkController extends Controller
         foreach ($list as $item) {
             $item->mark_type = $markList[$item->id]['mark_type'] ?? 0;
         }
-        $pv = config('app.env') == 'production' ?
-            Redis::get('mark_item_pv:' . $module_id) ?? 0 :
-            0;
-        $participant = config('app.env') == 'production' ?
-            Redis::scard('mark_item_participant:' . $module_id) ?? 0 :
-            0;
+        $pv = Redis::get('mark_item_pv:' . $module_id) ?? 0;
+        $participant = Redis::scard('mark_item_participant:' . $module_id) ?? 0;
         return Response::success([
             'list' => $list,
             'pv' => $pv, // 浏览量

@@ -83,9 +83,12 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/farmUser/initFarm', "App\Api\FarmUserController@initFarm")->middleware(['check_uuid']); // 初始化农场参数等
     Route::post('/farmUser/getLandList', "App\Api\FarmUserController@getLandList"); // 获取用户土地
     Route::post('/farmUser/plant', "App\Api\FarmUserController@plant"); // 种植
+    Route::post('/farmUser/plantAll', "App\Api\FarmUserController@plantAll"); // 种植所有土地上
     Route::post('/farmUser/remove', "App\Api\FarmUserController@remove"); // 移除土地
+    Route::post('/farmUser/removeAll', "App\Api\FarmUserController@removeAll"); // 一键铲除所有土地
     Route::post('/farmUser/refresh', "App\Api\FarmUserController@refresh"); // 刷新用户土地
     Route::post('/farmUser/harvest', "App\Api\FarmUserController@harvest"); // 收获
+    Route::post('/farmUser/harvestAll', "App\Api\FarmUserController@harvestAll"); // 一键收获所有土地
     Route::post('/farmUser/getLandUpgradeInfo', "App\Api\FarmUserController@getLandUpgradeInfo"); // 获取升级信息
     Route::post('/farmUser/upgradeLand', "App\Api\FarmUserController@upgradeLand"); // 升级
     Route::post('/farmUser/getSpecialInfo', "App\Api\FarmUserController@getSpecialInfo"); // 获取特殊建筑基础信息

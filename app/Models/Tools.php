@@ -67,11 +67,7 @@ class Tools
         }
 
         if ($value) {
-            if (config('app.env') == 'local') {
-                return config('app.url') . '/uploads/' . $value;
-            } else {
-                return config('app.url') . '/uploads/' . $value;
-            }
+            return config('app.url') . '/uploads/' . $value;
         }
         return $value;
     }

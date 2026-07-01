@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Asset;
 use App\Models\FarmDeliveryRecord;
+use App\Models\FarmUserLand;
 use Illuminate\Support\Facades\Redis;
 
 class FarmUserService
@@ -67,44 +68,19 @@ class FarmUserService
 
 
 
-    // 用户升级条件 code... 条件是什么待定
-    public static $FARM_UPGRADE_CONDITION = [
-        9 => 1,
-        19 => 1,
-        29 => 1,
-        39 => 1,
-        49 => 1,
-    ];
+    // // 用户升级条件 code... 条件是什么待定
+    // public static $FARM_UPGRADE_CONDITION = [
+    //     9 => 1,
+    //     19 => 1,
+    //     29 => 1,
+    //     39 => 1,
+    //     49 => 1,
+    // ];
 
     // 给我一个等级返回用户下一级需要的经验
     public static function getFarmUserNextLevelExp(int $level)
     {
-        $exp = 0;
-        // 遍历升级条件，找到当前等级的升级条件
-        for ($i = 0; $i < $level; $i++) {
-            if ($i < 9) {
-                $exp += 50;
-            } else if ($i == 9) {
-                $exp *= 2;
-            } else if ($i < 19) {
-                $exp += 100;
-            } else if ($i == 19) {
-                $exp *= 2;
-            } else if ($i < 29) {
-                $exp += 300;
-            } else if ($i == 29) {
-                $exp *= 3;
-            } else if ($i < 39) {
-                $exp += 800;
-            } else if ($i == 39) {
-                $exp *= 3;
-            } else if ($i < 49) {
-                $exp += 1500;
-            } else if ($i == 49) {
-                $exp *= 4;
-            }
-        }
-        return $exp;
+        return $level * 200;
     }
 
     // 获取农场用户等级
@@ -137,15 +113,15 @@ class FarmUserService
         if ($farm_user_exp >= $next_level_exp) {
 
             //如果用户可以升级了要判断是否是自动升级还是手动升级
-            $upgrade_condition = self::$FARM_UPGRADE_CONDITION[$farm_user_level] ?? 0;
-            if ($upgrade_condition) {
-                // 这个就要用户自己去点击提示升级
-            } else {
-                // 自动升级
-                self::setFarmUserLevel($user_id, $farm_user_level + 1);
-                // 扣除经验
-                Redis::hincrby('users_farm_exp', $user_id, -$next_level_exp);
-            }
+            // $upgrade_condition = self::$FARM_UPGRADE_CONDITION[$farm_user_level] ?? 0;
+            // if ($upgrade_condition) {
+            //     // 这个就要用户自己去点击提示升级
+            // } else {
+            // 自动升级
+            self::setFarmUserLevel($user_id, $farm_user_level + 1);
+            // 扣除经验
+            Redis::hincrby('users_farm_exp', $user_id, -$next_level_exp);
+            // }
         }
     }
     // 获取用户经验
@@ -200,5 +176,24 @@ class FarmUserService
         }
 
         return $delivery_tools;
+    }
+
+    /**
+     * 收获后更新土地状态（进入下一季或枯萎）
+     */
+    public static function updateLandAfterHarvest(FarmUserLand $farm_land)
+    {
+        $farm_land->residue_output = 0;
+        $farm_land->total_output = 0;
+
+        if ($farm_land->handbook->quarter > $farm_land->quarter) {
+            $farm_land->status = 1;
+            $farm_land->quarter += 1;
+            $farm_land->plant_mature_at = date('Y-m-d H:i:s', time() + ($farm_land->handbook->mature_after_time ?? $farm_land->handbook->mature_time));
+        } else {
+            $farm_land->status = 3;
+        }
+
+        $farm_land->save();
     }
 }

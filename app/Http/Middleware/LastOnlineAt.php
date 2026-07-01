@@ -22,11 +22,9 @@ class LastOnlineAt
     {
 
         // 缓存各接口的请求量到redis 的hash中
-        if (config('app.env') == 'production') {
-            $routeName = $request->route()->uri();
-            $routeKey = 'api_pv:route_' . date('Ymd');
-            Redis::hincrby($routeKey, $routeName, 1);
-        }
+        $routeName = $request->route()->uri();
+        $routeKey = 'api_pv:route_' . date('Ymd');
+        Redis::hincrby($routeKey, $routeName, 1);
 
         if (auth()->guest()) {
             return $next($request);

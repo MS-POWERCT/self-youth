@@ -2,7 +2,6 @@
 
 namespace App\Api;
 
-use App\Models\Asset;
 use App\Models\FarmDeliveryRecord;
 use App\Models\FarmHandbook;
 use App\Models\FarmUserLand;
@@ -132,6 +131,82 @@ class FarmUserController extends Controller
         }
     }
 
+    // 一键种植
+    public function plantAll(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'handbook_id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return Response::error($validator->errors()->first(), 1212);
+        }
+
+        $user = Auth::user();
+        $handbook_id = $request->handbook_id;
+
+        $handbook = FarmHandbook::find($handbook_id);
+        if (!$handbook) {
+            return Response::error('种子不存在', 1212);
+        }
+
+        $farm_lands = FarmUserLand::where('user_id', $user->id)
+            ->where('status', 0)
+            ->get();
+
+        if ($farm_lands->isEmpty()) {
+            return Response::error('未发现空闲土地', 1212);
+        }
+
+        $farm_warehouse = FarmWarehouse::where('user_id', $user->id)
+            ->where('handbook_id', $handbook_id)
+            ->where('type', 'seed')
+            ->where('num', '>', 0)
+            ->first();
+
+        if (!$farm_warehouse) {
+            return Response::error('未发现种子', 1212);
+        }
+
+        $plantCount = min($farm_lands->count(), $farm_warehouse->num);
+
+        $plant_mature_at = date('Y-m-d H:i:s', time() + $handbook->mature_time);
+        $plant_start_at = date('Y-m-d H:i:s');
+
+        try {
+            DB::beginTransaction();
+
+            $farm_lands->take($plantCount)->each(function ($land) use ($handbook_id, $plant_mature_at, $plant_start_at) {
+                $land->update([
+                    'handbook_id' => $handbook_id,
+                    'plant_mature_at' => $plant_mature_at,
+                    'plant_start_at' => $plant_start_at,
+                    'residue_output' => 0,
+                    'total_output' => 0,
+                    'quarter' => 1,
+                    'status' => 1,
+                ]);
+            });
+
+            $farm_warehouse->decrement('num', $plantCount);
+
+            FarmUserService::farmAddExp($user->id, FarmUserService::$FARM_PLANT_EXP * $plantCount);
+
+            DB::commit();
+            return Response::success(FarmUserLandService::getLandList($user));
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error('异常：' . request()->route()->uri(), [
+                'getMessage' => $th->getMessage(),
+                'getLine' => $th->getLine(),
+                'getFile' => $th->getFile()
+            ]);
+            if ($th->getCode() == 1235) {
+                return Response::error($th->getMessage(), 1235);
+            }
+            return Response::error(trans('app-return.error_msg'));
+        }
+    }
+
 
     // 刷新用户土地
     public function refresh(Request $request)
@@ -194,30 +269,17 @@ class FarmUserController extends Controller
         try {
             DB::beginTransaction();
 
-
             $farm_warehouse = FarmWarehouseService::getUserWareHouse($user, $farm_land->handbook_id, 'fruit');
-            $farm_warehouse->num += $farm_land->residue_output; // 增加果实
+            $farm_warehouse->num += $farm_land->residue_output;
             $farm_warehouse->save();
 
-            // 这里判断是枯萎还是进入下一季
-            $farm_land->residue_output = 0;
-            $farm_land->total_output = 0;
-            if ($farm_land->handbook->quarter > $farm_land->quarter) {
-                $farm_land->status = 1;
-                $farm_land->quarter += 1;
-                $farm_land->plant_mature_at = date('Y-m-d H:i:s', time() + ($farm_land->handbook->mature_after_time)); // 增加成熟时间
-            } else {
-                $farm_land->status = 3; // 设置枯萎状态
-            }
-            $farm_land->save();
+            FarmUserService::updateLandAfterHarvest($farm_land);
 
-
-            FarmUserService::farmAddExp($user->id, $farm_land->handbook->quarter_exp); // 增加经验
+            FarmUserService::farmAddExp($user->id, $farm_land->handbook->quarter_exp);
 
             DB::commit();
             return Response::success(FarmUserLandService::getLandList($user));
         } catch (\Throwable $th) {
-
             DB::rollBack();
             Log::error('异常：' . request()->route()->uri(), [
                 'getMessage' => $th->getMessage(),
@@ -230,6 +292,76 @@ class FarmUserController extends Controller
             return Response::error(trans('app-return.error_msg'));
         }
     }
+
+    /**
+     * 一键收获所有土地
+     */
+    public function harvestAll()
+    {
+        $user = Auth::user();
+
+        $harvestableLands = FarmUserLand::with('handbook')
+            ->where('user_id', $user->id)
+            ->where('status', 2)
+            ->get();
+
+        if ($harvestableLands->isEmpty()) {
+            return Response::success(FarmUserLandService::getLandList($user));
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $warehouseMap = [];
+            $totalExp = 0;
+            $skippedCount = 0;
+
+            foreach ($harvestableLands as $land) {
+                if (FarmWarehouseService::isFullHouse($user->id, $land->handbook_id)) {
+                    $skippedCount++;
+                    continue;
+                }
+
+                if (!isset($warehouseMap[$land->handbook_id])) {
+                    $warehouseMap[$land->handbook_id] = FarmWarehouseService::getUserWareHouse($user, $land->handbook_id, 'fruit');
+                }
+
+                $warehouseMap[$land->handbook_id]->num += $land->residue_output;
+                $totalExp += $land->handbook->quarter_exp;
+
+                FarmUserService::updateLandAfterHarvest($land);
+            }
+
+            foreach ($warehouseMap as $warehouse) {
+                $warehouse->save();
+            }
+
+            if ($totalExp > 0) {
+                FarmUserService::farmAddExp($user->id, $totalExp);
+            }
+
+            DB::commit();
+
+            $result = FarmUserLandService::getLandList($user);
+            if ($skippedCount > 0) {
+                return Response::success($result, "部分作物因仓库已满未收获，共跳过{$skippedCount}块土地");
+            }
+            return Response::success($result);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error('异常：' . request()->route()->uri(), [
+                'getMessage' => $th->getMessage(),
+                'getLine' => $th->getLine(),
+                'getFile' => $th->getFile()
+            ]);
+            if ($th->getCode() == 1235) {
+                return Response::error($th->getMessage(), 1235);
+            }
+            return Response::error(trans('app-return.error_msg'));
+        }
+    }
+
+
 
 
     /**
@@ -251,16 +383,36 @@ class FarmUserController extends Controller
         $user = Auth::user();
         $land_id = $request->land_id;
         // 种植中和枯萎的可以铲除
-        $farm_land = FarmUserLand::with('handbook')->where('user_id', $user->id)->where('id', $land_id)->whereIn('status', [1, 3])->first();
+        $farm_land = FarmUserLand::select('id', 'user_id', 'status')->where('user_id', $user->id)->where('id', $land_id)->whereIn('status', [1, 3])->first();
 
         if (!$farm_land) {
-            return Response::error(trans('app-return.not_found'));
+            return Response::error('土地状态错误');
         }
 
         $farm_land->status = 0;
         $farm_land->save();
 
         FarmUserService::farmAddExp($user->id, FarmUserService::$FARM_SHOVEL_EXP); // 增加经验
+
+        return Response::success(FarmUserLandService::getLandList($user));
+    }
+    /**
+     * 一键铲除
+     */
+    public function removeAll()
+    {
+        $user = Auth::user();
+        $farm_land = FarmUserLand::select('id', 'user_id', 'status')
+            ->where('user_id', $user->id)->where('status', 3)->get();
+
+        if ($farm_land->isEmpty()) {
+            return Response::error('没有可以铲除的土地');
+        }
+
+        // 一键更新所有土地状态为已铲除
+        FarmUserLand::whereIn('id', $farm_land->pluck('id'))->update(['status' => 0]);
+
+        FarmUserService::farmAddExp($user->id, FarmUserService::$FARM_SHOVEL_EXP * $farm_land->count()); // 增加经验
 
         return Response::success(FarmUserLandService::getLandList($user));
     }
