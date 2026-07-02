@@ -4,13 +4,13 @@ namespace App\Services;
 
 use App\Models\FarmTask;
 use App\Models\FarmUserTask;
+use Illuminate\Support\Facades\Redis;
 
 class FarmTaskService
 {
 
     /**
      * 获取用户的任务数量
-     * 这里如果当天用户升级了如9 -> 10 是不会增加任务数量的是第二天生效
      */
     public static function getTaskNumber(int $level_id)
     {
@@ -24,12 +24,68 @@ class FarmTaskService
             return 5;
         } else if ($level_id <= 40) {
             return 6;
-        } else if ($level_id <= 50) {
-            return 7;
         }
+        return 7;
     }
 
+    /**
+     * 补齐用户任务到指定数量（幂等，带并发锁）
+     * @param int $user_id
+     * @return \Illuminate\Support\Collection 补齐后的任务列表
+     */
+    public static function replenishTasks(int $user_id)
+    {
+        $lockKey = "farm_replenish_lock:{$user_id}";
+        $lockValue = uniqid('', true);
 
+        // 原子获取锁（SET NX EX，10秒自动过期防止死锁）
+        $locked = Redis::set($lockKey, $lockValue, 'EX', 10, 'NX');
+        if (!$locked) {
+            // 并发情况下直接返回当前任务列表
+            return self::getUserTaskList($user_id);
+        }
+
+        try {
+            $userTaskList = self::getUserTaskList($user_id);
+            $farm_user_level = FarmUserService::getFarmUserLevel($user_id);
+            $taskNumber = self::getTaskNumber($farm_user_level);
+
+            $remainingTasks = $taskNumber - count($userTaskList);
+
+            if ($remainingTasks <= 0) {
+                return $userTaskList;
+            }
+
+            // 只取已上架的任务
+            $availableTasks = FarmTask::where('status', 1)
+                ->where('level_id', '<=', $farm_user_level)
+                ->get();
+
+            // 排除已领取的任务
+            $excludeIds = $userTaskList->pluck('farm_task_id')->toArray();
+            $taskPool = $availableTasks->reject(fn($task) => in_array($task->id, $excludeIds));
+
+            // 如果可用任务池小于需要的数量，就把所有可用任务给用户；否则随机抽取
+            $newTasks = $taskPool->count() < $remainingTasks
+                ? $taskPool
+                : self::weightedRandomSelection($taskPool, $remainingTasks);
+
+            // 批量保存用户任务
+            if ($newTasks->isNotEmpty()) {
+                FarmUserTask::insert($newTasks->map(fn($task) => [
+                    'user_id' => $user_id,
+                    'farm_task_id' => $task->id,
+                ])->toArray());
+            }
+
+            return self::getUserTaskList($user_id);
+        } finally {
+            // 只释放自己的锁
+            if (Redis::get($lockKey) === $lockValue) {
+                Redis::del($lockKey);
+            }
+        }
+    }
 
     /**
      * 加权随机抽样（不重复）
@@ -40,8 +96,6 @@ class FarmTaskService
     {
         $result = [];
         $taskList = $tasks->values(); // 重置索引
-
-
 
         for ($i = 0; $i < $count; $i++) {
             // 计算总权重

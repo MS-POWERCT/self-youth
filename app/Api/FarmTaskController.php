@@ -3,7 +3,6 @@
 namespace App\Api;
 
 use App\Models\FarmHandbook;
-use App\Models\FarmTask;
 use App\Models\FarmUserTask;
 use Illuminate\Support\Facades\Auth;
 use App\Services\FarmTaskService;
@@ -11,7 +10,6 @@ use App\Services\FarmUserService;
 use App\Services\FarmWarehouseService;
 use App\Services\WalletAssetService;
 use App\Support\Response;
-use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
@@ -23,55 +21,11 @@ use Illuminate\Http\Request;
 class FarmTaskController extends Controller
 {
 
-    // 获取任务列表
+    // 获取任务列表（永远保持任务数量，不足自动补齐）
     public function getList()
     {
         $user_id = Auth::id();
-        $period = date('G') >= 12 ? 'pm' : 'am';
-        $taskDateKey = 'farm_task_d:' . date('Ymd') . '_' . $period;
-
-        $userTaskList = FarmTaskService::getUserTaskList($user_id);
-
-        if (Redis::sIsMember($taskDateKey, $user_id)) {
-            return Response::success($userTaskList);
-        }
-
-        $farm_user_level = FarmUserService::getFarmUserLevel($user_id);
-        $taskNumber = FarmTaskService::getTaskNumber($farm_user_level);
-
-        // 获取所有符合条件的任务
-        $availableTasks = FarmTask::where('level_id', '<=', $farm_user_level)->get();
-
-        // 检查还有几个任务，进行补齐
-        $remainingTasks = $taskNumber - count($userTaskList);
-
-        // 如果已有任务足够，直接返回
-        if ($remainingTasks <= 0) {
-            Redis::sAdd($taskDateKey, $user_id);
-            return Response::success($userTaskList);
-        }
-
-        // 排除已领取的任务
-        $excludeIds = $userTaskList->pluck('farm_task_id')->toArray();
-        $taskPool = $availableTasks->reject(fn($task) => in_array($task->id, $excludeIds));
-
-        // 如果可用任务池小于需要的数量，就把所有可用任务给用户；否则随机抽取
-        $newTasks = $taskPool->count() < $remainingTasks
-            ? $taskPool
-            : FarmTaskService::weightedRandomSelection($taskPool, $remainingTasks);
-
-        // 批量保存用户任务
-        if ($newTasks->isNotEmpty()) {
-            FarmUserTask::insert($newTasks->map(fn($task) => [
-                'user_id' => $user_id,
-                'farm_task_id' => $task->id,
-            ])->toArray());
-        }
-
-        // 标记已领取并返回完整列表
-        Redis::sAdd($taskDateKey, $user_id);
-
-        return Response::success(FarmTaskService::getUserTaskList($user_id));
+        return Response::success(FarmTaskService::replenishTasks($user_id));
     }
 
     // 交付任务
@@ -130,8 +84,8 @@ class FarmTaskController extends Controller
         $detail->ok_at = now();
         $detail->save();
 
-        // 把剩下的任务返回
-        return Response::success(FarmTaskService::getUserTaskList($user->id));
+        // 补齐新任务并返回完整列表
+        return Response::success(FarmTaskService::replenishTasks($user->id));
     }
 
     // 放弃任务
@@ -154,7 +108,7 @@ class FarmTaskController extends Controller
         $detail->status = 2;
         $detail->save();
 
-        // 把剩下的任务返回
-        return Response::success(FarmTaskService::getUserTaskList($user_id));
+        // 补齐新任务并返回完整列表
+        return Response::success(FarmTaskService::replenishTasks($user_id));
     }
 }

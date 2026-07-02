@@ -32,7 +32,7 @@ class FarmUserService
             'level_id' => 1,
             'asset_id' => 1,
             'capacity' => 10,  // 装载量
-            'delivery_time' => 10, // 配送时间（分钟）
+            'delivery_time' => 60, // 配送时间（分钟）
         ],
         [
             'id' => 1,
@@ -42,7 +42,7 @@ class FarmUserService
             'level_id' => 10,
             'asset_id' => 1,
             'capacity' => 20,  // 装载量
-            'delivery_time' => 5, // 配送时间（分钟）
+            'delivery_time' => 40, // 配送时间（分钟）
         ],
         [
             'id' => 2,
@@ -52,7 +52,7 @@ class FarmUserService
             'level_id' => 20,
             'asset_id' => 1,
             'capacity' => 50,  // 装载量
-            'delivery_time' => 3, // 配送时间（分钟）
+            'delivery_time' => 20, // 配送时间（分钟）
         ],
         [
             'id' => 3,
@@ -62,7 +62,7 @@ class FarmUserService
             'level_id' => 30,
             'asset_id' => 1,
             'capacity' => 100,  // 装载量
-            'delivery_time' => 2, // 配送时间（分钟）
+            'delivery_time' => 5, // 配送时间（分钟）
         ]
     ];
 

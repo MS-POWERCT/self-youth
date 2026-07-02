@@ -21,6 +21,10 @@ class FarmHandbook extends Model
     // 返回selling 名称
     public function getSellingAssetNameAttribute()
     {
+        // 检查是否存在
+        if (!$this->selling_asset_id) {
+            return '';
+        }
         return ToolsService::getAssetName($this->selling_asset_id);
     }
 

@@ -48,7 +48,7 @@ class FarmUserController extends Controller
                 'kill' => FarmUserService::$FARM_KILL_EXP, // 击虫得多少经验
                 'till' => FarmUserService::$FARM_TILL_EXP, // 翻土得多少经验
             ],
-            'handbooks' => FarmHandbook::pluck('name', 'id')->toArray(), //图谱
+            'handbooks' => FarmHandbook::select('id', 'name', 'icon')->get()->keyBy('id')->toArray(),
             'warehouse_size' => FarmWarehouseService::getWareHouseSize($user->id), // 仓库大小
             'warehouse_use' => FarmWarehouseService::getWareHouseUse($user->id), // 仓库使用情况
             'next_extend_price' => FarmWarehouseService::getNextExtendPrice($user->id), // 下一个扩充价格
@@ -361,9 +361,6 @@ class FarmUserController extends Controller
         }
     }
 
-
-
-
     /**
      * 铲除
      * 可以铲除正常种植的但不是可以收获状态
@@ -431,34 +428,29 @@ class FarmUserController extends Controller
         $user = Auth::user();
         $farm_user_level = FarmUserService::getFarmUserLevel($user->id);
 
-        // 获取用户各等级土地数量
         $lands = FarmUserLand::where('user_id', $user->id)->where('status', '<>', 9)->get();
         $landCounts = [
-            1 => $lands->whereIn('level_id', [1, 2, 3])->count(), // 普通土地
-            2 => $lands->whereIn('level_id', [2, 3])->count(), // 红土地
-            3 => $lands->where('level_id', 3)->count(), // 金土地
+            1 => $lands->whereIn('level_id', [1, 2, 3])->count(),
+            2 => $lands->whereIn('level_id', [2, 3])->count(),
+            3 => $lands->where('level_id', 3)->count(),
         ];
 
         $upgrade_info = [];
         $levelConfig = FarmUserLandService::$LEVEL;
 
-        // 定义升级规则
         $upgradeRules = [
             1 => [
                 'upgrade_type' => 1,
-                'requirement' => null, // 普通土地无前置要求
                 'action' => '开垦',
                 'desc' => '开垦新的土地',
             ],
             2 => [
                 'upgrade_type' => 2,
-                'requirement' => fn() => $landCounts[1] > $landCounts[2], // 普通土地数量必须大于红土地数量
                 'action' => '升级',
                 'desc' => '升级红土地',
             ],
             3 => [
                 'upgrade_type' => 3,
-                'requirement' => fn() => $landCounts[2] > $landCounts[3], // 红土地数量必须大于金土地数量
                 'action' => '升级',
                 'desc' => '升级金土地',
             ],
@@ -467,25 +459,41 @@ class FarmUserController extends Controller
         foreach ($upgradeRules as $levelId => $rule) {
             $nextCount = $landCounts[$rule['upgrade_type']] + 1;
 
-            // 检查是否达到土地数量上限
             if ($nextCount > FarmUserLandService::$MAX_LAND_COUNT) {
                 continue;
             }
 
-            // 检查等级要求
-            if ($levelConfig[$levelId]['level'][$nextCount] > $farm_user_level) {
-                continue;
+            $requiredLevel = $levelConfig[$levelId]['level'][$nextCount] ?? 0;
+            $price = $levelConfig[$levelId]['price'][$nextCount] ?? 0;
+
+            $canUpgrade = true;
+            $reason = '';
+
+            if ($farm_user_level < $requiredLevel) {
+                $canUpgrade = false;
+                $reason = "等级不足，需要{$requiredLevel}级";
             }
 
-            // 检查前置要求（红土地需要普通土地，金土地需要红土地）
-            if ($rule['requirement'] && !$rule['requirement']()) {
-                continue;
+            if ($levelId == 2 && $landCounts[1] <= $landCounts[2]) {
+                $canUpgrade = false;
+                $reason = "普通土地数量不足，需要普通土地数量大于红土地数量";
+            }
+
+            if ($levelId == 3 && $landCounts[2] <= $landCounts[3]) {
+                $canUpgrade = false;
+                $reason = "红土地数量不足，需要红土地数量大于金土地数量";
             }
 
             $upgrade_info[] = [
                 'level_id' => $levelId,
                 'name' => $levelConfig[$levelId]['name'],
-                'price' => $levelConfig[$levelId]['price'][$nextCount],
+                'current_count' => $landCounts[$rule['upgrade_type']],
+                'next_count' => $nextCount,
+                'price' => $price,
+                'required_level' => $requiredLevel,
+                'current_level' => $farm_user_level,
+                'can_upgrade' => $canUpgrade,
+                'reason' => $reason,
                 'desc' => $rule['desc'],
                 'bottom' => $rule['action'],
                 'upgrade_type' => $rule['upgrade_type'],
