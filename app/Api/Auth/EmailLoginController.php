@@ -79,15 +79,20 @@ class EmailLoginController extends Controller
         $category_text = $categoryMap[$category] ?? '验证';
         $time_minutes = round($time / 60); // 转换为分钟
 
-        // 需要优化，异步发送邮件
-        Mail::send('emails.new_code', [
+        // 获取信息头部app_name
+        $app_name = $request->header('app_name');
+        $email_view = $app_name == 'MyFarm' ? 'emails.farm_code' : 'emails.new_code';
+        $title = '[' . $app_name . '] Verification Code';
+
+        // 需要优化，异步发送邮件code...
+        Mail::send($email_view, [
             'code' => $code,
             'time' => $time_minutes,
             'url' => config('app.url'),
-            'app_name' => config('app.name'),
+            'app_name' => $app_name,
             'category_text' => $category_text,
-        ], function ($message) use ($email) {
-            $message->to($email)->subject('[' . config('app.name') . '] Verification Code');
+        ], function ($message) use ($email, $title) {
+            $message->to($email)->subject($title);
         });
 
         return Response::success([], '发送成功');
