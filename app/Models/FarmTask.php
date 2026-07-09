@@ -19,7 +19,7 @@ class FarmTask extends Model
     public static $quality_type_color = [
         0 => 'primary',
         1 => 'success',
-        2 => 'info',
+        2 => 'red',
     ];
 
     protected $appends = ['quality_type_name'];
@@ -37,5 +37,11 @@ class FarmTask extends Model
     public function rewardAsset()
     {
         return $this->belongsTo(Asset::class, 'reward_asset_id');
+    }
+
+    //对应的npc
+    public function npc()
+    {
+        return $this->belongsTo(FarmTaskNpc::class, 'npc_id');
     }
 }

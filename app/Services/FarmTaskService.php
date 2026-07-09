@@ -14,18 +14,20 @@ class FarmTaskService
      */
     public static function getTaskNumber(int $level_id)
     {
-        if ($level_id <= 5) {
+        if ($level_id < 5) {
             return 2;
-        } else if ($level_id <= 10) {
+        } else if ($level_id < 10) {
             return 3;
-        } else if ($level_id <= 20) {
+        } else if ($level_id < 20) {
             return 4;
-        } else if ($level_id <= 30) {
+        } else if ($level_id < 30) {
             return 5;
-        } else if ($level_id <= 40) {
+        } else if ($level_id < 40) {
             return 6;
+        } else if ($level_id < 50) {
+            return 7;
         }
-        return 7;
+        return 8;
     }
 
     /**

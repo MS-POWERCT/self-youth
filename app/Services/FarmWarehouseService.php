@@ -12,16 +12,11 @@ class FarmWarehouseService
     // 仓库单作物最大数量
     public static $FARM_WAREHOUSE_MAX = 999999;
     // 仓库默认大小数量
-    public static $FARM_DEFAULT_NUM = 10; // 仓库默认数量
-    // 仓库的扩充价格等,每次增加5个数量
-    public static $FARM_EXTEND_PRICE_LIST = [
-        15 => 1000,
-        20 => 5000,
-        25 => 20000,
-        30 => 50000
-    ];
+    public static $FARM_DEFAULT_NUM = 10;
     // 每次增加到数量
-    public static $FARM_EXTEND_NUM = 5;
+    public static $FARM_EXTEND_NUM = 2;
+    // 仓库最大扩容次数
+    public static $FARM_MAX_EXTEND_TIMES = 15;
 
     /**
      * 获取用户仓库
@@ -101,13 +96,19 @@ class FarmWarehouseService
     /**
      * 得到下一个扩充价格
      * @param int $user_id 用户ID
-     * @return int 下一个扩充价格
+     * @return int 下一个扩充价格，如果已满则返回0
      */
     public static function getNextExtendPrice($user_id)
     {
         $warehouse_size = self::getWareHouseSize($user_id);
-        $next_size = $warehouse_size + 5;
-        return self::$FARM_EXTEND_PRICE_LIST[$next_size] ?? 0;
+        // 已扩容次数（每次+2）
+        $times = ($warehouse_size - self::$FARM_DEFAULT_NUM) / self::$FARM_EXTEND_NUM;
+        // 已达到最大容量（40个位置，扩容15次）
+        if ($times >= self::$FARM_MAX_EXTEND_TIMES) {
+            return 0;
+        }
+        $price = 200 + 400 * $times + 200 * $times * ($times - 1) / self::$FARM_EXTEND_NUM;
+        return (int) $price;
     }
 
     /**

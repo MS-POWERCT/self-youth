@@ -2,7 +2,6 @@
 
 namespace App\Api;
 
-use App\Models\FarmDeliveryRecord;
 use App\Models\FarmHandbook;
 use App\Models\FarmUserLand;
 use App\Models\FarmWarehouse;
@@ -37,7 +36,6 @@ class FarmUserController extends Controller
             'user_id' => $user->id,
             'user_name' => $user->name,
             'level_id' => $farm_user_level,
-            'level_title' => trans('app-status.farm_user.level_title')[$farm_user_level] ?? '称号之外', // 用户称号
             'exp' => FarmUserService::getFarmUserExp($user->id), // 用户经验
             'next_level_exp' => FarmUserService::getFarmUserNextLevelExp($farm_user_level + 1), // 下一级需要的经验
             'wallet_assets' => WalletAssetService::getAccountAssetAll($user),
@@ -690,171 +688,176 @@ class FarmUserController extends Controller
         return Response::success();
     }
 
+    // code... 增加卖出功能
+    public function sell(Request $request) {}
+    // 全部卖出
+    public function sellAll(Request $request) {}
+
 
 
     // ============== 配送工具接口 ==============
     /**
      * 得到配送工具的基础信息
      */
-    public function getDeliveryToolInfo()
-    {
-        $user = Auth::user();
-        return Response::success(FarmUserService::getFarmUserDeliveryToolList($user));   // 获得用户的工具
-    }
+    // public function getDeliveryToolInfo()
+    // {
+    //     $user = Auth::user();
+    //     return Response::success(FarmUserService::getFarmUserDeliveryToolList($user));   // 获得用户的工具
+    // }
 
-    // 用户购买配送工具
-    public function buyDeliveryTool(Request $request)
-    {
-        $params = $request->all();
-        $validator = Validator::make($params, [
-            'id' => 'required|integer',
-        ]);
-        if ($validator->fails()) {
-            return response()->json(array('res_code' => 1212, 'res_msg' => trans('app-return.validator_fails'), 'data' => []));
-        }
+    // // 用户购买配送工具
+    // public function buyDeliveryTool(Request $request)
+    // {
+    //     $params = $request->all();
+    //     $validator = Validator::make($params, [
+    //         'id' => 'required|integer',
+    //     ]);
+    //     if ($validator->fails()) {
+    //         return response()->json(array('res_code' => 1212, 'res_msg' => trans('app-return.validator_fails'), 'data' => []));
+    //     }
 
-        $user = Auth::user();
-        $id = $params['id'];
-        $tool = FarmUserService::$FARM_DELIVERY_TOOL[$id] ?? [];
-        if (!$tool) {
-            return Response::error('配送工具不存在', 1212);
-        }
+    //     $user = Auth::user();
+    //     $id = $params['id'];
+    //     $tool = FarmUserService::$FARM_DELIVERY_TOOL[$id] ?? [];
+    //     if (!$tool) {
+    //         return Response::error('配送工具不存在', 1212);
+    //     }
 
-        $user_delivery_tools = json_decode(Redis::hget('users_delivery_tool', $user->id), true) ?? [];
-        // 检查用户是否有这个工具
-        if (in_array($tool['id'], $user_delivery_tools)) {
-            return Response::error('您已购买过', 1212);
-        }
+    //     $user_delivery_tools = json_decode(Redis::hget('users_delivery_tool', $user->id), true) ?? [];
+    //     // 检查用户是否有这个工具
+    //     if (in_array($tool['id'], $user_delivery_tools)) {
+    //         return Response::error('您已购买过', 1212);
+    //     }
 
-        // 检查用户是否有足够的金币
-        $wallet_asset = WalletAssetService::getWalletAsset($user, 1);
-
-
-        try {
-            DB::beginTransaction();
-            WalletAssetService::checkBalance($wallet_asset, $tool['price']);
+    //     // 检查用户是否有足够的金币
+    //     $wallet_asset = WalletAssetService::getWalletAsset($user, 1);
 
 
-            // 扣除余额
-            WalletAssetService::change($wallet_asset, -$tool['price'], [
-                'module_code' => 'FARM_DELIVERY_TOOL',
-            ]);
+    //     try {
+    //         DB::beginTransaction();
+    //         WalletAssetService::checkBalance($wallet_asset, $tool['price']);
 
-            // 更新用户配送工具
-            // 先添加到数组中
-            $user_delivery_tools[] = $tool['id'];
-            // 再更新缓存
-            Redis::hset('users_delivery_tool', $user->id, json_encode($user_delivery_tools, JSON_UNESCAPED_UNICODE));
-            DB::commit();
-            return Response::success();
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            return Response::error($th->getMessage());
-        }
-    }
 
-    // 用户使用配送工具
-    public function useDeliveryTool(Request $request)
-    {
-        $params = $request->all();
-        $validator = Validator::make($params, [
-            'tool_id' => 'required|integer',
-            'handbook_id' => 'required|integer',
-        ]);
-        if ($validator->fails()) {
-            return response()->json(array('res_code' => 1212, 'res_msg' => trans('app-return.validator_fails'), 'data' => []));
-        }
+    //         // 扣除余额
+    //         WalletAssetService::change($wallet_asset, -$tool['price'], [
+    //             'module_code' => 'FARM_DELIVERY_TOOL',
+    //         ]);
 
-        $user = Auth::user();
-        $tool_id = $params['tool_id'];
-        $handbook_id = $params['handbook_id'];
-        $tool = FarmUserService::$FARM_DELIVERY_TOOL[$tool_id] ?? [];
-        if (!$tool) {
-            return Response::error('配送工具不存在', 1212);
-        }
+    //         // 更新用户配送工具
+    //         // 先添加到数组中
+    //         $user_delivery_tools[] = $tool['id'];
+    //         // 再更新缓存
+    //         Redis::hset('users_delivery_tool', $user->id, json_encode($user_delivery_tools, JSON_UNESCAPED_UNICODE));
+    //         DB::commit();
+    //         return Response::success();
+    //     } catch (\Throwable $th) {
+    //         DB::rollBack();
+    //         return Response::error($th->getMessage());
+    //     }
+    // }
 
-        $user_delivery_tools = json_decode(Redis::hget('users_delivery_tool', $user->id), true) ?? [];
-        // 检查用户是否有这个工具
-        if (!in_array($tool['id'], $user_delivery_tools)) {
-            return Response::error('您未购买过', 1212);
-        }
+    // // 用户使用配送工具
+    // public function useDeliveryTool(Request $request)
+    // {
+    //     $params = $request->all();
+    //     $validator = Validator::make($params, [
+    //         'tool_id' => 'required|integer',
+    //         'handbook_id' => 'required|integer',
+    //     ]);
+    //     if ($validator->fails()) {
+    //         return response()->json(array('res_code' => 1212, 'res_msg' => trans('app-return.validator_fails'), 'data' => []));
+    //     }
 
-        // 检查用户是否有这个仓库果实
-        $warehouse = FarmWarehouse::with(['handbook'])->where('user_id', $user->id)->where('handbook_id', $handbook_id)
-            ->where('type', 'fruit')
-            ->where('num', '>', 0)
-            ->first();
-        if (!$warehouse) {
-            return Response::error('仓库果实不存在', 1212);
-        }
+    //     $user = Auth::user();
+    //     $tool_id = $params['tool_id'];
+    //     $handbook_id = $params['handbook_id'];
+    //     $tool = FarmUserService::$FARM_DELIVERY_TOOL[$tool_id] ?? [];
+    //     if (!$tool) {
+    //         return Response::error('配送工具不存在', 1212);
+    //     }
 
-        // 获得判断这次运送多少，如果用户仓库果实数量不足，就运送所有
-        $send_num = min($warehouse['num'], $tool['capacity']);
-        //
+    //     $user_delivery_tools = json_decode(Redis::hget('users_delivery_tool', $user->id), true) ?? [];
+    //     // 检查用户是否有这个工具
+    //     if (!in_array($tool['id'], $user_delivery_tools)) {
+    //         return Response::error('您未购买过', 1212);
+    //     }
 
-        try {
-            DB::beginTransaction();
-            // 更新用户仓库果实数量
-            $warehouse->update([
-                'num' => $warehouse['num'] - $send_num,
-            ]);
+    //     // 检查用户是否有这个仓库果实
+    //     $warehouse = FarmWarehouse::with(['handbook'])->where('user_id', $user->id)->where('handbook_id', $handbook_id)
+    //         ->where('type', 'fruit')
+    //         ->where('num', '>', 0)
+    //         ->first();
+    //     if (!$warehouse) {
+    //         return Response::error('仓库果实不存在', 1212);
+    //     }
 
-            // 创建一条配送记录
-            FarmDeliveryRecord::create([
-                'user_id' => $user->id,
-                'tool_id' => $tool['id'],
-                'handbook_id' => $handbook_id,
-                'num' => $send_num,
-                'start_at' => now(),
-                'end_at' => now()->addSeconds($tool['delivery_time']),
-                'asset_id' => $warehouse->handbook->selling_asset_id,
-                'amount' => $warehouse->handbook->selling_price * $send_num,
-                'status' => 0
-            ]);
-            DB::commit();
-            return Response::success(FarmUserService::getFarmUserDeliveryToolList($user));   // 获得用户的工具
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            return Response::error($th->getMessage());
-        }
-    }
+    //     // 获得判断这次运送多少，如果用户仓库果实数量不足，就运送所有
+    //     $send_num = min($warehouse['num'], $tool['capacity']);
+    //     //
 
-    // 配送结束后更新用户资产和配送记录
-    public function updateDeliveryRecord(Request $request)
-    {
-        $params = $request->all();
-        $validator = Validator::make($params, [
-            'id' => 'required|integer',
-        ]);
-        if ($validator->fails()) {
-            return response()->json(array('res_code' => 1212, 'res_msg' => trans('app-return.validator_fails'), 'data' => []));
-        }
+    //     try {
+    //         DB::beginTransaction();
+    //         // 更新用户仓库果实数量
+    //         $warehouse->update([
+    //             'num' => $warehouse['num'] - $send_num,
+    //         ]);
 
-        $user = Auth::user();
-        $id = $params['id'];
-        $delivery_record = FarmDeliveryRecord::where('user_id', $user->id)->where('id', $id)->where('status', 0)->first();
-        if (!$delivery_record) {
-            return Response::error('配送记录不存在', 1212);
-        }
+    //         // 创建一条配送记录
+    //         FarmDeliveryRecord::create([
+    //             'user_id' => $user->id,
+    //             'tool_id' => $tool['id'],
+    //             'handbook_id' => $handbook_id,
+    //             'num' => $send_num,
+    //             'start_at' => now(),
+    //             'end_at' => now()->addSeconds($tool['delivery_time']),
+    //             'asset_id' => $warehouse->handbook->selling_asset_id,
+    //             'amount' => $warehouse->handbook->selling_price * $send_num,
+    //             'status' => 0
+    //         ]);
+    //         DB::commit();
+    //         return Response::success(FarmUserService::getFarmUserDeliveryToolList($user));   // 获得用户的工具
+    //     } catch (\Throwable $th) {
+    //         DB::rollBack();
+    //         return Response::error($th->getMessage());
+    //     }
+    // }
 
-        try {
-            DB::beginTransaction();
+    // // 配送结束后更新用户资产和配送记录
+    // public function updateDeliveryRecord(Request $request)
+    // {
+    //     $params = $request->all();
+    //     $validator = Validator::make($params, [
+    //         'id' => 'required|integer',
+    //     ]);
+    //     if ($validator->fails()) {
+    //         return response()->json(array('res_code' => 1212, 'res_msg' => trans('app-return.validator_fails'), 'data' => []));
+    //     }
 
-            // 更新用户资产
-            $wallet_asset = WalletAssetService::getWalletAsset($user, $delivery_record['asset_id']);
-            WalletAssetService::change($wallet_asset, $delivery_record['amount'], [
-                'module_code' => 'FARM_DELIVERY_RECORD',
-            ]);
+    //     $user = Auth::user();
+    //     $id = $params['id'];
+    //     $delivery_record = FarmDeliveryRecord::where('user_id', $user->id)->where('id', $id)->where('status', 0)->first();
+    //     if (!$delivery_record) {
+    //         return Response::error('配送记录不存在', 1212);
+    //     }
 
-            // 更新配送记录
-            $delivery_record->status = 1;
-            $delivery_record->save();
+    //     try {
+    //         DB::beginTransaction();
 
-            DB::commit();
-            return Response::success(FarmUserService::getFarmUserDeliveryToolList($user));   // 获得用户的工具
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            return Response::error($th->getMessage());
-        }
-    }
+    //         // 更新用户资产
+    //         $wallet_asset = WalletAssetService::getWalletAsset($user, $delivery_record['asset_id']);
+    //         WalletAssetService::change($wallet_asset, $delivery_record['amount'], [
+    //             'module_code' => 'FARM_DELIVERY_RECORD',
+    //         ]);
+
+    //         // 更新配送记录
+    //         $delivery_record->status = 1;
+    //         $delivery_record->save();
+
+    //         DB::commit();
+    //         return Response::success(FarmUserService::getFarmUserDeliveryToolList($user));   // 获得用户的工具
+    //     } catch (\Throwable $th) {
+    //         DB::rollBack();
+    //         return Response::error($th->getMessage());
+    //     }
+    // }
 }

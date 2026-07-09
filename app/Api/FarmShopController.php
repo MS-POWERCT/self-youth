@@ -13,6 +13,7 @@ use App\Services\FarmWarehouseService;
 use App\Services\WalletAssetService;
 use App\Support\Response;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 /**
  * Description of FarmProductController
@@ -30,7 +31,7 @@ class FarmShopController extends Controller
         $size = min(intval($request->size ?? 50), 500);
         $type = $request->type ?? 'seed';
 
-        $list = FarmShop::with('handbook')->select('id', 'handbook_id', 'type', 'status')->where('type', $type)
+        $list = FarmShop::with('handbook')->select('id', 'handbook_id', 'type', 'status')->whereIn('type', [$type, 'product'])
             ->where('status', 1)
             ->offset($page * $size)
             ->limit($size)
@@ -60,15 +61,26 @@ class FarmShopController extends Controller
             return Response::error($validator->errors()->first());
         }
 
+
+        $cache_key = 'farm_shop_daylimit';
+        $num = min(intval($request->num ?? 1), 999);
+        $user = Auth::user();
         // 查询这个产品是否
         $product = FarmShop::with('handbook')->where('id', $request->id)->where('status', 1)->first();
         if (!$product) {
             return Response::error(trans('app-return.not_found'));
         }
 
-        $num = min(intval($request->num ?? 1), 999);
+
+        // 检查是否有限购
+        if ($product->day_limit > 0) {
+            // 检查是否购买过
+            $buy_num = Redis::hget($cache_key, $user->id . '_' . $product->id);
+            if ($buy_num + $num > $product->day_limit) {
+                return Response::error("购买数量超过今日最大数量" . $product->day_limit . "个");
+            }
+        }
         $asset = Asset::find($product->handbook->asset_id);
-        $user = Auth::user();
 
 
         // 查看是否会超过数量
@@ -98,6 +110,12 @@ class FarmShopController extends Controller
             // 对应的仓库数量增加
             $warehouse->num += $num;
             $warehouse->save();
+
+
+            // 如果有限购就使用redis进行计数
+            if ($product->day_limit > 0) {
+                Redis::hincrby($cache_key, $user->id . '_' . $product->id, $num);
+            }
 
             DB::commit();
             return Response::success();

@@ -2,8 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Asset;
-use App\Models\FarmDeliveryRecord;
 use App\Models\FarmUserLand;
 use Illuminate\Support\Facades\Redis;
 
@@ -23,48 +21,48 @@ class FarmUserService
 
 
     // 配送工具配置
-    public static $FARM_DELIVERY_TOOL = [
-        [
-            'id' => 0,
-            'name' => "电动车",
-            'icon' => "noto-v1:motor-scooter",
-            'price' => 1000,
-            'level_id' => 1,
-            'asset_id' => 1,
-            'capacity' => 10,  // 装载量
-            'delivery_time' => 60, // 配送时间（分钟）
-        ],
-        [
-            'id' => 1,
-            'name' => "面包车",
-            'icon' => "noto-v1:minibus",
-            'price' => 10000,
-            'level_id' => 10,
-            'asset_id' => 1,
-            'capacity' => 20,  // 装载量
-            'delivery_time' => 40, // 配送时间（分钟）
-        ],
-        [
-            'id' => 2,
-            'name' => "货车",
-            'icon' => "noto-v1:delivery-truck",
-            'price' => 100000,
-            'level_id' => 20,
-            'asset_id' => 1,
-            'capacity' => 50,  // 装载量
-            'delivery_time' => 20, // 配送时间（分钟）
-        ],
-        [
-            'id' => 3,
-            'name' => "直升机",
-            'icon' => "noto-v1:helicopter",
-            'price' => 1000000,
-            'level_id' => 30,
-            'asset_id' => 1,
-            'capacity' => 100,  // 装载量
-            'delivery_time' => 5, // 配送时间（分钟）
-        ]
-    ];
+    // public static $FARM_DELIVERY_TOOL = [
+    //     [
+    //         'id' => 0,
+    //         'name' => "电动车",
+    //         'icon' => "noto-v1:motor-scooter",
+    //         'price' => 1000,
+    //         'level_id' => 1,
+    //         'asset_id' => 1,
+    //         'capacity' => 10,  // 装载量
+    //         'delivery_time' => 60, // 配送时间（分钟）
+    //     ],
+    //     [
+    //         'id' => 1,
+    //         'name' => "面包车",
+    //         'icon' => "noto-v1:minibus",
+    //         'price' => 10000,
+    //         'level_id' => 10,
+    //         'asset_id' => 1,
+    //         'capacity' => 20,  // 装载量
+    //         'delivery_time' => 40, // 配送时间（分钟）
+    //     ],
+    //     [
+    //         'id' => 2,
+    //         'name' => "货车",
+    //         'icon' => "noto-v1:delivery-truck",
+    //         'price' => 100000,
+    //         'level_id' => 20,
+    //         'asset_id' => 1,
+    //         'capacity' => 50,  // 装载量
+    //         'delivery_time' => 20, // 配送时间（分钟）
+    //     ],
+    //     [
+    //         'id' => 3,
+    //         'name' => "直升机",
+    //         'icon' => "noto-v1:helicopter",
+    //         'price' => 1000000,
+    //         'level_id' => 30,
+    //         'asset_id' => 1,
+    //         'capacity' => 100,  // 装载量
+    //         'delivery_time' => 5, // 配送时间（分钟）
+    //     ]
+    // ];
 
 
 
@@ -150,33 +148,33 @@ class FarmUserService
      * 获取用户配送工具列表
      * @param  \App\Models\User $user
      */
-    public static function getFarmUserDeliveryToolList($user)
-    {
-        $delivery_tools = self::$FARM_DELIVERY_TOOL;
-        $assets = Asset::pluck('name', 'id')->toArray();
+    // public static function getFarmUserDeliveryToolList($user)
+    // {
+    //     $delivery_tools = self::$FARM_DELIVERY_TOOL;
+    //     $assets = Asset::pluck('name', 'id')->toArray();
 
-        // 获得用户的工具
-        $user_delivery_tools = json_decode(Redis::hget('users_delivery_tool', $user->id), true) ?? [];
+    //     // 获得用户的工具
+    //     $user_delivery_tools = json_decode(Redis::hget('users_delivery_tool', $user->id), true) ?? [];
 
-        $delivery_records_list = FarmDeliveryRecord::with(['handbook'])
-            ->select(['id', 'tool_id', 'num', 'handbook_id', 'asset_id', 'start_at', 'end_at', 'amount', 'status'])
-            ->where('user_id', $user->id)
-            ->where('status', 0)
-            ->get();
+    //     $delivery_records_list = FarmDeliveryRecord::with(['handbook'])
+    //         ->select(['id', 'tool_id', 'num', 'handbook_id', 'asset_id', 'start_at', 'end_at', 'amount', 'status'])
+    //         ->where('user_id', $user->id)
+    //         ->where('status', 0)
+    //         ->get();
 
-        // 合并配送工具和资产信息
-        foreach ($delivery_tools as $key => $tool) {
-            $delivery_tools[$key]['asset_name'] = $assets[$tool['asset_id']] ?? '';
-            // 检查用户是否有这个工具
-            $delivery_tools[$key]['is_have'] = in_array($tool['id'], $user_delivery_tools) ? 1 : 0;
-            // 是否配送和配送信息
+    //     // 合并配送工具和资产信息
+    //     foreach ($delivery_tools as $key => $tool) {
+    //         $delivery_tools[$key]['asset_name'] = $assets[$tool['asset_id']] ?? '';
+    //         // 检查用户是否有这个工具
+    //         $delivery_tools[$key]['is_have'] = in_array($tool['id'], $user_delivery_tools) ? 1 : 0;
+    //         // 是否配送和配送信息
 
-            $delivery_tools[$key]['is_delivery'] = $delivery_records_list->contains('tool_id', $tool['id']) ? 1 : 0;
-            $delivery_tools[$key]['delivery_record'] = $delivery_records_list->where('tool_id', $tool['id'])->first() ?? [];
-        }
+    //         $delivery_tools[$key]['is_delivery'] = $delivery_records_list->contains('tool_id', $tool['id']) ? 1 : 0;
+    //         $delivery_tools[$key]['delivery_record'] = $delivery_records_list->where('tool_id', $tool['id'])->first() ?? [];
+    //     }
 
-        return $delivery_tools;
-    }
+    //     return $delivery_tools;
+    // }
 
     /**
      * 收获后更新土地状态（进入下一季或枯萎）

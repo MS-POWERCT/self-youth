@@ -84,7 +84,8 @@ namespace Dcat\Admin {
      * @property Grid\Column|Collection quarter_output_num
      * @property Grid\Column|Collection selling_asset_id
      * @property Grid\Column|Collection selling_price
-     * @property Grid\Column|Collection npc_name
+     * @property Grid\Column|Collection day_limit
+     * @property Grid\Column|Collection npc_id
      * @property Grid\Column|Collection quality_ratio
      * @property Grid\Column|Collection quality_type
      * @property Grid\Column|Collection reward_asset_id
@@ -236,7 +237,8 @@ namespace Dcat\Admin {
      * @method Grid\Column|Collection quarter_output_num(string $label = null)
      * @method Grid\Column|Collection selling_asset_id(string $label = null)
      * @method Grid\Column|Collection selling_price(string $label = null)
-     * @method Grid\Column|Collection npc_name(string $label = null)
+     * @method Grid\Column|Collection day_limit(string $label = null)
+     * @method Grid\Column|Collection npc_id(string $label = null)
      * @method Grid\Column|Collection quality_ratio(string $label = null)
      * @method Grid\Column|Collection quality_type(string $label = null)
      * @method Grid\Column|Collection reward_asset_id(string $label = null)
@@ -393,7 +395,8 @@ namespace Dcat\Admin {
      * @property Show\Field|Collection quarter_output_num
      * @property Show\Field|Collection selling_asset_id
      * @property Show\Field|Collection selling_price
-     * @property Show\Field|Collection npc_name
+     * @property Show\Field|Collection day_limit
+     * @property Show\Field|Collection npc_id
      * @property Show\Field|Collection quality_ratio
      * @property Show\Field|Collection quality_type
      * @property Show\Field|Collection reward_asset_id
@@ -545,7 +548,8 @@ namespace Dcat\Admin {
      * @method Show\Field|Collection quarter_output_num(string $label = null)
      * @method Show\Field|Collection selling_asset_id(string $label = null)
      * @method Show\Field|Collection selling_price(string $label = null)
-     * @method Show\Field|Collection npc_name(string $label = null)
+     * @method Show\Field|Collection day_limit(string $label = null)
+     * @method Show\Field|Collection npc_id(string $label = null)
      * @method Show\Field|Collection quality_ratio(string $label = null)
      * @method Show\Field|Collection quality_type(string $label = null)
      * @method Show\Field|Collection reward_asset_id(string $label = null)

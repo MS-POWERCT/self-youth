@@ -93,10 +93,10 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/farmUser/upgradeLand', "App\Api\FarmUserController@upgradeLand"); // 升级
     Route::post('/farmUser/getSpecialInfo', "App\Api\FarmUserController@getSpecialInfo"); // 获取特殊建筑基础信息
     Route::post('/farmUser/clickWorldTree', "App\Api\FarmUserController@clickWorldTree"); // 点击世界树
-    Route::post('/farmUser/getDeliveryToolInfo', "App\Api\FarmUserController@getDeliveryToolInfo"); // 获取配送工具基础信息
-    Route::post('/farmUser/buyDeliveryTool', "App\Api\FarmUserController@buyDeliveryTool"); // 购买配送工具
-    Route::post('/farmUser/useDeliveryTool', "App\Api\FarmUserController@useDeliveryTool"); // 完成配送工具
-    Route::post('/farmUser/updateDeliveryRecord', "App\Api\FarmUserController@updateDeliveryRecord"); // 更新配送记录
+    // Route::post('/farmUser/getDeliveryToolInfo', "App\Api\FarmUserController@getDeliveryToolInfo"); // 获取配送工具基础信息
+    // Route::post('/farmUser/buyDeliveryTool', "App\Api\FarmUserController@buyDeliveryTool"); // 购买配送工具
+    // Route::post('/farmUser/useDeliveryTool', "App\Api\FarmUserController@useDeliveryTool"); // 完成配送工具
+    // Route::post('/farmUser/updateDeliveryRecord', "App\Api\FarmUserController@updateDeliveryRecord"); // 更新配送记录
     Route::get('/farmShop/getList', "App\Api\FarmShopController@getList"); // 获取商店列表
     Route::post('/farmShop/buy', "App\Api\FarmShopController@buy"); // 购买
     Route::post('/farmWarehouse/getList', "App\Api\FarmWarehouseController@getList"); // 仓库列表
