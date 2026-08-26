@@ -128,4 +128,34 @@ class MyController extends Controller
             ->where('status', 1)->orderByDesc('updated_at')
             ->orderByDesc('id')->limit(50)->get());
     }
+
+
+
+    // 填写个人信息
+    public function fillInfo(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'age'    => 'required|integer|min:1|max:150',
+            'gender' => 'required|integer|in:0,1,2',
+            'height' => 'required|integer|min:50|max:250',
+        ], [
+            'age.min'    => '年龄不能小于1岁',
+            'age.max'    => '年龄不能大于150岁',
+            'gender.in'  => '性别只能是0未知、1男、2女',
+            'height.min' => '身高不能小于50cm',
+            'height.max' => '身高不能大于250cm',
+        ]);
+
+        if ($validator->fails()) {
+            return Response::error($validator->errors()->first(), 1212);
+        }
+
+        $user = User::find(Auth::id());
+        $user->age = $request->age;
+        $user->gender = $request->gender;
+        $user->height = $request->height;
+        $user->save();
+
+        return Response::success();
+    }
 }

@@ -36,6 +36,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/my/bindEmail', "App\Api\MyController@bindEmail")->middleware(['limit_form_repeat:3']);
     Route::post('/my/bindAddress', "App\Api\MyController@bindAddress")->middleware(['limit_form_repeat:3', 'web3.signature']); //
     Route::get('/my/getUserLog', "App\Api\MyController@getUserLog"); //
+    // 填写个人信息模块
+    Route::post('/my/fillInfo', "App\Api\MyController@fillInfo")->middleware(['limit_form_repeat:3', 'check_uuid']); // 填写个人信息
 
 
 
@@ -43,9 +45,9 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/habit/getList', "App\Api\HabitController@getList"); // 获取习惯列表
     Route::post('/habit/getEditableList', "App\Api\HabitController@getEditableList"); // 获取可以编辑的习惯列表
     Route::post('/habit/create', "App\Api\HabitController@create")->middleware(['limit_form_repeat:3', 'check_uuid']); // 新增习惯
-    Route::post('/habit/edit', "App\Api\HabitController@edit")->middleware(['limit_form_repeat:3', 'check_uuid']); // 编辑习惯
-    Route::post('/habit/hide', "App\Api\HabitController@hide")->middleware(['check_uuid']); // 隐藏/显示
-    Route::post('/habit/delete', "App\Api\HabitController@delete")->middleware(['check_uuid']); // 删除习惯
+    Route::post('/habit/edit', "App\Api\HabitController@edit")->middleware(['limit_form_repeat:3']); // 编辑习惯
+    Route::post('/habit/hide', "App\Api\HabitController@hide"); // 隐藏/显示
+    Route::post('/habit/delete', "App\Api\HabitController@delete"); // 删除习惯
     Route::get('/habit/stat', "App\Api\HabitController@stat"); // 获取打卡统计（周/月）
     Route::get('/habit/getIconList', "App\Api\HabitController@getIconList"); // 获取icon列表
 
@@ -56,8 +58,8 @@ Route::middleware('auth:api')->group(function () {
     // 时长计数记录模块
     Route::post('/habit/value/create', "App\Api\HabitValueController@create")->middleware(['limit_form_repeat:3', 'check_uuid']); // 新增数值记录
     Route::get('/habit/value/list', "App\Api\HabitValueController@getList"); // 获取数值记录列表
-    Route::post('/habit/value/edit', "App\Api\HabitValueController@edit")->middleware(['limit_form_repeat:3', 'check_uuid']); // 编辑数值记录
-    Route::post('/habit/value/del', "App\Api\HabitValueController@del")->middleware(['limit_form_repeat:3', 'check_uuid']); // 删除数值记录
+    Route::post('/habit/value/edit', "App\Api\HabitValueController@edit")->middleware(['limit_form_repeat:3']); // 编辑数值记录
+    Route::post('/habit/value/del', "App\Api\HabitValueController@del")->middleware(['limit_form_repeat:3']); // 删除数值记录
 
 
     // 标记吧
@@ -72,11 +74,22 @@ Route::middleware('auth:api')->group(function () {
     // 情侣圈
     Route::post('/loverCircle/create', "App\Api\LoverCircleController@create")->middleware(['limit_form_repeat:3', 'check_uuid']); // 新增情侣圈
     Route::post('/loverCircle/getList', "App\Api\LoverCircleController@getList");
-    Route::post('/loverCircle/userClick', "App\Api\LoverCircleController@userClick")->middleware(['check_uuid']); // 点击情侣圈
-    Route::post('/loverCircle/delData', "App\Api\LoverCircleController@delData")->middleware(['check_uuid']); // 删除情侣圈
+    Route::post('/loverCircle/userClick', "App\Api\LoverCircleController@userClick"); // 点击情侣圈
+    Route::post('/loverCircle/delData', "App\Api\LoverCircleController@delData"); // 删除情侣圈
     Route::post('/loverComment/create', "App\Api\LoverCommentController@create")->middleware(['limit_form_repeat:3', 'check_uuid']); // 评论
     Route::post('/loverComment/getList', "App\Api\LoverCommentController@getList"); // 评论列表
-    Route::post('/loverComment/delData', "App\Api\LoverCommentController@delData")->middleware(['limit_form_repeat:3', 'check_uuid']); // 删除评论
+    Route::post('/loverComment/delData', "App\Api\LoverCommentController@delData")->middleware(['limit_form_repeat:3']); // 删除评论
+
+
+    // 体重接口
+    Route::post('/weightRecord/create', "App\Api\WeightRecordController@create")->middleware(['limit_form_repeat:3', 'check_uuid']); // 新增体重记录
+    Route::post('/weightRecord/getList', "App\Api\WeightRecordController@getList"); // 获取体重记录列表
+    Route::post('/weightRecord/getDetail', "App\Api\WeightRecordController@getDetail"); // 查看体重记录详情
+    Route::post('/weightRecord/edit', "App\Api\WeightRecordController@edit"); // 编辑体重记录
+    Route::post('/weightRecord/del', "App\Api\WeightRecordController@del"); // 删除体重记录
+    Route::get('/weightRecord/stats', "App\Api\WeightRecordController@stats"); // 获取体重统计
+    Route::get('/weightRecord/chart', "App\Api\WeightRecordController@chart"); // 获取体重图表
+
 
 
     // 农场模块
