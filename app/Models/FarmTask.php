@@ -42,6 +42,6 @@ class FarmTask extends Model
     //对应的npc
     public function npc()
     {
-        return $this->belongsTo(FarmTaskNpc::class, 'npc_id');
+        return $this->belongsTo(FarmTaskNpc::class, 'npc_id')->select('id', 'name', 'icon');
     }
 }

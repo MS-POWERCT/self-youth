@@ -19,7 +19,6 @@ class GlobalData
      */
     public function handle($request, Closure $next)
     {
-        Log::info('ip:' . $request->ip());
         $GLOBALS['clientIp'] = $request->ip();
         // ToolsService::getRealIp($ip);
 

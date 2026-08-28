@@ -12,6 +12,8 @@ use App\Services\WalletAssetService;
 use App\Support\Response;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Description of My
@@ -57,7 +59,7 @@ class FarmTaskController extends Controller
             return Response::error('用户仓库资源不足', 456346);
         }
         foreach ($taskNeed as $key => $value) {
-            if ($warehouseNum->where('handbook_id', $value['handbook_id'])->where('type', 'fruit')->value('num') < $value['quantity']) {
+            if ($warehouseNum->where('handbook_id', $value['handbook_id'])->value('num') < $value['quantity']) {
                 return Response::error(
                     '用户仓库资源不足,需要' . $value['quantity'] . '个' . FarmHandbook::where('id', $value['handbook_id'])->value('name'),
                     456346
@@ -65,27 +67,39 @@ class FarmTaskController extends Controller
             }
         }
 
-        // 扣除用户仓库资源
-        foreach ($taskNeed as $key => $value) {
-            $warehouse = $warehouseNum->where('handbook_id', $value['handbook_id'])->first();
-            $warehouse->num = $warehouse->num - $value['quantity'];
-            $warehouse->save();
+        try {
+
+            DB::beginTransaction();
+            // 扣除用户仓库资源
+            foreach ($taskNeed as $key => $value) {
+                $warehouse = $warehouseNum->where('handbook_id', $value['handbook_id'])->first();
+                $warehouse->num = $warehouse->num - $value['quantity'];
+                $warehouse->save();
+            }
+
+            // 给用户奖励
+            FarmUserService::farmAddExp($user->id, $detail->farmTask->reward_exp); // 增加经验
+            $wallet_asset = WalletAssetService::getWalletAsset($user, $detail->farmTask->reward_asset_id);
+            WalletAssetService::change($wallet_asset, $detail->farmTask->reward_gold, [
+                'module_code' => 'FARM_TASK',
+            ]);
+
+            // 更新任务状态为已完成
+            $detail->status = 1;
+            $detail->ok_at = now();
+            $detail->save();
+
+
+            DB::commit();
+            // 补齐新任务并返回完整列表
+            return Response::success(FarmTaskService::replenishTasks($user->id));
+        } catch (\Throwable $th) {
+
+            DB::rollBack();
+            Log::error('异常：' . request()->route()->uri(), ['getMessage' => $th->getMessage(), 'getLine' => $th->getLine(), 'file' => $th->getFile()]);
+            return Response::error();
+            //throw $th;
         }
-
-        // 给用户奖励
-        FarmUserService::farmAddExp($user->id, $detail->farmTask->reward_exp); // 增加经验
-        $wallet_asset = WalletAssetService::getWalletAsset($user, $detail->farmTask->reward_asset_id);
-        WalletAssetService::change($wallet_asset, $detail->farmTask->reward_gold, [
-            'module_code' => 'FARM_TASK',
-        ]);
-
-        // 更新任务状态为已完成
-        $detail->status = 1;
-        $detail->ok_at = now();
-        $detail->save();
-
-        // 补齐新任务并返回完整列表
-        return Response::success(FarmTaskService::replenishTasks($user->id));
     }
 
     // 放弃任务

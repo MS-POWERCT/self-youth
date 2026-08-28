@@ -6,6 +6,7 @@ return [
     ],
     'fields' => [
         'name' => '名称',
+        'icon' => '图标',
     ],
     'options' => [],
 ];

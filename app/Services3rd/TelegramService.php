@@ -67,11 +67,6 @@ class TelegramService
             // 构建完整的API URL
             $url = $this->baseUrl . '/sendMessage?' . http_build_query($params);
 
-            // Log::info('发送Telegram消息', [
-            //     'chat_id' => $targetChatId,
-            //     'message' => $message,
-            //     'url' => $url
-            // ]);
 
             $response = ApiService::json_get($url);
 

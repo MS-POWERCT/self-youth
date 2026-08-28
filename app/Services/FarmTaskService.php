@@ -135,7 +135,7 @@ class FarmTaskService
      */
     public static function getUserTaskList($user_id)
     {
-        return FarmUserTask::with('farmTask', 'farmTask.rewardAsset')
+        return FarmUserTask::with('farmTask', 'farmTask.rewardAsset', 'farmTask.npc')
             ->select('farm_user_tasks.id', 'farm_user_tasks.user_id', 'farm_user_tasks.farm_task_id', 'farm_user_tasks.status')
             ->join('farm_tasks', 'farm_user_tasks.farm_task_id', '=', 'farm_tasks.id')
             ->where('farm_user_tasks.user_id', $user_id)

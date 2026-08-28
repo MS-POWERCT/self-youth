@@ -62,7 +62,7 @@ class FarmShopController extends Controller
         }
 
 
-        $cache_key = 'farm_shop_daylimit';
+        $cache_key = 'farm_shop_daylimit_' . date('Ymd');
         $num = min(intval($request->num ?? 1), 999);
         $user = Auth::user();
         // 查询这个产品是否

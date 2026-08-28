@@ -63,7 +63,6 @@ class UserReferrerService
     // 刷新用户名称的关系到缓存中
     public static function setUserName()
     {
-        Log::info('setUserName');
         $users = User::select('id', 'name')->get();
         // 对缓存数据进行更新
         Redis::pipeline(function ($pipe) use ($users) {

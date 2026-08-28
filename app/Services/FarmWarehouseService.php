@@ -47,9 +47,9 @@ class FarmWarehouseService
      * @param array $handbookIds 图鉴ID列表
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public static function getWareHouseList($user, array $handbookIds = [], $type = 'fruit')
+    public static function getWareHouseList($user, array $handbookIds = [])
     {
-        $query = FarmWarehouse::where('user_id', $user->id)->where('type', $type);
+        $query = FarmWarehouse::where('user_id', $user->id)->whereIn('type', ['fruit', 'product']);
 
         // 如果传入了图鉴ID，则按条件筛选
         if (!empty($handbookIds)) {
