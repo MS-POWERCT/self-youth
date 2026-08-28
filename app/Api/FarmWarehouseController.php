@@ -2,16 +2,13 @@
 
 namespace App\Api;
 
-use App\Models\Asset;
 use App\Models\FarmWarehouse;
 use App\Services\FarmWarehouseService;
 use App\Services\WalletAssetService;
 use App\Support\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 
 /**
  * Description of My
@@ -26,13 +23,20 @@ class FarmWarehouseController extends Controller
     public function getList(Request $request)
     {
         $type = $request->type ?? 'seed';
-
+        if ($type == 'seed') {
+            $type = ['seed'];
+        } else {
+            $type = ['product', 'fruit'];
+        }
         $list = FarmWarehouse::with(['handbook' => function ($query) {
             $query->orderBy('level_id', 'ASC');
         }])->where('user_id', Auth::id())
             ->where('num', '>', 0)
-            ->where('type', $type)
-            ->orderBy('id', 'DESC')->get();
+            ->whereIn('type', $type)
+            ->orderBy('type')
+            ->orderBy('id', 'DESC')
+            ->get();
+
 
         return Response::success($list);
     }

@@ -1,0 +1,12 @@
+CREATE TABLE `weight_records` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint DEFAULT NULL,
+  `weight` decimal(5,2) DEFAULT NULL COMMENT '体重数值（如 65.30），精确到小数点后两位',
+  `unit` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '单位kg/jin',
+  `recorded_at` datetime DEFAULT NULL COMMENT '记录时间（用户可指定，默认为当前时间',
+  `note` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '备注',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` timestamp NULL DEFAULT NULL COMMENT '软删除',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;

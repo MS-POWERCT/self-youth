@@ -91,7 +91,7 @@ class FarmWarehouseService
      */
     public static function getWareHouseUse($user_id)
     {
-        return (int)FarmWarehouse::where('user_id', $user_id)->where('type', 'fruit')->where('num', '>', 0)->count();
+        return (int)FarmWarehouse::where('user_id', $user_id)->whereIn('type', ['product', 'fruit'])->where('num', '>', 0)->count();
     }
     /**
      * 得到下一个扩充价格

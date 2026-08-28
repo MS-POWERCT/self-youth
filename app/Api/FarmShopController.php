@@ -31,7 +31,7 @@ class FarmShopController extends Controller
         $size = min(intval($request->size ?? 50), 500);
         $type = $request->type ?? 'seed';
 
-        $list = FarmShop::with('handbook')->select('id', 'handbook_id', 'type', 'status')->whereIn('type', [$type, 'product'])
+        $list = FarmShop::with('handbook')->select('id', 'handbook_id', 'day_limit', 'type', 'status')->whereIn('type', [$type, 'product'])
             ->where('status', 1)
             ->offset($page * $size)
             ->limit($size)
