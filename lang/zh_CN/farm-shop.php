@@ -1,14 +1,14 @@
-<?php 
+<?php
 return [
     'labels' => [
-        'FarmShop' => 'FarmShop',
-        'farm-shop' => 'FarmShop',
+        'FarmShop' => '农场商店',
+        'farm-shop' => '农场商店',
     ],
     'fields' => [
-        'handbook_id' => 'handbook_id',
-        'type' => 'type',
-        'status' => 'status',
+        'handbook_id' => '图鉴商品',
+        'type' => '类型',
+        'day_limit' => '每日限购',
+        'status' => '上架状态',
     ],
-    'options' => [
-    ],
+    'options' => [],
 ];

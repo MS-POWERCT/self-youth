@@ -1,5 +1,8 @@
 <?php
 
+use App\Admin\Controllers\FarmHandbookController;
+use App\Admin\Controllers\FarmTaskNpcController;
+use App\Admin\Controllers\FarmUserTaskController;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Dcat\Admin\Admin;
@@ -34,9 +37,16 @@ Route::group([
     $router->resource('userHabitConfig', 'UserHabitConfigController');
     $router->resource('userHabit', 'UserHabitController');
     $router->resource('userHabitIcon', 'UserHabitIconController');
+    $router->resource('weightRecord', 'WeightRecordController');
 
     // 农场模块
     $router->resource('farmTask', 'FarmTaskController');
+    $router->resource('farmUserLand', 'FarmUserLandController');
+    $router->resource('farmWarehouse', 'FarmWarehouseController');
+    $router->resource('farmShop', 'FarmShopController');
+    $router->resource('farmTaskNpc', 'FarmTaskNpcController');
+    $router->resource('farmHandbook', 'FarmHandbookController');
+    $router->resource('farmUserTask', 'FarmUserTaskController');
 
     // 资产
     $router->resource('walletAsset', 'WalletAssetController');

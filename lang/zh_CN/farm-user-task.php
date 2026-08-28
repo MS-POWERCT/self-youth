@@ -1,16 +1,15 @@
-<?php 
+<?php
 return [
     'labels' => [
-        'FarmUserTask' => 'FarmUserTask',
-        'farm-user-task' => 'FarmUserTask',
+        'FarmUserTask' => '用户任务',
+        'farm-user-task' => '用户任务',
     ],
     'fields' => [
-        'user_id' => 'user_id',
-        'farm_task_id' => 'farm_task_id',
-        'task_log' => '任务的一些记录',
+        'user_id' => '用户ID',
+        'farm_task_id' => '任务ID',
+        'task_log' => '任务记录',
         'ok_at' => '完成时间',
-        'status' => 'status',
+        'status' => '状态',
     ],
-    'options' => [
-    ],
+    'options' => [],
 ];

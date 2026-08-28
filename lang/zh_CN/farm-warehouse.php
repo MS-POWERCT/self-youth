@@ -1,15 +1,14 @@
-<?php 
+<?php
 return [
     'labels' => [
-        'FarmWarehouse' => 'FarmWarehouse',
-        'farm-warehouse' => 'FarmWarehouse',
+        'FarmWarehouse' => '用户仓库',
+        'farm-warehouse' => '用户仓库',
     ],
     'fields' => [
-        'user_id' => 'user_id',
-        'handbook_id' => 'handbook_id',
+        'user_id' => '用户ID',
+        'handbook_id' => '图鉴ID',
         'num' => '数量',
-        'type' => 'type',
+        'type' => '类型',
     ],
-    'options' => [
-    ],
+    'options' => [],
 ];

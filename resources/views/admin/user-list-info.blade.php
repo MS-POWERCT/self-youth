@@ -1,15 +1,16 @@
 @php
+    $userId = $user->id ?? null;
     $name = $user->name ?? '—';
-    $uuid = $user->uuid ?? null;
-    $email = $user->email ?? null;
-    $address = $user->address ?? null;
-    $loginType = $user->login_type ?? null;
-    $loginLabels = [
-        'email' => '邮箱',
-        'uuid' => '游客',
-        'address' => '钱包',
-    ];
-    $loginLabel = $loginLabels[$loginType] ?? ($loginType ?: '—');
+$uuid = $user->uuid ?? null;
+$email = $user->email ?? null;
+$address = $user->address ?? null;
+$loginType = $user->login_type ?? null;
+$loginLabels = [
+'email' => '邮箱',
+'uuid' => '游客',
+'address' => '钱包',
+];
+$loginLabel = $loginLabels[$loginType] ?? ($loginType ?: '—');
 @endphp
 
 <div style="
@@ -42,7 +43,12 @@
         font-size: 11px;
         line-height: 1.6;
     ">
-        <div style="color: rgba(255,255,255,0.95); word-break: break-all;" title="{{ $uuid }}">
+        <div style="color: rgba(255,255,255,0.95); word-break: break-all;">
+            <i class="feather icon-user" style="width: 14px; margin-right: 4px; opacity: 0.75;"></i>
+            <span style="opacity: 0.75;">ID</span>
+            {{ $userId ?? '—' }}
+        </div>
+        <div style="color: rgba(255,255,255,0.95); word-break: break-all; margin-top: 4px;" title="{{ $uuid }}">
             <i class="feather icon-hash" style="width: 14px; margin-right: 4px; opacity: 0.75;"></i>
             <span style="opacity: 0.75;">UUID</span>
             {{ $uuid ? \Illuminate\Support\Str::limit($uuid, 36) : '—' }}

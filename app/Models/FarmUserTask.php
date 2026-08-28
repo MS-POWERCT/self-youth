@@ -16,6 +16,11 @@ class FarmUserTask extends Model
         return $this->belongsTo(FarmTask::class, 'farm_task_id');
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     // 状态
     public static $status_color = [
         0 => 'info',

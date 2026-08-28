@@ -10,56 +10,49 @@ use Dcat\Admin\Http\Controllers\AdminController;
 
 class FarmTaskNpcController extends AdminController
 {
-    /**
-     * Make a grid builder.
-     *
-     * @return Grid
-     */
+    protected function title()
+    {
+        return '任务 NPC';
+    }
+
     protected function grid()
     {
         return Grid::make(new FarmTaskNpc(), function (Grid $grid) {
+            $grid->model()->orderByDesc('id');
+
             $grid->column('id')->sortable();
-            $grid->column('name');
-            $grid->column('created_at');
-            $grid->column('updated_at')->sortable();
-        
+            $grid->column('name', '名称');
+            $grid->column('updated_at', '更新时间')->datetimeSplit()->sortable();
+            $grid->column('created_at', '创建时间')->datetimeSplit();
+            $grid->paginate(20);
+
+            $grid->quickSearch(['id', 'name']);
+
             $grid->filter(function (Grid\Filter $filter) {
-                $filter->equal('id');
-        
+                $filter->panel();
+                $filter->equal('id', 'ID')->width(3);
+                $filter->like('name', '名称')->width(3);
             });
         });
     }
 
-    /**
-     * Make a show builder.
-     *
-     * @param mixed $id
-     *
-     * @return Show
-     */
     protected function detail($id)
     {
         return Show::make($id, new FarmTaskNpc(), function (Show $show) {
             $show->field('id');
-            $show->field('name');
-            $show->field('created_at');
-            $show->field('updated_at');
+            $show->field('name', '名称');
+            $show->field('created_at', '创建时间');
+            $show->field('updated_at', '更新时间');
         });
     }
 
-    /**
-     * Make a form builder.
-     *
-     * @return Form
-     */
     protected function form()
     {
         return Form::make(new FarmTaskNpc(), function (Form $form) {
             $form->display('id');
-            $form->text('name');
-        
-            $form->display('created_at');
-            $form->display('updated_at');
+            $form->text('name', '名称')->required()->rules('required|string|max:100');
+            $form->display('created_at', '创建时间');
+            $form->display('updated_at', '更新时间');
         });
     }
 }

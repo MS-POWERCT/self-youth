@@ -1,12 +1,11 @@
-<?php 
+<?php
 return [
     'labels' => [
-        'FarmTaskNpc' => 'FarmTaskNpc',
-        'farm-task-npc' => 'FarmTaskNpc',
+        'FarmTaskNpc' => '任务 NPC',
+        'farm-task-npc' => '任务 NPC',
     ],
     'fields' => [
-        'name' => 'name',
+        'name' => '名称',
     ],
-    'options' => [
-    ],
+    'options' => [],
 ];
