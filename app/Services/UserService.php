@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\UserLog;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 
 /*
@@ -23,8 +24,8 @@ class UserService
     // 默认常量
     public static $HANDBOOK_ID_DEFAULT = 1; // 默认手册id
     public static $HANDBOOK_NUM_DEFAULT = 6; // 默认种子数量
-    public static $WALLET_ASSET_ID_DEFAULT = 1; // 默认资产
-    public static $WALLET_ASSET_NUM_DEFAULT = 100; // 默认资产数量
+    public static $FARM_ASSET_ID_DEFAULT = 1;
+    public static $FARM_ASSET_NUM_DEFAULT = 100;
 
 
     public static function getEmailCodeKey($email, $category)
@@ -59,31 +60,31 @@ class UserService
      */
     public static function createUser($value, $type)
     {
-        $preData = [
-            $type => $value,
-            'ip' => $GLOBALS['clientIp'],
-            'status' => 0,
-            'login_type' => $type,
-            'name' => CreativeNameService::generateDe(),
-        ];
+        return DB::transaction(function () use ($value, $type) {
+            $provider = IdentityService::normalizeProvider($type);
+            $identifier = IdentityService::normalizeIdentifier($provider, $value);
 
-        $user = User::create($preData);
+            $user = User::create([
+                'ip' => $GLOBALS['clientIp'],
+                'status' => 0,
+                'name' => CreativeNameService::generateDe(),
+            ]);
 
-        // 创建默认习惯
-        HabitService::getDefaultHabit($user);
+            IdentityService::createIdentity($user, $provider, $identifier);
 
-        // 创建用户默认资产
-        $wallet_asset = WalletAssetService::getWalletAsset($user, self::$WALLET_ASSET_ID_DEFAULT);
-        // 默认给100
-        WalletAssetService::change($wallet_asset, self::$WALLET_ASSET_NUM_DEFAULT, [
-            'module_code' => 'ADMIN',
-        ]);
-        // 给这个用户仓库增加6个土豆
-        $warehouse = FarmWarehouseService::getUserWareHouse($user, self::$HANDBOOK_ID_DEFAULT, 'seed');
-        $warehouse->num += self::$HANDBOOK_NUM_DEFAULT;
-        $warehouse->save();
+            HabitService::getDefaultHabit($user);
 
-        return $user;
+            $farmAsset = FarmAssetService::getFarmAsset($user, self::$FARM_ASSET_ID_DEFAULT);
+            FarmAssetService::change($farmAsset, self::$FARM_ASSET_NUM_DEFAULT, [
+                'module_code' => 'ADMIN',
+            ]);
+
+            $warehouse = FarmWarehouseService::getUserWareHouse($user, self::$HANDBOOK_ID_DEFAULT, 'seed');
+            $warehouse->num += self::$HANDBOOK_NUM_DEFAULT;
+            $warehouse->save();
+
+            return $user;
+        });
     }
 
 

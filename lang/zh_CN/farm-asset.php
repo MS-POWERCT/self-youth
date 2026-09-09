@@ -1,8 +1,9 @@
 <?php
+
 return [
     'labels' => [
-        'WalletAsset' => 'WalletAsset',
-        'wallet-asset' => 'WalletAsset',
+        'FarmAsset' => '农场资产',
+        'farm-asset' => '农场资产',
     ],
     'fields' => [],
     'options' => [],

@@ -2,15 +2,10 @@
 
 namespace App\Admin\Repositories;
 
-use App\Models\WalletAsset as Model;
+use App\Models\FarmAsset as Model;
 use Dcat\Admin\Repositories\EloquentRepository;
 
-class WalletAsset extends EloquentRepository
+class FarmAsset extends EloquentRepository
 {
-    /**
-     * Model.
-     *
-     * @var string
-     */
     protected $eloquentClass = Model::class;
 }

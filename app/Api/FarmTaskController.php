@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\FarmTaskService;
 use App\Services\FarmUserService;
 use App\Services\FarmWarehouseService;
-use App\Services\WalletAssetService;
+use App\Services\FarmAssetService;
 use App\Support\Response;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
@@ -79,8 +79,8 @@ class FarmTaskController extends Controller
 
             // 给用户奖励
             FarmUserService::farmAddExp($user->id, $detail->farmTask->reward_exp); // 增加经验
-            $wallet_asset = WalletAssetService::getWalletAsset($user, $detail->farmTask->reward_asset_id);
-            WalletAssetService::change($wallet_asset, $detail->farmTask->reward_gold, [
+            $farmAsset = FarmAssetService::getFarmAsset($user, $detail->farmTask->reward_asset_id);
+            FarmAssetService::change($farmAsset, $detail->farmTask->reward_gold, [
                 'module_code' => 'FARM_TASK',
             ]);
 

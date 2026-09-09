@@ -4,7 +4,7 @@ namespace App\Api;
 
 use App\Models\FarmWarehouse;
 use App\Services\FarmWarehouseService;
-use App\Services\WalletAssetService;
+use App\Services\FarmAssetService;
 use App\Support\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -59,13 +59,11 @@ class FarmWarehouseController extends Controller
 
         // 获取下一次扩充大小
         $next_extend_num = FarmWarehouseService::$FARM_EXTEND_NUM;
-        $wallet_account = WalletAssetService::getWalletAsset($user, 1);
+        $farmAsset = FarmAssetService::getFarmAsset($user, 1);
         try {
-            // 检查余额
-            WalletAssetService::checkBalance($wallet_account, $next_extend_price);
+            FarmAssetService::checkBalance($farmAsset, $next_extend_price);
 
-            // 扣除余额
-            WalletAssetService::change($wallet_account, -$next_extend_price, [
+            FarmAssetService::change($farmAsset, -$next_extend_price, [
                 'module_code' => 'EXTEND',
             ]);
 

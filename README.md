@@ -4,15 +4,15 @@ Self Youth 是一款面向自律与生活方式的后端 API 服务，为移动�
 
 ## 技术栈
 
-| 类别 | 技术 |
-|------|------|
-| 框架 | Laravel 9、PHP 8.0+ |
+| 类别      | 技术                                                                                               |
+| --------- | -------------------------------------------------------------------------------------------------- |
+| 框架      | Laravel 9、PHP 8.0+                                                                                |
 | HTTP 服务 | [Laraman](https://github.com/itinysun/laraman)（Workerman 常驻进程，默认 `http://127.0.0.1:8000`） |
-| API 认证 | Laravel Passport（`auth:api`） |
-| 后台管理 | Dcat Admin 2.x（Google 2FA） |
-| 数据库 | MySQL |
-| 缓存 | Redis / File（可配置） |
-| 其他 | Web3 钱包登录、阿里云 OSS、Activity Log |
+| API 认证  | Laravel Passport（`auth:api`）                                                                     |
+| 后台管理  | Dcat Admin 2.x（Google 2FA）                                                                       |
+| 数据库    | MySQL                                                                                              |
+| 缓存      | Redis / File（可配置）                                                                             |
+| 其他      | Web3 钱包登录、阿里云 OSS、Activity Log                                                            |
 
 ## 功能模块
 
@@ -32,8 +32,7 @@ Self Youth 是一款面向自律与生活方式的后端 API 服务，为移动�
 
 ### 用户与认证
 
-- 访客登录（UUID）
-- 邮箱验证码登录
+- 邮箱验证码登录 / 邮箱密码登录（Passport）
 - Web3 钱包签名登录（`/api/web3/signature`、`/api/web3/login`）
 - 个人信息填写、邮箱/钱包绑定
 
@@ -149,7 +148,7 @@ php artisan serve
 
 ```
 GET  /api/global/getInitData
-POST /api/auth/visitor/loginVisitor
+POST /api/auth/email/loginEmail
 POST /api/habit/getList          # 需 Bearer Token
 ```
 
@@ -167,9 +166,9 @@ Authorization: Bearer {access_token}
 
 ```json
 {
-  "res_code": 0,
-  "res_msg": "成功",
-  "data": {}
+    "res_code": 0,
+    "res_msg": "成功",
+    "data": {}
 }
 ```
 
@@ -179,27 +178,26 @@ Authorization: Bearer {access_token}
 
 ### 常用中间件
 
-| 中间件 | 说明 |
-|--------|------|
-| `check_uuid` | 纯访客用户（仅有 UUID、未绑定邮箱/钱包）禁止写入类操作 |
+| 中间件                | 说明             |
+| --------------------- | ---------------- |
 | `limit_form_repeat:N` | N 秒内防重复提交 |
-| `web3.signature` | Web3 签名验证 |
+| `web3.signature`      | Web3 签名验证    |
 
 ### 主要 API 分组
 
-| 模块 | 路径前缀 | 说明 |
-|------|----------|------|
-| 全局 | `/global` | 初始化数据 |
-| 认证 | `/auth`, `/web3` | 访客 / 邮箱 / Web3 登录 |
-| 用户 | `/my` | 个人信息、绑定、日志 |
-| 习惯 | `/habit` | 习惯配置与统计 |
-| 打卡 | `/habit/check` | 今日打卡切换 |
-| 数值 | `/habit/value` | 时长/计数记录 |
-| 标记 | `/mark` | 标记分类与项目 |
-| 情侣圈 | `/loverCircle`, `/loverComment` | 动态与评论 |
-| 体重 | `/weightRecord` | 记录 CRUD、stats、chart |
-| 农场 | `/farmUser`, `/farmShop`, `/farmWarehouse`, `/farmTask` | 农场玩法 |
-| 其他 | `/appupdate` | App 版本检查 |
+| 模块   | 路径前缀                                                | 说明                    |
+| ------ | ------------------------------------------------------- | ----------------------- |
+| 全局   | `/global`                                               | 初始化数据              |
+| 认证   | `/auth`, `/web3`                                        | 邮箱 / Web3 登录        |
+| 用户   | `/my`                                                   | 个人信息、绑定、日志    |
+| 习惯   | `/habit`                                                | 习惯配置与统计          |
+| 打卡   | `/habit/check`                                          | 今日打卡切换            |
+| 数值   | `/habit/value`                                          | 时长/计数记录           |
+| 标记   | `/mark`                                                 | 标记分类与项目          |
+| 情侣圈 | `/loverCircle`, `/loverComment`                         | 动态与评论              |
+| 体重   | `/weightRecord`                                         | 记录 CRUD、stats、chart |
+| 农场   | `/farmUser`, `/farmShop`, `/farmWarehouse`, `/farmTask` | 农场玩法                |
+| 其他   | `/appupdate`                                            | App 版本检查            |
 
 完整路由定义见 [`routes/api.php`](./routes/api.php)。
 
@@ -234,7 +232,6 @@ python3 scripts/generate_farm_npc_icons.py
 
 - API 控制器位于 `app/Api/`，后台控制器位于 `app/Admin/Controllers/`
 - 后台路由：`app/Admin/routes.php`；语言包：`lang/zh_CN/`
-- 新增需登录且不允许纯访客写入的接口，请加上 `check_uuid` 中间件
 - 图标字段入库时建议只存文件名（如 `wheat.svg`），展示时通过 Model 的 `resolveIconUrl()` 拼接完整 URL
 
 ## License

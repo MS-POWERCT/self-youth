@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\FarmUserLandService;
 use App\Services\FarmUserService;
 use App\Services\FarmWarehouseService;
-use App\Services\WalletAssetService;
+use App\Services\FarmAssetService;
 use App\Support\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -38,7 +38,7 @@ class FarmUserController extends Controller
             'level_id' => $farm_user_level,
             'exp' => FarmUserService::getFarmUserExp($user->id), // 用户经验
             'next_level_exp' => FarmUserService::getFarmUserNextLevelExp($farm_user_level + 1), // 下一级需要的经验
-            'wallet_assets' => WalletAssetService::getAccountAssetAll($user),
+            'farm_assets' => FarmAssetService::getFarmAssetsAll($user),
             'default_exp' => [
                 'plant' => FarmUserService::$FARM_PLANT_EXP, // 种植得多少经验
                 'shovel' => FarmUserService::$FARM_SHOVEL_EXP, // 铲除得多少经验
@@ -553,16 +553,16 @@ class FarmUserController extends Controller
         $price = $levelConfig[$upgrade_type]['price'][$nextCount];
 
         // 得到用户资产
-        $wallet_asset = WalletAssetService::getWalletAsset($user, 1);
+        $farmAsset = FarmAssetService::getFarmAsset($user, 1);
 
         try {
             DB::beginTransaction();
 
             // 检查是否有足够的金币
-            WalletAssetService::checkBalance($wallet_asset, $price);
+            FarmAssetService::checkBalance($farmAsset, $price);
 
             // 扣除金币
-            WalletAssetService::change($wallet_asset, -$price, [
+            FarmAssetService::change($farmAsset, -$price, [
                 'module_code' => 'FARM_LAND_UPGRADE',
             ]);
 
@@ -671,8 +671,8 @@ class FarmUserController extends Controller
         FarmUserService::farmAddExp($user->id, $exp);
 
         // 更新用户资产
-        $wallet_asset = WalletAssetService::getWalletAsset($user, 1);
-        WalletAssetService::change($wallet_asset, $gold, [
+        $farmAsset = FarmAssetService::getFarmAsset($user, 1);
+        FarmAssetService::change($farmAsset, $gold, [
             'module_code' => 'FARM_WORLD_TREE',
         ]);
 

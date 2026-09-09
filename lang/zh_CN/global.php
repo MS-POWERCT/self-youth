@@ -25,7 +25,7 @@ return [
         'note'                  => '备注',
 
         'source' => '来源',
-        'wallet_asset_id' => '钱包资产id',
+        'farm_asset_id' => '农场资产id',
         'tx_confirm_time' => '确认次数',
         'user_master_id' => '全节点id',
         'userMaster' => [

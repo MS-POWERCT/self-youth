@@ -67,8 +67,8 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'web3.signature' => \App\Http\Middleware\Web3SignatureMiddleware::class,
+        'email.login_code' => \App\Http\Middleware\EmailLoginCodeMiddleware::class,
         'limit_form_repeat' => \App\Http\Middleware\LimitFormRepeat::class,
-        'check_uuid' => \App\Http\Middleware\CheckUUIDVerified::class,
         // 'web3.auth' => \App\Http\Middleware\Web3AuthMd::class,
         'limit_api_repeat' => \App\Http\Middleware\LimitApiRepeat::class,
     ];

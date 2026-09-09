@@ -49,11 +49,8 @@ Route::group([
     $router->resource('farmUserTask', 'FarmUserTaskController');
 
     // 资产
-    $router->resource('walletAsset', 'WalletAssetController');
-    $router->resource('walletAssetChange', 'WalletAssetChangeController');
-    $router->resource('walletWithdraws', 'WalletWithdrawController');
-    $router->resource('walletDeposit', 'WalletDepositController');
-
+    $router->resource('farmAsset', 'FarmAssetController');
+    $router->resource('farmAssetChange', 'FarmAssetChangeController');
 
     // 其他
     $router->resource('llconfig', 'LlconfigController');

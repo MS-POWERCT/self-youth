@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\User;
+use App\Services\IdentityService;
 use App\Support\Response;
 use Illuminate\Http\Request;
 use Closure;
@@ -25,7 +25,7 @@ class Web3AuthMd
         if (empty($address = $request->address)) {
             return Response::error('Address parameter is required', 400, 400);
         }
-        $user = User::where('address', $address)->first();
+        $user = IdentityService::findUserByIdentity('web3', $address);
 
         // 检查用户是否存在
         if (!$user) {

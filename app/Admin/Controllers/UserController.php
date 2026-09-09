@@ -7,6 +7,7 @@ use App\Admin\Metrics\Handle\UserHabitAudited;
 use App\Admin\Metrics\Tools\GlobalTool;
 use App\Admin\Repositories\User;
 use App\Models\User as ModelsUser;
+use App\Models\UserIdentity;
 use Dcat\Admin\Form;
 use Dcat\Admin\Grid;
 use Dcat\Admin\Http\Controllers\AdminController;
@@ -50,6 +51,7 @@ class UserController extends AdminController
     protected function grid()
     {
         return Grid::make(new User(), function (Grid $grid) {
+            $grid->model()->with('identities');
             $grid->column('id')->sortable();
             $grid->column('user_info', '用户信息')->display(function () {
                 return View::make('admin.user-list-info', ['user' => $this])->render();
@@ -66,8 +68,27 @@ class UserController extends AdminController
             $grid->filter(function (Grid\Filter $filter) {
                 $filter->equal('id')->width('20%');
                 $filter->like('name')->width('30%');
-                $filter->like('email')->width('30%');
-                $filter->like('address')->width('30%');
+                $filter->where('email', function ($query) {
+                    $email = request('email');
+                    if ($email) {
+                        $query->whereHas('identities', function ($identityQuery) use ($email) {
+                            $identityQuery
+                                ->where('provider', UserIdentity::PROVIDER_EMAIL)
+                                ->where('identifier', 'like', "%{$email}%");
+                        });
+                    }
+                }, '邮箱')->width('30%');
+                $filter->where('address', function ($query) {
+                    $address = request('address');
+                    if ($address) {
+                        $address = strtolower(trim($address));
+                        $query->whereHas('identities', function ($identityQuery) use ($address) {
+                            $identityQuery
+                                ->where('provider', UserIdentity::PROVIDER_WEB3)
+                                ->where('identifier', 'like', "%{$address}%");
+                        });
+                    }
+                }, '钱包地址')->width('30%');
                 $filter->equal('status')->select(trans('app-status.user.status'))->width('20%');
             });
 

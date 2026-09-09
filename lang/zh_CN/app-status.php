@@ -28,7 +28,7 @@ return [
         ],
     ],
 
-    'wallet_asset' => [
+    'farm_asset' => [
         'module_code' => [
             'ADMIN' => '系统',
             'FARM_TASK' => '农场任务',

@@ -20,7 +20,7 @@ class WeightRecordController extends AdminController
 
     protected function grid()
     {
-        return Grid::make(new WeightRecord(['user']), function (Grid $grid) {
+        return Grid::make(new WeightRecord(['user.identities']), function (Grid $grid) {
             $grid->model()->orderByDesc('recorded_at')->orderByDesc('id');
 
             $grid->column('id')->sortable();
@@ -144,7 +144,7 @@ HTML;
 
     protected function detail($id)
     {
-        return Show::make($id, new WeightRecord(['user']), function (Show $show) {
+        return Show::make($id, new WeightRecord(['user.identities']), function (Show $show) {
             $show->field('id');
             $show->field('user_id', '用户ID');
             $show->field('user.name', '用户昵称');

@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Services\FarmWarehouseService;
-use App\Services\WalletAssetService;
+use App\Services\FarmAssetService;
 use App\Support\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
@@ -99,11 +99,10 @@ class FarmShopController extends Controller
             DB::beginTransaction();
 
             $total_amount = $product->handbook->price * $num;
-            $wallet_account = WalletAssetService::getWalletAsset($user, $asset->id);
-            WalletAssetService::checkBalance($wallet_account, $total_amount);
+            $farmAsset = FarmAssetService::getFarmAsset($user, $asset->id);
+            FarmAssetService::checkBalance($farmAsset, $total_amount);
 
-            // 扣除余额
-            WalletAssetService::change($wallet_account, -$total_amount, [
+            FarmAssetService::change($farmAsset, -$total_amount, [
                 'module_code' => 'PAY',
             ]);
 

@@ -7,7 +7,9 @@
  *
  * @author jqh <841324345@qq.com>
  */
+
 namespace Dcat\Admin {
+
     use Illuminate\Support\Collection;
 
     /**
@@ -160,7 +162,7 @@ namespace Dcat\Admin {
      * @property Grid\Column|Collection age
      * @property Grid\Column|Collection signature
      * @property Grid\Column|Collection ip
-     * @property Grid\Column|Collection wallet_asset_id
+     * @property Grid\Column|Collection farm_asset_id
      * @property Grid\Column|Collection balance_change
      * @property Grid\Column|Collection module_code
      * @property Grid\Column|Collection balance
@@ -317,7 +319,7 @@ namespace Dcat\Admin {
      * @method Grid\Column|Collection age(string $label = null)
      * @method Grid\Column|Collection signature(string $label = null)
      * @method Grid\Column|Collection ip(string $label = null)
-     * @method Grid\Column|Collection wallet_asset_id(string $label = null)
+     * @method Grid\Column|Collection farm_asset_id(string $label = null)
      * @method Grid\Column|Collection balance_change(string $label = null)
      * @method Grid\Column|Collection module_code(string $label = null)
      * @method Grid\Column|Collection balance(string $label = null)
@@ -479,7 +481,7 @@ namespace Dcat\Admin {
      * @property Show\Field|Collection age
      * @property Show\Field|Collection signature
      * @property Show\Field|Collection ip
-     * @property Show\Field|Collection wallet_asset_id
+     * @property Show\Field|Collection farm_asset_id
      * @property Show\Field|Collection balance_change
      * @property Show\Field|Collection module_code
      * @property Show\Field|Collection balance
@@ -636,7 +638,7 @@ namespace Dcat\Admin {
      * @method Show\Field|Collection age(string $label = null)
      * @method Show\Field|Collection signature(string $label = null)
      * @method Show\Field|Collection ip(string $label = null)
-     * @method Show\Field|Collection wallet_asset_id(string $label = null)
+     * @method Show\Field|Collection farm_asset_id(string $label = null)
      * @method Show\Field|Collection balance_change(string $label = null)
      * @method Show\Field|Collection module_code(string $label = null)
      * @method Show\Field|Collection balance(string $label = null)
@@ -647,10 +649,9 @@ namespace Dcat\Admin {
     class Show {}
 
     /**
-     
+
      */
     class Form {}
-
 }
 
 namespace Dcat\Admin\Grid {
@@ -660,14 +661,14 @@ namespace Dcat\Admin\Grid {
     class Column {}
 
     /**
-     
+
      */
     class Filter {}
 }
 
 namespace Dcat\Admin\Show {
     /**
-     
+
      */
     class Field {}
 }

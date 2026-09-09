@@ -4,13 +4,14 @@ namespace App\Api;
 
 use App\Models\MarkUser;
 use App\Models\User;
+use App\Models\UserIdentity;
 use App\Models\UserLog;
 use App\Services\HabitService;
+use App\Services\IdentityService;
 use App\Services\UserService;
 use App\Support\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class MyController extends Controller
@@ -18,10 +19,9 @@ class MyController extends Controller
     // 用户个人数据
     public function getMyInfo()
     {
-        $user = User::find(Auth::id());
+        $user = User::with('identities')->find(Auth::id());
 
-        // 对密码进行处理，如果有设置密码就标记为已设置密码
-        $user->has_password = $user->password ? 1 : 0;
+        $user->has_password = IdentityService::getIdentity($user, UserIdentity::PROVIDER_EMAIL)?->credential ? 1 : 0;
 
         // 有2个值，一个是用户连续几天进行习惯，
         $user->continuous_days_check = HabitService::getContinuousDays($user->id, HabitService::HABITCHECK);
@@ -48,19 +48,18 @@ class MyController extends Controller
         }
 
         $password = $request->input('password');
-        $user = User::find(Auth::id());
+        $user = User::with('identities')->find(Auth::id());
+        $email = IdentityService::getIdentifier($user, UserIdentity::PROVIDER_EMAIL);
 
-        // 检查是否有绑定邮箱
-        if (!$user->email) {
+        if (!$email) {
             return Response::error('邮箱未绑定', '5001');
         }
 
-        if (!UserService::checkEmailCode($user->email, 'recover', $request->code)) {
+        if (!UserService::checkEmailCode($email, 'recover', $request->code)) {
             return Response::error('验证码错误或已过期', '5002');
         }
 
-        $user->password = Hash::make($password);
-        $user->save();
+        IdentityService::updateEmailPassword($user, $password);
 
         return Response::success();
     }
@@ -81,10 +80,9 @@ class MyController extends Controller
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return response()->json(array('res_code' => 5003, 'res_msg' => trans('app-return.email_format_error'), 'data' => []));
         }
-        $user = User::find(Auth::id());
+        $user = User::with('identities')->find(Auth::id());
 
-        // 检查是否有绑定邮箱
-        if ($user->email) {
+        if (IdentityService::hasIdentity($user, UserIdentity::PROVIDER_EMAIL)) {
             return Response::error('邮箱存在无法进行绑定', '5001');
         }
 
@@ -92,8 +90,15 @@ class MyController extends Controller
             return Response::error('验证码错误或已过期', '5002');
         }
 
-        $user->email = $email;
-        $user->save();
+        try {
+            IdentityService::bindIdentity($user, UserIdentity::PROVIDER_EMAIL, $email);
+        } catch (\Exception $e) {
+            if ($e->getMessage() === 'identity_already_bound') {
+                return Response::error('邮箱已绑定,请更换其他邮箱', '5002');
+            }
+
+            throw $e;
+        }
 
         return Response::success();
     }
@@ -102,20 +107,25 @@ class MyController extends Controller
     public function bindAddress(Request $request)
     {
         $address = $request->address;
-        $user = User::find(Auth::id());
+        $user = User::with('identities')->find(Auth::id());
 
-        // 检查是否有绑定邮箱
-        if ($user->address) {
+        if (IdentityService::hasIdentity($user, UserIdentity::PROVIDER_WEB3)) {
             return Response::error('地址存在无法进行绑定', '5001');
         }
 
-        // 检查这个地址是否用户已绑定
-        if (User::where('address', $address)->first()) {
+        if (IdentityService::identityExists(UserIdentity::PROVIDER_WEB3, $address)) {
             return Response::error('地址已绑定，请更换其他地址', '5002');
         }
 
-        $user->address = $address;
-        $user->save();
+        try {
+            IdentityService::bindIdentity($user, UserIdentity::PROVIDER_WEB3, $address);
+        } catch (\Exception $e) {
+            if ($e->getMessage() === 'identity_already_bound') {
+                return Response::error('地址已绑定，请更换其他地址', '5002');
+            }
+
+            throw $e;
+        }
 
         return Response::success();
     }

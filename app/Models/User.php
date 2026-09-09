@@ -4,28 +4,17 @@ namespace App\Models;
 
 use Dcat\Admin\Traits\HasDateTimeFormatter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redis;
 use Laravel\Passport\HasApiTokens;
-// use Spatie\Activitylog\LogOptions;
-// use Spatie\Activitylog\Traits\LogsActivity;
 use League\OAuth2\Server\Exception\OAuthServerException;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasDateTimeFormatter;
-
-    // public function getActivitylogOptions(): LogOptions
-    // {
-    //     return LogOptions::defaults()
-    //         ->logOnly(['address', 'referrer_address']) // 只记录这些属性的变更
-    //         ->logOnlyDirty() // 只记录属性值实际发生变更的情况
-    //         ->dontSubmitEmptyLogs() // 如果没有属性发生变更，则不记录日志
-    //         ->useLogName('system'); // 使用 'system' 作为日志名称
-    // }
-
-
 
     public static $user_status_color = [
         0 => 'success',
@@ -36,15 +25,13 @@ class User extends Authenticatable
         9 => 'success',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    // 密码隐藏
     protected $hidden = ['password'];
+
     protected $guarded = [];
-    public $incrementing = true; // 允许自增，同时也支持手动指定 ID
+
+    protected $appends = ['email', 'uuid', 'address', 'login_type'];
+
+    public $incrementing = true;
 
     protected static function boot()
     {
@@ -52,32 +39,100 @@ class User extends Authenticatable
 
         static::updated(function ($user) {
             if ($user->isDirty('name')) {
-                $newName = $user->name;
-                $userId = $user->id;
-                Redis::hset("users_names", $userId, $newName);
+                Redis::hset('users_names', $user->id, $user->name);
             }
             if ($user->isDirty('avatar')) {
-                $newAvatar = $user->avatar;
-                $userId = $user->id;
-                Redis::hset("users_avatars", $userId, $newAvatar);
+                Redis::hset('users_avatars', $user->id, $user->avatar);
             }
         });
     }
 
-    public function getAvatarAttribute($value)
+    public function identities(): HasMany
     {
-        return Tools::setPrefix($value, request()->route()->getAction('controller'));
+        return $this->hasMany(UserIdentity::class);
     }
 
+    public function getAvatarAttribute($value)
+    {
+        return Tools::setPrefix($value, request()->route()?->getAction('controller'));
+    }
+
+    public function getEmailAttribute(): ?string
+    {
+        return $this->resolveIdentity(UserIdentity::PROVIDER_EMAIL)?->identifier;
+    }
+
+    public function getUuidAttribute(): ?string
+    {
+        return $this->resolveIdentity(UserIdentity::PROVIDER_VISITOR)?->identifier;
+    }
+
+    public function getAddressAttribute(): ?string
+    {
+        return $this->resolveIdentity(UserIdentity::PROVIDER_WEB3)?->identifier;
+    }
+
+    public function getPasswordAttribute(): ?string
+    {
+        return $this->resolveIdentity(UserIdentity::PROVIDER_EMAIL)?->credential;
+    }
+
+    public function getLoginTypeAttribute(): ?string
+    {
+        $first = $this->relationLoaded('identities')
+            ? $this->identities->sortBy('created_at')->first()
+            : $this->identities()->orderBy('created_at')->first();
+
+        if (!$first) {
+            return null;
+        }
+
+        return match ($first->provider) {
+            UserIdentity::PROVIDER_VISITOR => 'uuid',
+            UserIdentity::PROVIDER_WEB3 => 'address',
+            default => $first->provider,
+        };
+    }
+
+    protected function resolveIdentity(string $provider): ?UserIdentity
+    {
+        if (!$this->relationLoaded('identities')) {
+            $this->load('identities');
+        }
+
+        return $this->identities
+            ->first(fn (UserIdentity $identity) => $identity->provider === $provider && $identity->status === UserIdentity::STATUS_ACTIVE);
+    }
 
     public function findForPassport($username)
     {
+        $identity = UserIdentity::query()
+            ->where('provider', UserIdentity::PROVIDER_EMAIL)
+            ->where('identifier', strtolower(trim($username)))
+            ->where('status', UserIdentity::STATUS_ACTIVE)
+            ->first();
 
-        // 先验证邮箱是否存在
-        if (!User::where('email', $username)->first()) {
+        if (!$identity) {
             throw new OAuthServerException(trans('app-return.email_not_register'), 99, 'invalid_grant');
         }
 
-        return $this->where('email', $username)->where('status', '!=', 1)->first();
+        $user = $identity->user;
+
+        if (!$user || $user->status == 1) {
+            return null;
+        }
+
+        return $user;
+    }
+
+    public function validateForPassportPasswordGrant($password)
+    {
+        $credential = $this->resolveIdentity(UserIdentity::PROVIDER_EMAIL)?->credential;
+
+        if (!$credential) {
+            return false;
+        }
+
+        return Hash::check($password, $credential);
     }
 }
