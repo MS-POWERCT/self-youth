@@ -3,6 +3,8 @@
 namespace Asundust\DcatAuthGoogle2Fa\Http\Controllers;
 
 use Asundust\DcatAuthGoogle2Fa\DcatAuthGoogle2FaServiceProvider;
+use Asundust\DcatAuthGoogle2Fa\Http\Controllers\Actions\BindRowAction;
+use Asundust\DcatAuthGoogle2Fa\Http\Controllers\Actions\UnbindRowAction;
 use Asundust\DcatAuthGoogle2Fa\Models\AdminUser;
 use Dcat\Admin\Form;
 use Dcat\Admin\Grid;
@@ -23,17 +25,17 @@ class DcatAuthGoogle2FaUserController extends UserController
 
             $grid->column('status', DcatAuthGoogle2FaServiceProvider::trans('dcat-auth-google-2fa.status'))
                 ->bool();
-            // $grid->column('google_two_fa_enable', DcatAuthGoogle2FaServiceProvider::trans('dcat-auth-google-2fa.google_2fa'))
-            //     ->bool()
-            //     ->if(function () {
-            //         /* @var AdminUser $this */
-            //         return $this->google_two_fa_enable;
-            //     })
-            //     ->qrcode(function () {
-            //         /* @var AdminUser $this */
-            //         $google2fa = new Google2FA();
-            //         return $google2fa->getQRCodeUrl(config('admin.name'), $this->username, $this->google_two_fa_secret);
-            //     }, 200, 200);
+            $grid->column('google_two_fa_enable', DcatAuthGoogle2FaServiceProvider::trans('dcat-auth-google-2fa.google_2fa'))
+                ->bool()
+                ->if(function () {
+                    /* @var AdminUser $this */
+                    return $this->google_two_fa_enable;
+                })
+                ->qrcode(function () {
+                    /* @var AdminUser $this */
+                    $google2fa = new Google2FA();
+                    return $google2fa->getQRCodeUrl(config('admin.name'), $this->username, $this->google_two_fa_secret);
+                }, 200, 200);
 
             if (config('admin.permission.enable')) {
                 $grid->column('roles', trans('admin.roles'))->pluck('name')->label('primary', 3);
@@ -72,11 +74,11 @@ class DcatAuthGoogle2FaUserController extends UserController
                 if ($actions->getKey() == AdminUser::DEFAULT_ID) {
                     $actions->disableDelete();
                 }
-                // if ($actions->row['google_two_fa_enable']) {
-                //     $actions->append(new UnbindRowAction());
-                // } else {
-                //     $actions->append(new BindRowAction());
-                // }
+                if ($actions->row['google_two_fa_enable']) {
+                    $actions->append(new UnbindRowAction());
+                } else {
+                    $actions->append(new BindRowAction());
+                }
             });
         });
     }
@@ -155,13 +157,8 @@ class DcatAuthGoogle2FaUserController extends UserController
                 ->updateRules(['required', "unique:$connection.$userTable,username,$id"]);
             $form->text('name', trans('admin.name'))->required();
             $form->image('avatar', trans('admin.avatar'))->autoUpload();
-            // $form->switch('status', DcatAuthGoogle2FaServiceProvider::trans('dcat-auth-google-2fa.status'))->default(AdminUser::STATUS_TRUE);
-            // $form->switch('google_two_fa_enable', DcatAuthGoogle2FaServiceProvider::trans('dcat-auth-google-2fa.google_2fa'))->default(AdminUser::GOOGLE_TWO_FA_ENABLE_FALSE);
-            // $form->switch('google_refresh', '刷新验证码')->default(0)->help('开启后保存会进行一次刷新');
-            $form->hidden('status')->default(1);
-            $form->hidden('google_two_fa_msg');
-            $form->hidden('google_two_fa_secret');
-            $form->hidden('google_two_fa_enable')->default(1);
+            $form->switch('status', DcatAuthGoogle2FaServiceProvider::trans('dcat-auth-google-2fa.status'))->default(AdminUser::STATUS_TRUE);
+            $form->switch('google_two_fa_enable', DcatAuthGoogle2FaServiceProvider::trans('dcat-auth-google-2fa.google_2fa'))->default(AdminUser::GOOGLE_TWO_FA_ENABLE_FALSE);
 
             if ($id) {
                 $form->password('password', trans('admin.password'))
@@ -209,40 +206,11 @@ class DcatAuthGoogle2FaUserController extends UserController
                 $form->deleteInput('password');
             }
 
-
-            if ($form->isCreating()) {
-                if ($form->google_two_fa_enable == AdminUser::GOOGLE_TWO_FA_ENABLE_TRUE) {
-                    $form->google_two_fa_secret = (new Google2FA())->generateSecretKey(32);
-                    $google2fa = new Google2FA();
-                    $qrCodeUrl = $google2fa->getQRCodeUrl(
-                        config('app.name'),
-                        $form->username,
-                        $form->google_two_fa_secret
-                    );
-                    $form->google_two_fa_msg = $qrCodeUrl;
-                } else {
-                    $form->google_two_fa_secret = null;
-                }
+            if ($form->google_two_fa_enable == AdminUser::GOOGLE_TWO_FA_ENABLE_TRUE) {
+                $form->google_two_fa_secret = (new Google2FA())->generateSecretKey(32);
+            } else {
+                $form->google_two_fa_secret = null;
             }
-
-            // if ($form->isEditing()) {
-            //     if ($form->google_refresh == 1) {
-            //         $form->google_two_fa_secret = (new Google2FA())->generateSecretKey(32);
-            //         $google2fa = new Google2FA();
-            //         $qrCodeUrl = $google2fa->getQRCodeUrl(
-            //             config('app.name'),
-            //             $form->username,
-            //             $form->google_two_fa_secret
-            //         );
-            //         $form->google_two_fa_msg = $qrCodeUrl;
-            //     }
-            //     // 删除google_refresh
-            //     $form->deleteInput('google_refresh');
-            // }
-        })->saved(function (Form $form) {
-            if ($form->isCreating()) {
-                return $form->response()->success('创建成功：下面是你的google验证码信息,请复制并保持')->detail($form->google_two_fa_msg)->alert(true)->refresh();
-            };
         });
     }
 }

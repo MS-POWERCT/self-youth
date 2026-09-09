@@ -29,20 +29,12 @@ class BindRowAction extends RowAction
      */
     public function handle()
     {
-        return $this->response()->error('暂时不支持绑定');
-
         $google2Fa = new Google2FA();
         $secret = $google2Fa->generateSecretKey(32);
         /* @var AdminUser $user */
         $user = AdminUser::query()->find($this->getKey());
         $user->google_two_fa_secret = $secret;
         $user->google_two_fa_enable = AdminUser::GOOGLE_TWO_FA_ENABLE_TRUE;
-        $qrCodeUrl = $google2Fa->getQRCodeUrl(
-            config('app.name'),
-            $user->username,
-            $user->google_two_fa_secret
-        );
-        $user->google_two_fa_msg = $qrCodeUrl;
         $user->save();
         return $this->response()->success(DcatAuthGoogle2FaServiceProvider::trans('dcat-auth-google-2fa.2fa_bind_success'))->refresh();
     }
