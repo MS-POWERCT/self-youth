@@ -58,9 +58,9 @@ class UserService
      * 创建用户函数
      * @return type
      */
-    public static function createUser($value, $type)
+    public static function createUser($value, $type, ?array $metadata = null)
     {
-        return DB::transaction(function () use ($value, $type) {
+        return DB::transaction(function () use ($value, $type, $metadata) {
             $provider = IdentityService::normalizeProvider($type);
             $identifier = IdentityService::normalizeIdentifier($provider, $value);
 
@@ -70,7 +70,7 @@ class UserService
                 'name' => CreativeNameService::generateDe(),
             ]);
 
-            IdentityService::createIdentity($user, $provider, $identifier);
+            IdentityService::createIdentity($user, $provider, $identifier, null, $metadata, now());
 
             HabitService::getDefaultHabit($user);
 

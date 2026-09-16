@@ -62,7 +62,8 @@ class IdentityService
         string $provider,
         string $identifier,
         ?string $credential = null,
-        ?array $metadata = null
+        ?array $metadata = null,
+        ?\DateTimeInterface $verifiedAt = null
     ): UserIdentity {
         $provider = self::normalizeProvider($provider);
         $identifier = self::normalizeIdentifier($provider, $identifier);
@@ -73,6 +74,7 @@ class IdentityService
             'identifier' => $identifier,
             'credential' => $credential,
             'metadata' => $metadata,
+            'verified_at' => $verifiedAt,
             'status' => UserIdentity::STATUS_ACTIVE,
         ]);
     }
@@ -141,10 +143,29 @@ class IdentityService
         self::getIdentity($user, $provider)?->update(['last_login_at' => now()]);
     }
 
+    public static function syncIdentityMetadata(User $user, string $provider, ?array $metadata = null): void
+    {
+        if ($metadata === null || $metadata === []) {
+            return;
+        }
+
+        $identity = self::getIdentity($user, $provider);
+
+        if (!$identity) {
+            return;
+        }
+
+        $identity->update([
+            'metadata' => array_merge($identity->metadata ?? [], $metadata),
+            'verified_at' => now(),
+        ]);
+        $user->unsetRelation('identities');
+    }
+
     /**
      * @return array{res_code:int,res_msg:string,access_token:string}
      */
-    public static function authenticate(string $provider, string $identifier): array
+    public static function authenticate(string $provider, string $identifier, ?array $metadata = null): array
     {
         $provider = self::normalizeProvider($provider);
         $identifier = self::normalizeIdentifier($provider, $identifier);
@@ -153,7 +174,9 @@ class IdentityService
 
         if (!$user) {
             $legacyType = $provider === UserIdentity::PROVIDER_WEB3 ? 'address' : $provider;
-            $user = UserService::createUser($identifier, $legacyType);
+            $user = UserService::createUser($identifier, $legacyType, $metadata);
+        } else {
+            self::syncIdentityMetadata($user, $provider, $metadata);
         }
 
         if ($user->status == 1) {

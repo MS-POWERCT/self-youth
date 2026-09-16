@@ -68,6 +68,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'web3.signature' => \App\Http\Middleware\Web3SignatureMiddleware::class,
         'email.login_code' => \App\Http\Middleware\EmailLoginCodeMiddleware::class,
+        'taptap.token' => \App\Http\Middleware\TapTapTokenMiddleware::class,
         'limit_form_repeat' => \App\Http\Middleware\LimitFormRepeat::class,
         // 'web3.auth' => \App\Http\Middleware\Web3AuthMd::class,
         'limit_api_repeat' => \App\Http\Middleware\LimitApiRepeat::class,

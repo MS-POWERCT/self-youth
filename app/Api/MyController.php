@@ -8,6 +8,7 @@ use App\Models\UserIdentity;
 use App\Models\UserLog;
 use App\Services\HabitService;
 use App\Services\IdentityService;
+use App\Services\TapTapLoginService;
 use App\Services\UserService;
 use App\Support\Response;
 use Illuminate\Http\Request;
@@ -122,6 +123,47 @@ class MyController extends Controller
         } catch (\Exception $e) {
             if ($e->getMessage() === 'identity_already_bound') {
                 return Response::error('地址已绑定，请更换其他地址', '5002');
+            }
+
+            throw $e;
+        }
+
+        return Response::success();
+    }
+
+    // 绑定 TapTap
+    public function bindTapTap(Request $request)
+    {
+        $user = User::with('identities')->find(Auth::id());
+
+        if (IdentityService::hasIdentity($user, UserIdentity::PROVIDER_TAPTAP)) {
+            return Response::error('TapTap 已绑定，无法重复绑定', '5001');
+        }
+
+        try {
+            $profile = TapTapLoginService::verifyAndGetProfile($request);
+            $identifier = $profile['unionid'] ?: $profile['openid'];
+
+            if (IdentityService::identityExists(UserIdentity::PROVIDER_TAPTAP, $identifier)) {
+                return Response::error('TapTap 账号已绑定其他用户', '5002');
+            }
+
+            $metadata = array_filter([
+                'openid' => $profile['openid'] ?? null,
+                'unionid' => $profile['unionid'] ?? null,
+                'name' => $profile['name'] ?? null,
+                'avatar' => $profile['avatar'] ?? null,
+            ], fn ($value) => $value !== null && $value !== '');
+
+            IdentityService::bindIdentity($user, UserIdentity::PROVIDER_TAPTAP, $identifier);
+            IdentityService::syncIdentityMetadata($user, UserIdentity::PROVIDER_TAPTAP, $metadata);
+        } catch (\Exception $e) {
+            if ($e->getMessage() === 'identity_already_bound') {
+                return Response::error('TapTap 账号已绑定其他用户', '5002');
+            }
+
+            if ($e->getCode() >= 6301 && $e->getCode() <= 6304) {
+                return Response::error($e->getMessage(), $e->getCode());
             }
 
             throw $e;

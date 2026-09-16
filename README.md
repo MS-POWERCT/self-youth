@@ -225,8 +225,13 @@ python3 scripts/generate_farm_npc_icons.py
 
 ## 相关文档
 
-- [核心业务开发文档.md](./核心业务开发文档.md) — 习惯/打卡/数值模块的数据表与业务设计
-- [项目提醒.md](./项目提醒.md) — 备份恢复、Passport 密钥、邮件 SSL 等注意事项
+文档已统一放在 [`docs/`](./docs/) 目录：
+
+- [docs/核心业务开发文档.md](./docs/核心业务开发文档.md) — 习惯/打卡/数值模块的数据表与业务设计
+- [docs/项目提醒.md](./docs/项目提醒.md) — 备份恢复、Passport 密钥、邮件 SSL 等注意事项
+- [docs/taptap-login-prep.md](./docs/taptap-login-prep.md) — TapTap 登录接入准备
+- [docs/wechat-miniprogram-login-prep.md](./docs/wechat-miniprogram-login-prep.md) — 微信小程序登录接入准备
+- [docs/README.md](./docs/README.md) — 文档目录索引
 
 ## 开发约定
 

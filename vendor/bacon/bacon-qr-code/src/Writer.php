@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace BaconQrCode;
 
@@ -42,7 +43,7 @@ final class Writer
         string $encoding = Encoder::DEFAULT_BYTE_MODE_ECODING,
         ?ErrorCorrectionLevel $ecLevel = null,
         ?Version $forcedVersion = null
-    ) : string {
+    ): string {
         if (strlen($content) === 0) {
             throw new InvalidArgumentException('Found empty contents');
         }
@@ -65,7 +66,7 @@ final class Writer
         string $encoding = Encoder::DEFAULT_BYTE_MODE_ECODING,
         ?ErrorCorrectionLevel $ecLevel = null,
         ?Version $forcedVersion = null
-    ) : void {
+    ): void {
         file_put_contents($filename, $this->writeString($content, $encoding, $ecLevel, $forcedVersion));
     }
 }

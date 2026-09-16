@@ -9,6 +9,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/my/changePassword', 'App\Api\MyController@changePassword')->middleware(['limit_form_repeat:3']);
     Route::post('/my/bindEmail', 'App\Api\MyController@bindEmail')->middleware(['limit_form_repeat:3']);
     Route::post('/my/bindAddress', 'App\Api\MyController@bindAddress')->middleware(['limit_form_repeat:3', 'web3.signature']);
+    Route::post('/my/bindTapTap', 'App\Api\MyController@bindTapTap')->middleware(['limit_form_repeat:3', 'taptap.token']);
     Route::get('/my/getUserLog', 'App\Api\MyController@getUserLog');
     Route::post('/my/fillInfo', 'App\Api\MyController@fillInfo')->middleware(['limit_form_repeat:3']);
 
@@ -77,6 +78,7 @@ Route::post('/appupdate/version', 'App\Api\AppUpdateController@version');
 Route::post('/auth/email/sendCode', 'App\Api\Auth\EmailLoginController@sendEmailCode')->middleware(['limit_form_repeat:3']);
 Route::post('/auth/email/loginEmail', 'App\Api\Auth\EmailLoginController@loginEmail')->middleware(['limit_form_repeat:3', 'email.login_code']);
 Route::post('/auth/visitor/loginVisitor', 'App\Api\Auth\VisitorLoginController@loginVisitor')->middleware(['limit_form_repeat:3']);
+Route::post('/auth/taptap/login', 'App\Api\Auth\TapTapLoginController@login')->middleware(['limit_form_repeat:3', 'taptap.token']);
 
 Route::as('web3')->prefix('web3')->group(function () {
     Route::get('signature', 'App\Api\Auth\Web3LoginController@signature')->middleware('limit_form_repeat:3');
