@@ -38,7 +38,7 @@ class FarmUserController extends Controller
             'level_id' => $farm_user_level,
             'exp' => FarmUserService::getFarmUserExp($user->id), // 用户经验
             'next_level_exp' => FarmUserService::getFarmUserNextLevelExp($farm_user_level + 1), // 下一级需要的经验
-            'farm_assets' => FarmAssetService::getFarmAssetsAll($user),
+            'farmAssets' => FarmAssetService::getFarmAssetsAll($user),
             'default_exp' => [
                 'plant' => FarmUserService::$FARM_PLANT_EXP, // 种植得多少经验
                 'shovel' => FarmUserService::$FARM_SHOVEL_EXP, // 铲除得多少经验
